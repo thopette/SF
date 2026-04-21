@@ -597,17 +597,16 @@ loggFilter = 'sesong';
 const sesongTurerStats = filterTurer(turer);
 loggFilter = _prevF;
 const forerStats = {};
+// Bruk sesong-filtrerte turer og diffMap på alle turer
 const diffMapSesong = beregnDiff(turer);
 sesongTurerStats.forEach(t => {
 if (!t.forer) return;
 if (!forerStats[t.forer]) forerStats[t.forer] = { okter:0, km:0, timer:0, turer:[] };
 forerStats[t.forer].okter++;
-// Timer: bruk Maskintimer (per-tur diff) direkte
-// Timer: bruk Maskintimer direkte, eller diff fra TimerSlutt som fallback
+// Timer: bruk Maskintimer direkte (allerede per-tur verdi fra sheet)
+forerStats[t.forer].timer += parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+// Km: diff fra beregnDiff
 const d = diffMapSesong[t.id]||{};
-const timerPerTur = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||(d.timerBrukt||0);
-forerStats[t.forer].timer += timerPerTur;
-// Km: bruk diff fra beregnDiff
 forerStats[t.forer].km += d.kmKjort||0;
 forerStats[t.forer].turer.push(t);
 });
@@ -620,8 +619,17 @@ Object.keys(window._forerCharts||{}).forEach(k => { try { window._forerCharts[k]
 window._forerCharts = {};
 kortEl.innerHTML = forerNavn.map(f => {
 const s = forerStats[f];
-const snitt = s.timer > 0 ? (s.km / s.timer).toFixed(1) : '–';
-return `<div style="border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden"><div style="background:linear-gradient(135deg,var(--navy) 0%,var(--mid) 100%);padding:10px 16px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:white">${f.charAt(0)}</div><div style="font-weight:600;font-size:14px;color:white">${f}</div></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)"><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.okter}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Økter</div></div><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.km.toFixed(1)}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Km kjørt</div></div><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.timer.toFixed(1)}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Timer</div></div><div style="padding:12px;text-align:center"><div style="font-size:22px;font-weight:600;color:var(--mid);font-family:var(--mono)">${snitt}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Km/t</div></div></div><div style="padding:12px;position:relative;height:160px"><canvas id="chart-forer-${f.replace(/\s/g,'_')}" role="img" aria-label="Km kjørt per økt for ${f}"></canvas></div></div>`;
+// Fallback: beregn km fra første/siste km-stand for denne føreren
+let kmBrukt = s.km;
+if (kmBrukt === 0 && s.turer.length >= 2) {
+const sorterteTurer = [...s.turer].sort((a,b) => new Date(a.dato) - new Date(b.dato));
+const forsteKm = parseFloat(sorterteTurer[0].km)||0;
+const sisteKm = parseFloat(sorterteTurer[sorterteTurer.length-1].km)||0;
+if (sisteKm > forsteKm) kmBrukt = sisteKm - forsteKm;
+}
+const snitt = (s.timer > 0 && kmBrukt > 0) ? (kmBrukt / s.timer).toFixed(1) : '–';
+const kmVis = kmBrukt > 0 ? kmBrukt.toFixed(1) : s.km.toFixed(1);
+return `<div style="border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden"><div style="background:linear-gradient(135deg,var(--navy) 0%,var(--mid) 100%);padding:10px 16px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:white">${f.charAt(0)}</div><div style="font-weight:600;font-size:14px;color:white">${f}</div></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)"><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.okter}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Økter</div></div><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${kmVis}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Km kjørt</div></div><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.timer.toFixed(1)}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Timer</div></div><div style="padding:12px;text-align:center"><div style="font-size:22px;font-weight:600;color:var(--mid);font-family:var(--mono)">${snitt}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Km/t</div></div></div><div style="padding:12px;position:relative;height:160px"><canvas id="chart-forer-${f.replace(/\s/g,'_')}" role="img" aria-label="Km kjørt per økt for ${f}"></canvas></div></div>`;
 }).join('');
 // Render per-driver charts
 forerNavn.forEach(f => {
