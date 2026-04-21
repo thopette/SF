@@ -566,16 +566,26 @@ const tot = turPerLoype[a.loype]||1;
 const pct = Math.round(a.antall/tot*100);
 return `<tr><td style="font-weight:500">${a.navn}</td><td style="color:var(--text2);font-size:12px">${a.loype}</td><td style="font-family:var(--mono)">${a.antall}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:var(--border);border-radius:4px;height:6px;max-width:80px"><div style="width:${pct}%;background:var(--accent);border-radius:4px;height:6px"></div></div><span style="font-family:var(--mono);font-size:12px">${pct}%</span></div></td></tr>`;
 }).join('');
-// ── Sjåfør-kort med graf ──
-const diffMapStats = beregnDiff(filtrertStats);
+// ── Sjåfør-kort med graf – alltid sesong ──
+const _prevF = loggFilter;
+loggFilter = 'sesong';
+const sesongTurerStats = filterTurer(turer);
+loggFilter = _prevF;
 const forerStats = {};
-filtrertStats.forEach(t => {
+sesongTurerStats.forEach(t => {
 if (!t.forer) return;
-if (!forerStats[t.forer]) forerStats[t.forer] = { okter:0, km:0, timer:0 };
+if (!forerStats[t.forer]) forerStats[t.forer] = { okter:0, km:0, timer:0, turer:[] };
 forerStats[t.forer].okter++;
-const d = diffMapStats[t.id]||{};
-forerStats[t.forer].km += d.kmKjort||0;
-forerStats[t.forer].timer += d.timerBrukt||0;
+forerStats[t.forer].timer += parseFloat(t.timerBrukt)||0;
+forerStats[t.forer].turer.push(t);
+});
+// Beregn km per fører fra diff
+const diffMapSesong = beregnDiff(sesongTurerStats);
+Object.keys(forerStats).forEach(f => {
+forerStats[f].turer.forEach(t => {
+const d = diffMapSesong[t.id]||{};
+forerStats[f].km += d.kmKjort||0;
+});
 });
 const kortEl = document.getElementById('stats-sjaforer-kort');
 const forerNavn = Object.keys(forerStats);
@@ -591,11 +601,11 @@ return `<div style="border:1px solid var(--border);border-radius:var(--radius);m
 }).join('');
 // Render per-driver charts
 forerNavn.forEach(f => {
-const turene = filtrertStats.filter(t => t.forer===f)
+const turene = sesongTurerStats.filter(t => t.forer===f)
 .sort((a,b) => new Date(a.dato) - new Date(b.dato));
 const labels = turene.map(t => formatDato(t.dato));
-const kmData = turene.map(t => { const d=diffMapStats[t.id]||{}; return d.kmKjort||0; });
-const timerData = turene.map(t => { const d=diffMapStats[t.id]||{}; return d.timerBrukt||0; });
+const kmData = turene.map(t => { const d=diffMapSesong[t.id]||{}; return d.kmKjort||0; });
+const timerData = turene.map(t => { const d=diffMapSesong[t.id]||{}; return d.timerBrukt||0; });
 const canvasId = 'chart-forer-' + f.replace(/\s/g,'_');
 const canvas = document.getElementById(canvasId);
 if (!canvas) return;
