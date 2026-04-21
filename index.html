@@ -405,7 +405,10 @@ const sorted = [...turer].sort((a,b) =>
 new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
 );
 const relevante = maskinNavn ? sorted.filter(t => t.maskin === maskinNavn) : sorted;
-const sisteT = relevante.length > 0 ? relevante[relevante.length-1] : null;
+// Finn turen med høyest km-stand (= siste reelle stand)
+const sisteT = relevante.length > 0
+? relevante.reduce((best, t) => (parseFloat(t.km)||0) > (parseFloat(best.km)||0) ? t : best, relevante[0])
+: null;
 const maskinNavn2 = aktivMaskin ? ` (${aktivMaskin.navn})` : '';
 if (sisteT) {
 hintKm.innerHTML = `Nåværende km-stand${maskinNavn2}: <strong>${sisteT.km}</strong>`;
