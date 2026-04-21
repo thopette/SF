@@ -597,7 +597,7 @@ loggFilter = 'sesong';
 const sesongTurerStats = filterTurer(turer);
 loggFilter = _prevF;
 const forerStats = {};
-const diffMapSesong = beregnDiff(sesongTurerStats);
+const diffMapSesong = beregnDiff(turer);
 sesongTurerStats.forEach(t => {
 if (!t.forer) return;
 if (!forerStats[t.forer]) forerStats[t.forer] = { okter:0, km:0, timer:0, turer:[] };
@@ -628,9 +628,10 @@ forerNavn.forEach(f => {
 const turene = sesongTurerStats.filter(t => t.forer===f)
 .sort((a,b) => new Date(a.dato) - new Date(b.dato));
 const labels = turene.map(t => formatDato(t.dato));
-const kmData = turene.map(t => { const d=diffMapSesong[t.id]||{}; return d.kmKjort||0; });
+const diffAlleKart = beregnDiff(turer);
+const kmData = turene.map(t => { const d=diffAlleKart[t.id]||{}; return d.kmKjort||0; });
 const timerData = turene.map(t => {
-const d2 = diffMapSesong[t.id]||{};
+const d2 = diffAlleKart[t.id]||{};
 return parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||(d2.timerBrukt||0);
 });
 const canvasId = 'chart-forer-' + f.replace(/\s/g,'_');
@@ -1206,6 +1207,7 @@ aktivMaskin = maskiner[idx];
 await lagreMaskiner_api();
 renderAdminMaskiner();
 }
+
 function renderAdminMaskiner() {
 const el = document.getElementById('admin-maskin-liste');
 if (!el) return;
@@ -1217,7 +1219,7 @@ el.innerHTML = maskiner.map((m,i) => `
 <div class="forer-list-item"><div style="flex:1"><div style="font-weight:600;font-size:14px;color:var(--text)">${m.navn}
 ${m.aktiv ? '<span style="margin-left:6px;background:var(--ice);color:var(--mid);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;border:1px solid var(--border)">Aktiv</span>' : ''}
 </div><div style="font-size:12px;color:var(--text2);margin-top:2px">
-Km-start: ${m.kmStart||0} &nbsp;·&nbsp; Timer-start: ${m.timerStart||0}
+Km-start: <strong>${m.kmStart||0}</strong> &nbsp;·&nbsp; Timer-start: <strong>${m.timerStart||0}</strong>
 </div></div>
 ${!m.aktiv ? `<button class="btn btn-sm btn-outline" onclick="settAktivMaskin(${i})" style="font-size:11px;padding:5px 10px">Sett aktiv</button>` : ''}
 <button class="btn btn-sm btn-outline" onclick="redigerMaskin(${i})" style="font-size:12px;padding:5px 10px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettMaskin(${i})">Slett</button></div>`).join('');
