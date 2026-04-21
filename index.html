@@ -1,0 +1,1194 @@
+<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="apple-mobile-web-app-capable" content="yes"><title>Kjørebok</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"><style>
+:root { --navy: #1A2B4A; --mid: #2D5A8E; --accent: #4A9FD4; --ice: #E8F4FD; --snow: #F5F9FF; --white: #FFFFFF; --text: #1A2B4A; --text2: #5A7A9A; --border: #C8DCF0; --success: #27AE60; --warn: #E67E22; --danger: #E74C3C; --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif; --radius: 10px; --shadow: 0 2px 12px rgba(26,43,74,0.10); } * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; } body { font-family: var(--sans); background: var(--snow); color: var(--text); min-height: 100vh; padding-bottom: 80px; } .topbar { background: var(--navy); padding: 14px 20px 12px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.25); } .topbar-titles h1 { font-size: 17px; font-weight: 600; color: #fff; } .topbar-sub { font-size: 11px; color: rgba(255,255,255,0.5); } .sync-status { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,0.7); } .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #888; flex-shrink: 0; } .sync-dot.ok { background: #27AE60; } .sync-dot.loading { background: #F39C12; animation: pulse 1s infinite; } .sync-dot.error { background: var(--danger); } @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} } .nav { display: flex; background: var(--white); border-bottom: 1.5px solid var(--border); position: sticky; top: 56px; z-index: 99; overflow-x: auto; } .nav::-webkit-scrollbar { display: none; } .nav-btn { flex: 1; min-width: 80px; padding: 12px 6px 10px; border: none; background: transparent; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; border-bottom: 2.5px solid transparent; transition: all 0.15s; } .nav-btn.active { color: var(--mid); border-bottom-color: var(--accent); } .nav-btn svg { width: 18px; height: 18px; } .section { display: none; padding: 16px; max-width: 900px; margin: 0 auto; } .section.active { display: block; } .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; } .card-header { background: linear-gradient(135deg, var(--navy) 0%, var(--mid) 100%); color: white; padding: 12px 16px; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; } .card-body { padding: 16px; } .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .form-grid.three { grid-template-columns: 1fr 1fr 1fr; } .form-grid.full { grid-template-columns: 1fr; } .field { margin-bottom: 0; } .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; } .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: var(--sans); font-size: 14px; color: var(--text); background: var(--snow); transition: border-color 0.15s; -webkit-appearance: none; } .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: var(--white); } .field textarea { resize: vertical; min-height: 70px; } .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 10px; position: relative; } .divider::before { content: attr(data-label); position: absolute; top: -9px; left: 0; background: var(--white); padding: 0 8px 0 0; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; } .btn { padding: 11px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 500; font-size: 14px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; } .btn-primary { background: var(--mid); color: white; } .btn-primary:active { background: var(--navy); transform: scale(0.98); } .btn-primary:disabled { background: #aaa; cursor: not-allowed; } .btn-danger { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; font-size: 12px; padding: 6px 10px; } .btn-outline { background: transparent; color: var(--mid); border: 1.5px solid var(--mid); } .btn-sm { padding: 7px 12px; font-size: 12px; } .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; align-items: center; } .toast { font-size: 13px; color: var(--success); display: none; align-items: center; gap: 5px; font-weight: 500; } .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; } @media (min-width: 600px) { .metrics { grid-template-columns: repeat(4, 1fr); } } .metric { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); } .metric-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; } .metric-value { font-size: 26px; font-weight: 600; color: var(--navy); font-family: var(--mono); line-height: 1; } .metric-sub { font-size: 11px; color: var(--text2); margin-top: 3px; } .trip-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); margin-bottom: 10px; } .trip-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; } .trip-route { font-size: 15px; font-weight: 600; color: var(--navy); } .trip-date { font-size: 12px; color: var(--text2); font-family: var(--mono); } .trip-driver { font-size: 13px; color: var(--mid); font-weight: 500; margin-bottom: 8px; } .trip-stats { display: flex; gap: 8px; flex-wrap: wrap; } .trip-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text2); background: var(--snow); border-radius: 6px; padding: 4px 8px; border: 1px solid var(--border); } .trip-stat span { font-weight: 600; color: var(--navy); font-family: var(--mono); font-size: 13px; } .trip-note { margin-top: 8px; font-size: 12px; color: var(--text2); font-style: italic; border-left: 2px solid var(--accent); padding-left: 8px; } .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 580px; } th { padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1.5px solid var(--border); background: var(--snow); white-space: nowrap; } td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; } tr:last-child td { border-bottom: none; } tr:hover td { background: var(--ice); } .chart-container { position: relative; width: 100%; height: 200px; } .empty { text-align: center; padding: 40px 20px; color: var(--text2); } .empty-icon { font-size: 36px; margin-bottom: 12px; } .empty p { font-size: 14px; line-height: 1.6; } .loading-overlay { display: none; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: var(--text2); font-size: 13px; } .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--mid); border-radius: 50%; animation: spin 0.7s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } } @media (max-width: 480px) { .form-grid.three { grid-template-columns: 1fr 1fr; } .form-grid.three .field:last-child { grid-column: span 2; } .section { padding: 12px; } } @media (min-width: 700px) { .form-grid { grid-template-columns: repeat(3, 1fr); } .form-grid.two { grid-template-columns: 1fr 1fr; } } .cond-bar { display:flex; gap:8px; margin-top:4px; } .cond-btn { flex:1; padding:12px 8px; border-radius:8px; border:1.5px solid var(--border); background:var(--snow); cursor:pointer; font-family:var(--sans); font-size:13px; font-weight:500; color:var(--text2); text-align:center; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:4px; } .cond-btn .cond-dots { display:flex; gap:3px; justify-content:center; } .cond-btn .dot { width:10px; height:10px; border-radius:50%; background:var(--border); transition:background 0.15s; } .cond-btn[data-val="1"].active { border-color:#E74C3C; background:#FEF2F2; color:#C0392B; } .cond-btn[data-val="1"].active .dot { background:#E74C3C; } .cond-btn[data-val="2"].active { border-color:#F39C12; background:#FFFBF0; color:#D68910; } .cond-btn[data-val="2"].active .dot { background:#F39C12; } .cond-btn[data-val="3"].active { border-color:#27AE60; background:#F0FBF4; color:#1E8449; } .cond-btn[data-val="3"].active .dot { background:#27AE60; } .cond-badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:600; } .cond-1 { background:#FEF2F2; color:#C0392B; } .cond-2 { background:#FFFBF0; color:#D68910; } .cond-3 { background:#F0FBF4; color:#1E8449; } .admin-section { background:var(--snow); border-radius:var(--radius); border:1px solid var(--border); padding:16px; margin-bottom:14px; } .admin-section h3 { font-size:13px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; } .forer-list-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:0.5px solid var(--border); } .forer-list-item:last-child { border-bottom:none; } .forer-name { flex:1; font-size:14px; font-weight:500; color:var(--text); } .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; align-items:center; justify-content:center; padding:20px; } .modal-bg.open { display:flex; } .modal { background:var(--white); border-radius:var(--radius); padding:20px; width:100%; max-width:440px; box-shadow:0 8px 32px rgba(0,0,0,0.2); } .modal h3 { font-size:16px; font-weight:600; color:var(--navy); margin-bottom:16px; } .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; } .tag { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:var(--ice); color:var(--mid); border:1px solid var(--border); } .admin-pin-overlay { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; gap:16px; } .pin-input { text-align:center; font-size:28px; font-family:var(--mono); letter-spacing:8px; width:140px; } .pin-dots { display:flex; gap:10px; margin:8px 0; } .pin-dot { width:14px; height:14px; border-radius:50%; background:var(--border); transition:background 0.2s; } .pin-dot.filled { background:var(--mid); } .loype-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; } .loype-boks { border-radius:var(--radius); padding:14px; border:1.5px solid var(--border); transition:all 0.2s; position:relative; overflow:hidden; } .loype-boks.kjort { background:#F0FBF4; border-color:#A9DFBF; } .loype-boks.ikke-kjort { background:var(--snow); border-color:var(--border); } .loype-boks-navn { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:6px; line-height:1.3; } .loype-boks.ikke-kjort .loype-boks-navn { color:var(--text2); } .loype-status-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:3px 8px; border-radius:999px; margin-bottom:8px; } .loype-status-badge.kjort { background:#D5F5E3; color:#1E8449; } .loype-status-badge.ikke-kjort { background:var(--border); color:var(--text2); } .loype-meta { font-size:11px; color:var(--text2); line-height:1.6; } .loype-meta strong { color:var(--text); font-weight:500; } .loype-snofnugg { position:absolute; right:10px; top:10px; opacity:0.15; font-size:28px; } .filter-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; } .filter-btn { padding:7px 14px; border-radius:20px; border:1.5px solid var(--border); background:var(--white); font-family:var(--sans); font-size:12px; font-weight:500; color:var(--text2); cursor:pointer; transition:all 0.15s; } .filter-btn.active { background:var(--mid); color:white; border-color:var(--mid); } .filter-btn:hover:not(.active) { border-color:var(--mid); color:var(--mid); } .ldot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:ldot-pulse 1.2s ease-in-out infinite; } .ldot:nth-child(2) { animation-delay:0.2s; } .ldot:nth-child(3) { animation-delay:0.4s; } @keyframes ldot-pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} } @keyframes snowcat-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} } #snowcat-svg { animation: snowcat-bounce 1s ease-in-out infinite; } .avstikker-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border:1.5px solid var(--border); border-radius:8px; background:var(--snow); margin-bottom:7px; cursor:pointer; transition:all 0.15s; } .avstikker-item.checked { border-color:var(--accent); background:var(--ice); } .avstikker-item input[type=checkbox] { width:18px; height:18px; accent-color:var(--mid); cursor:pointer; flex-shrink:0; } .avstikker-label { font-size:14px; font-weight:500; color:var(--text); } .loype-admin-item { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:10px; overflow:hidden; } .loype-admin-header { display:flex; align-items:center; gap:8px; padding:12px 14px; background:var(--snow); border-bottom:1px solid var(--border); } .loype-admin-name { font-weight:600; font-size:14px; color:var(--navy); flex:1; } .loype-admin-body { padding:12px 14px; } .avstikker-admin-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; } .avstikker-admin-row input[type=text] { flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-family:var(--sans); font-size:13px; color:var(--text); background:var(--white); } .badge-km { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; background:var(--ice); color:var(--mid); font-weight:600; border:1px solid var(--border); } .vaer-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:500; background:var(--snow); border:1px solid var(--border); color:var(--text); } .vaer-badge .vaer-ikon { font-size:16px; line-height:1; } .snupunkt-btn { display:block; width:100%; text-align:left; padding:9px 12px; margin-bottom:6px; border:1.5px solid #F5CBA7; border-radius:7px; background:white; font-family:var(--sans); font-size:13px; font-weight:500; color:#784212; cursor:pointer; transition:all 0.15s; } .snupunkt-btn:last-child { margin-bottom:0; } .snupunkt-btn.selected { background:#F39C12; color:white; border-color:#E67E22; } .snupunkt-btn:hover:not(.selected) { background:#FEF5E7; border-color:#F39C12; } .runde-kort { border:1.5px solid var(--border); border-radius:var(--radius); margin-bottom:10px; overflow:hidden; background:var(--snow); } .runde-kort-header { display:flex; align-items:center; padding:10px 14px; background:var(--white); border-bottom:1px solid var(--border); gap:10px; } .runde-nummer { width:24px; height:24px; border-radius:50%; background:var(--mid); color:white; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; } .runde-kort-body { padding:12px 14px; } .runde-kort.collapsed .runde-kort-body { display:none; } .runde-kort.collapsed { background:var(--white); } .runde-tittel { font-size:13px; font-weight:600; color:var(--navy); flex:1; }
+</style></head><body>
+<div id="loading-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(255,255,255,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px">
+<div class="spinner"></div>
+<span id="loading-tekst" style="font-size:13px;color:var(--text2)">Lagrer tur…</span>
+</div>
+<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>Kjørebok</h1><div class="topbar-sub">Langrennsløype</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+Dashboard
+</button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+Ny tur
+</button><button class="nav-btn" onclick="showTab('logg')" id="btn-logg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+Logg
+</button><button class="nav-btn" onclick="showTab('statistikk')" id="btn-statistikk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+Statistikk
+</button><button class="nav-btn" onclick="showTab('admin')" id="btn-admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="18" cy="5" r="2.5" fill="currentColor" stroke="none"/><line x1="18" y1="3" x2="18" y2="2"/><line x1="18" y1="8" x2="18" y2="7"/><line x1="16" y1="4" x2="15" y2="3.5"/><line x1="20" y1="6" x2="21" y2="6.5"/><line x1="16" y1="6" x2="15" y2="6.5"/><line x1="20" y1="4" x2="21" y2="3.5"/></svg>
+Admin
+</button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn active" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-30d" onclick="setDashFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+Løypestatus – siste 7 dager
+</div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section" id="tab-ny"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+Registrer ny kjøretur
+</div><div class="card-body"><div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Runder kjørt denne økten</label><button type="button" onclick="leggTilRunde()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--mid);background:transparent;color:var(--mid);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+Legg til runde
+</button></div><div id="runder-container"></div></div><hr class="divider" data-label="Tid og stand" style="margin-top:16px"><div class="form-grid two"><div class="field"><label>Slutt (kl.)</label><input type="time" id="f-slutt"></div><div class="field"><label>Km-stand ved slutt</label><input type="number" id="f-km" placeholder="0.0" min="0" step="0.1"></div></div><hr class="divider" data-label="Driftsdata" style="margin-top:16px"><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Timerteller ved slutt</label><input type="number" id="f-timer-slutt" placeholder="0.0" step="0.1" min="0"></div></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-diesel" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte diesel</span></label><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-adblue" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte AdBlue</span></label></div><hr class="divider" data-label="Føreforhold" style="margin-top:16px"><div class="field" style="margin-bottom:12px"><label>Føreforhold</label><div class="cond-bar" id="cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setCond(1)"><div class="cond-dots"><div class="dot"></div></div>
+Dårlig
+</button><button type="button" class="cond-btn" data-val="2" onclick="setCond(2)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div></div>
+Middels
+</button><button type="button" class="cond-btn" data-val="3" onclick="setCond(3)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+Bra
+</button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Merknader</label><textarea id="f-merknader" placeholder="Utstyr, feil, observasjoner…"></textarea></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-primary" id="lagre-btn" onclick="lagreTur()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+Lagre tur
+</button></div></div></div></div><div class="section" id="tab-logg"><div class="filter-bar"><button class="filter-btn" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn active" id="filter-uke" onclick="setLoggFilter('uke')">Denne uken</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button><button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="hentData()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+Oppdater
+</button><button class="btn btn-outline btn-sm" onclick="eksporterCSV()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+CSV
+</button></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div><div class="table-wrap"><table><thead><tr><th>Dato</th><th>Fører</th><th>Løype</th><th>Slutt</th><th>Km kjørt</th><th>Timer</th><th>Vær</th><th>Føre</th><th>Diesel</th><th>AdBlue</th><th></th></tr></thead><tbody id="logg-tbody"></tbody></table><div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny tur» for å starte.</p></div></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn active" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+Km kjørt per måned
+<span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører</div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Maskintimer</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Per løype</div><div class="table-wrap"><table><thead><tr><th>Løype</th><th>Turer</th><th>Snudde</th><th>Km totalt</th><th>Timer</th></tr></thead><tbody id="stats-loype"></tbody></table><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Avstikkere – kjørefrekvens</div><div class="table-wrap"><table><thead><tr><th>Avstikker</th><th>Løype</th><th>Antall kjørt</th><th>Av totalt turer</th></tr></thead><tbody id="stats-avstikkere"></tbody></table><div id="stats-avstikkere-empty" class="empty" style="display:none"><p>Ingen avstikkerdata</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+Sjåførstatistikk
+</div><div class="card-body" id="stats-sjaforer-kort"></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+Admin – logg inn
+</div><div class="card-body"><div class="admin-pin-overlay"><p style="font-size:14px;color:var(--text2);text-align:center">Skriv inn PIN-kode for å få tilgang til adminpanelet.</p><div class="pin-dots" id="pin-dots"><div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div></div><input class="field input pin-input" id="pin-input" type="password" maxlength="4" inputmode="numeric" placeholder="••••" oninput="sjekkPin()"><p id="pin-feil" style="font-size:12px;color:var(--danger);display:none">Feil PIN. Prøv igjen.</p></div></div></div></div><div id="admin-panel" style="display:none"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+Førere
+<button class="btn btn-sm" style="margin-left:auto;background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3)" onclick="visNyForer()">+ Legg til</button></div><div class="card-body" id="admin-forere-list"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+Løyper og avstikkere
+<button class="btn btn-sm" style="margin-left:auto;background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3)" onclick="visNyLoype()">+ Ny runde</button></div><div class="card-body" id="admin-loype-liste"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+Rediger tidligere turer
+</div><div class="table-wrap"><table><thead><tr><th>Dato</th><th>Fører</th><th>Løype</th><th>Slutt</th><th>Føre</th><th></th></tr></thead><tbody id="admin-turer-tbody"></tbody></table><div id="admin-turer-empty" class="empty" style="display:none"><p>Ingen turer</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+Maskiner
+<button class="btn btn-sm" style="margin-left:auto;background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3)" onclick="visNyMaskin()">+ Ny maskin</button></div><div class="card-body" id="admin-maskin-liste"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Sesonginnstillinger
+</div><div class="card-body"><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Sesongstart (DD.MM)</label><input type="text" id="admin-sesong-start" placeholder="01.11" maxlength="5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Sesongslutt (DD.MM)</label><input type="text" id="admin-sesong-slutt" placeholder="30.04" maxlength="5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+Google Sheets tilkobling
+</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="edit-modal"><div class="modal"><h3>Rediger tur</h3><input type="hidden" id="edit-id"><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Dato</label><input type="date" id="edit-dato"></div><div class="field"><label>Fører</label><select id="edit-forer"><option value="">Velg…</option></select></div></div><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Løype</label><input type="text" id="edit-loype"></div></div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Slutt (kl.)</label><input type="time" id="edit-slutt"></div><div class="field"><label>Km-stand</label><input type="number" id="edit-km" step="0.1" min="0"></div></div><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Timerteller ved slutt</label><input type="number" id="edit-timer" step="0.1" min="0"></div></div><div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" id="edit-diesel" style="width:18px;height:18px;accent-color:var(--mid)"> Fylte diesel
+</label><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" id="edit-adblue" style="width:18px;height:18px;accent-color:var(--mid)"> Fylte AdBlue
+</label></div><div class="field" style="margin-bottom:10px"><label>Føreforhold</label><div class="cond-bar" id="edit-cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setEditCond(1)"><div class="cond-dots"><div class="dot"></div></div>Dårlig</button><button type="button" class="cond-btn" data-val="2" onclick="setEditCond(2)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div></div>Middels</button><button type="button" class="cond-btn" data-val="3" onclick="setEditCond(3)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>Bra</button></div></div><div class="field"><label>Merknader</label><textarea id="edit-merknader" style="min-height:60px;width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></textarea></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreEditTur()">Lagre endringer</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
+Avstikkere / tilbringere
+<button type="button" onclick="leggTilAvstikkerInput()" style="float:right;font-size:11px;color:var(--mid);background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-avstikkere"></div><div style="font-size:11px;font-weight:600;color:#B7770D;text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span>Faste snupunkter</span><button type="button" onclick="leggTilSnupunktInput()" style="font-size:11px;color:#E67E22;background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-snupunkter"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkLoypeModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreLoype()">Lagre runde</button></div></div></div><div class="modal-bg" id="registrert-modal" style="align-items:flex-end;padding:0"><div class="modal" style="max-width:100%;width:100%;border-radius:var(--radius) var(--radius) 0 0;padding:24px 20px 32px;max-height:85vh;overflow-y:auto"><div style="text-align:center;margin-bottom:20px"><div style="width:52px;height:52px;border-radius:50%;background:var(--ice);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:4px">Tur registrert!</h3><p style="font-size:13px;color:var(--text2)" id="reg-loype-tekst"></p></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Denne turen</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px"><div style="background:var(--ice);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Tid medgått</div><div style="font-size:24px;font-weight:600;color:var(--navy);font-family:var(--mono);line-height:1" id="reg-tid">–</div></div><div style="background:var(--ice);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Km kjørt</div><div style="font-size:24px;font-weight:600;color:var(--navy);font-family:var(--mono);line-height:1" id="reg-km">–</div></div></div><div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px"><div style="font-size:11px;font-weight:600;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px" id="reg-forer-label">Din sesong</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div style="background:var(--ice);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--mid);font-family:var(--mono)" id="reg-forer-turer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Økter</div></div><div style="background:var(--ice);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--mid);font-family:var(--mono)" id="reg-forer-km">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Km</div></div><div style="background:var(--ice);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--mid);font-family:var(--mono)" id="reg-forer-timer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Timer</div></div></div></div><div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Sesongen totalt</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px"><div style="background:var(--snow);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="reg-sesong-turer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Turer</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="reg-sesong-km">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Km</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="reg-sesong-timer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Timer</div></div></div></div><button class="btn btn-primary" style="width:100%;justify-content:center" onclick="lukkRegistrertModal()">Lukk</button></div></div><div class="modal-bg" id="maskin-modal"><div class="modal" style="max-width:440px"><h3 id="maskin-modal-title">Ny maskin</h3><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Maskinens navn / ID</label><input type="text" id="maskin-navn-input" placeholder="f.eks. Prinoth Bison X" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Km-stand ved oppstart</label><input type="number" id="maskin-km-input" placeholder="0" min="0" step="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Timerteller ved oppstart</label><input type="number" id="maskin-timer-input" placeholder="0.0" min="0" step="0.1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="margin-bottom:16px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow)"><input type="checkbox" id="maskin-aktiv-input" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Aktiv maskin</div><div style="font-size:11px;color:var(--text2)">Denne maskinen brukes ved nye registreringer</div></div></label></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkMaskinModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreMaskin()">Lagre maskin</button></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script><script>
+
+// ── CONFIG ──
+const STORAGE_KEY = 'kjorebok_script_url'; // Beholdes for bakoverkompatibilitet
+function formatDato(str) {
+if (!str) return '–';
+const parts = str.substring(0,10).split('-');
+if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
+return str;
+}
+function beregnDiff(turer) {
+// Returns a map of tur.id -> { kmKjort, timerBrukt }
+// sorted per machine chronologically
+const sorted = [...turer].sort((a,b) =>
+new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
+);
+const maskinSiste = {}; // maskin -> last {km, timer}
+const diffMap = {};
+sorted.forEach(t => {
+const maskin = t.maskin || '__ingen__';
+const kmNy = parseFloat(t.km)||0;
+const timerNy = parseFloat(t.timerSlutt)||0;
+const prev = maskinSiste[maskin];
+let kmKjort = null, timerBrukt = null;
+if (prev) {
+if (kmNy > 0 && prev.km > 0 && kmNy > prev.km) kmKjort = kmNy - prev.km;
+if (timerNy > 0 && prev.timer > 0 && timerNy > prev.timer) timerBrukt = timerNy - prev.timer;
+} else {
+// First trip for this machine – use maskin startdata if available
+const m = maskiner.find(m => m.navn === t.maskin);
+if (m) {
+if (kmNy > 0 && m.kmStart > 0 && kmNy > m.kmStart) kmKjort = kmNy - m.kmStart;
+if (timerNy > 0 && m.timerStart > 0 && timerNy > m.timerStart) timerBrukt = timerNy - m.timerStart;
+}
+}
+diffMap[t.id] = { kmKjort, timerBrukt };
+maskinSiste[maskin] = { km: kmNy || (prev?.km||0), timer: timerNy || (prev?.timer||0) };
+});
+return diffMap;
+}
+// If served from Apps Script, use the injected URL; otherwise fall back to localStorage
+// Hardkodet URL – endres her ved nytt Apps Script-prosjekt
+// scriptUrl defined in head
+let turer = [];
+let chartInst = null;
+// ── SETUP ──
+function lagreScriptUrl() {
+// URL er hardkodet – denne funksjonen brukes ikke lenger
+}
+function sjekkSetup() {
+if (!scriptUrl) setSyncStatus('', 'Ikke tilkoblet');
+}
+// ── SYNC STATUS ──
+function setSyncStatus(state, label) {
+const dot = document.getElementById('sync-dot');
+dot.className = 'sync-dot' + (state ? ' ' + state : '');
+document.getElementById('sync-label').textContent = label;
+const cat = document.getElementById('topbar-snowcat');
+if (cat) {
+cat.style.display = state === 'loading' ? 'block' : 'none';
+cat.style.animation = state === 'loading' ? 'snowcat-bounce 0.8s ease-in-out infinite' : 'none';
+}
+}
+// ── API ──
+async function apiKall(body) {
+const controller = new AbortController();
+const timeout = setTimeout(() => controller.abort(), 40000);
+try {
+const res = await fetch(scriptUrl, {
+method: 'POST', redirect: 'follow',
+headers: { 'Content-Type': 'text/plain' },
+body: JSON.stringify(body),
+signal: controller.signal
+});
+clearTimeout(timeout);
+return res.json();
+} catch(e) {
+clearTimeout(timeout);
+if (e.name === 'AbortError') throw new Error('Tidsfrist utløpt – sjekk nettforbindelsen og prøv igjen.');
+throw e;
+}
+}
+async function hentData() {
+if (!scriptUrl) return;
+setSyncStatus('loading', 'Kobler til…');
+try {
+const data = await apiKall({ action: 'hentAlle' });
+if (data.feil) throw new Error(data.feil);
+turer = (data.turer || []).map(t => ({
+id: t.ID, dato: t.Dato, forer: t['Fører'], loype: t['Løype'],
+slutt: t.Slutt, km: parseFloat(t.Km)||0,
+timerSlutt: t.TimerSlutt,
+timerBrukt: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null,
+diesel: t.Diesel || '', adblue: t.AdBlue || '', forkond: parseInt(t.Forkond)||0,
+merknader: t.Merknader || '',
+avstikkere: t.Avstikkere || '',
+snupunkt: t.Snupunkt || '',
+maskin: t.Maskin || '',
+vaer: t.Vaer || '',
+timerBruktCalc: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null
+}));
+// Hent config (førere + løyper)
+const cfg = await apiKall({ action: 'hentConfig' });
+if (cfg.forere && cfg.forere.length) forere = cfg.forere;
+if (cfg.loyper) loyper = cfg.loyper;
+// Refresh runde selects now that loyper are loaded
+oppdaterLoypeSelect();
+// If on ny-tur tab with empty container, add first round now
+const rCont = document.getElementById('runder-container');
+if (rCont && rCont.children.length === 0 && loyper.length > 0 &&
+document.getElementById('tab-ny').classList.contains('active')) {
+leggTilRunde();
+}
+if (cfg.innstillinger) {
+const s = cfg.innstillinger;
+if (s.sesongStart) sesongStart = s.sesongStart;
+if (s.sesongSlutt) sesongSlutt = s.sesongSlutt;
+if (s.maxKm) window._maxKm = s.maxKm;
+if (s.maxTimer) window._maxTimer = s.maxTimer;
+}
+if (cfg.maskiner) {
+maskiner = cfg.maskiner;
+aktivMaskin = maskiner.find(m=>m.aktiv) || maskiner[0] || null;
+oppdaterMaskinSelect();
+}
+setSyncStatus('ok', 'Synkronisert');
+oppdaterDataLists();
+const tab = document.querySelector('.section.active').id.replace('tab-','');
+if (tab==='dashboard') renderDashboard();
+if (tab==='logg') renderLogg();
+if (tab==='statistikk') renderStatistikk();
+} catch (err) {
+if (err.message && err.message.includes('Tidsfrist')) {
+setSyncStatus('error', 'Tidsavbrudd – prøver igjen…');
+setTimeout(() => hentData(), 5000);
+} else {
+setSyncStatus('error', 'Feil ved henting');
+console.error(err);
+}
+}
+}
+// ── TABS ──
+function showTab(id) {
+['dashboard','ny','logg','statistikk','admin'].forEach(t => {
+document.getElementById('tab-'+t).classList.toggle('active', t===id);
+document.getElementById('btn-'+t).classList.toggle('active', t===id);
+});
+if (id==='dashboard') { renderDashboard(); }
+if (id==='logg') { renderLogg(); }
+if (id==='statistikk') { renderStatistikk(); }
+if (id==='admin') { renderAdmin(); }
+if (id==='ny') { if (document.getElementById('runder-container').children.length===0 && loyper.length > 0) leggTilRunde(); else if (document.getElementById('runder-container').children.length===0) { setTimeout(()=>{ if(loyper.length>0 && document.getElementById('runder-container').children.length===0) leggTilRunde(); }, 1500); } }
+}
+// ── FØREFORHOLD ──
+let condVal = 0;
+function setCond(val) {
+condVal = condVal === val ? 0 : val;
+document.querySelectorAll('.cond-btn').forEach(btn => {
+btn.classList.toggle('active', parseInt(btn.dataset.val) === condVal);
+});
+}
+// ── LAGRE TUR ──
+function showLoading(tekst='Lagrer tur…') {
+const el = document.getElementById('loading-tekst');
+if (el) el.textContent = tekst;
+const ov = document.getElementById('loading-overlay');
+if (ov) ov.style.display = 'flex';
+}
+function hideLoading() {
+const ov = document.getElementById('loading-overlay');
+if (ov) ov.style.display = 'none';
+}
+async function lagreTur() {
+if (!scriptUrl) { alert('Koble til Google Sheets først – se banneret øverst.'); return; }
+const dato = document.getElementById('f-dato').value;
+const forer = document.getElementById('f-forer').value.trim();
+const runder = hentRundeData();
+if (!dato || !forer || runder.length === 0) { alert('Fyll ut dato, fører og minst én runde.'); return; }
+// Use first round as primary løype for backwards compat, combine all
+const loype = runder.map(r => r.loype).join(' + ');
+const kjorteAvstikkere = runder.flatMap(r => r.avstikkere);
+const snupunkt = runder.map(r => r.snupunkt).filter(Boolean).join(', ');
+// ── VALIDERING ──
+const kmNy = parseFloat(document.getElementById('f-km').value) || 0;
+const timerNy = parseFloat(document.getElementById('f-timer-slutt').value) || 0;
+// Finn siste tur med SAMME maskin (eller siste tur generelt om ingen maskin er satt)
+const sorted = [...turer].sort((a,b) =>
+new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
+);
+const maskinNavn = aktivMaskin ? aktivMaskin.navn : '';
+const turerSammeMaskin = maskinNavn
+? sorted.filter(t => t.maskin === maskinNavn)
+: sorted;
+const sisteT = turerSammeMaskin.length > 0 ? turerSammeMaskin[turerSammeMaskin.length-1] : null;
+// Referansepunkt: bruk forrige tur på samme maskin.
+// Første tur på ny maskin → bruk maskinens startdata som referanse.
+let sisteKm = 0;
+let sisteTimer = 0;
+let referanseKilde = '';
+if (sisteT) {
+sisteKm = parseFloat(sisteT.km)||0;
+sisteTimer = parseFloat(sisteT.timerSlutt)||0;
+referanseKilde = 'forrige tur';
+} else if (aktivMaskin && (aktivMaskin.kmStart > 0 || aktivMaskin.timerStart > 0)) {
+sisteKm = parseFloat(aktivMaskin.kmStart)||0;
+sisteTimer = parseFloat(aktivMaskin.timerStart)||0;
+referanseKilde = 'maskinens startdata';
+}
+const feil = [];     // Nektes – kan ikke overstyres
+const advarsler = []; // Advarsel – kan overstyres
+const maxKm = parseInt(window._maxKm||'150');
+const maxTimer = parseFloat(window._maxTimer||'10');
+// NEKTES: lavere stand enn referanse
+if (kmNy > 0 && sisteKm > 0 && kmNy < sisteKm) {
+feil.push(`🚫 Km-stand (${kmNy}) er lavere enn ${referanseKilde} (${sisteKm}). Dette kan ikke registreres.`);
+}
+if (timerNy > 0 && sisteTimer > 0 && timerNy < sisteTimer) {
+feil.push(`🚫 Timerteller (${timerNy}) er lavere enn ${referanseKilde} (${sisteTimer}). Dette kan ikke registreres.`);
+}
+// ADVARSEL: urimelig stor diff
+if (kmNy > 0 && sisteKm > 0) {
+const kmDiff = kmNy - sisteKm;
+if (kmDiff > maxKm) advarsler.push(`⚠️ Km kjørt denne turen ser ut til å være ${kmDiff.toFixed(0)} km – grense er ${maxKm} km. Er det riktig?`);
+}
+if (timerNy > 0 && sisteTimer > 0) {
+const timerDiff = timerNy - sisteTimer;
+if (timerDiff > maxTimer) advarsler.push(`⚠️ Maskintimer denne turen ser ut til å være ${timerDiff.toFixed(1)} timer – grense er ${maxTimer} t. Er det riktig?`);
+}
+// Vis feil – nekter registrering
+if (feil.length > 0) {
+alert('Registreringen ble avvist:\n\n' + feil.join('\n\n') + '\n\nRett opp tallene og prøv igjen.');
+return;
+}
+// Vis advarsler – kan overstyres
+if (advarsler.length > 0) {
+const bekreft = confirm('Er du sikker på at tallene er riktige?\n\n' + advarsler.join('\n\n') + '\n\nTrykk OK for å lagre likevel, eller Avbryt for å rette opp.');
+if (!bekreft) return;
+}
+const btn = document.getElementById('lagre-btn');
+btn.disabled = true; btn.textContent = 'Lagrer…';
+showLoading('Lagrer tur…');
+const now = new Date();
+const defaultSlutt = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+const tur = {
+id: Date.now().toString(), dato, forer, loype,
+slutt: document.getElementById('f-slutt').value || defaultSlutt,
+km: parseFloat(document.getElementById('f-km').value)||0,
+timerSlutt: document.getElementById('f-timer-slutt').value || '',
+diesel: document.getElementById('f-diesel').checked ? 'Ja' : '',
+adblue: document.getElementById('f-adblue').checked ? 'Ja' : '',
+forkond: condVal > 0 ? condVal.toString() : '',
+avstikkere: kjorteAvstikkere.join('|'),
+snupunkt: snupunkt,
+maskin: aktivMaskin ? aktivMaskin.navn : '',
+timerStartMaskin: aktivMaskin ? aktivMaskin.timerStart : '',
+merknader: document.getElementById('f-merknader').value.trim()
+};
+try {
+setSyncStatus('loading', 'Lagrer…');
+const res = await apiKall({ action: 'leggTil', tur });
+if (res.feil) throw new Error(res.feil);
+setSyncStatus('ok', 'Lagret!');
+['f-forer','f-slutt','f-km','f-timer-slutt','f-merknader'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+document.getElementById('runder-container').innerHTML='';
+rundeCounter=0;
+document.getElementById('f-diesel').checked=false;
+document.getElementById('f-adblue').checked=false;
+setCond(0);
+hideLoading();
+btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Lagre tur';
+visRegistrertModal(tur);
+showTab('dashboard');
+setTimeout(() => hentData(), 500);
+// Vær-henting midlertidig deaktivert
+} catch(err) {
+hideLoading();
+setSyncStatus('error', 'Feil ved lagring');
+alert('Kunne ikke lagre: ' + err.message);
+}
+btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Lagre tur';
+}
+// ── SLETT ──
+async function slettTur(id) {
+if (!confirm('Slett denne turen fra Google Sheets?')) return;
+try {
+setSyncStatus('loading', 'Sletter…');
+const res = await apiKall({ action: 'slett', id });
+if (res.feil) throw new Error(res.feil);
+setSyncStatus('ok', 'Slettet');
+await hentData();
+} catch(err) {
+setSyncStatus('error', 'Feil');
+alert('Kunne ikke slette: ' + err.message);
+}
+}
+// ── DATALISTS ──
+function oppdaterDataLists() {
+oppdaterForerSelect();
+oppdaterLoypeSelect();
+}
+function oppdaterForerSelect() {
+const opts = forere.map(f=>`<option value="${f}">${f}</option>`).join('');
+['f-forer','edit-forer'].forEach(id => {
+const el = document.getElementById(id);
+if (el) el.innerHTML = `<option value="">Velg fører…</option>${opts}`;
+});
+}
+// ── DASHBOARD ──
+function renderDashboard() {
+// Apply dash filter
+const _prev = loggFilter;
+loggFilter = dashFilter;
+const filtrertDash = filterTurer(turer);
+loggFilter = _prev;
+const diffMapDash = beregnDiff(filtrertDash);
+const totalTimer = Object.values(diffMapDash).reduce((s,d)=>s+(d.timerBrukt||0),0);
+const dieselTurer = filtrertDash.filter(t=>t.diesel==='Ja').length;
+const adBlueTurer = filtrertDash.filter(t=>t.adblue==='Ja').length;
+const totalKm = Object.values(diffMapDash).reduce((s,d)=>s+(d.kmKjort||0),0);
+const filterLabels = {sesong:'Sesongen',uke:'Denne uken','30d':'Siste 30 dager',alle:'Totalt'};
+document.getElementById('dash-metrics').innerHTML = `
+<div class="metric"><div class="metric-label">Turer – ${filterLabels[dashFilter]}</div><div class="metric-value">${filtrertDash.length}</div></div><div class="metric"><div class="metric-label">Km kjørt</div><div class="metric-value">${totalKm.toFixed(1)}</div><div class="metric-sub">kilometer</div></div><div class="metric"><div class="metric-label">Maskintimer</div><div class="metric-value">${totalTimer.toFixed(1)}</div><div class="metric-sub">timer</div></div><div class="metric"><div class="metric-label">Diesel / AdBlue</div><div class="metric-value">${dieselTurer} / ${adBlueTurer}</div><div class="metric-sub">påfyllinger</div></div>
+`;
+// Update card label
+const labelMap = {sesong:'Siste turer – sesongen',uke:'Turer denne uken','30d':'Turer siste 30 dager',alle:'Alle turer'};
+const labelEl = document.getElementById('dash-recent-label');
+if (labelEl) labelEl.textContent = labelMap[dashFilter];
+renderLoypeStatus();
+const recent = filtrertDash.slice(0,5);
+document.getElementById('dash-loading').style.display = 'none';
+if (!recent.length) {
+document.getElementById('dash-recent').innerHTML='<div class="empty"><div class="empty-icon">🎿</div><p>Ingen turer i valgt periode.</p></div>';
+return;
+}
+const dashDiffMap = beregnDiff(filtrertDash);
+document.getElementById('dash-recent').innerHTML = recent.map(t=>{const dd=dashDiffMap[t.id]||{}; return `
+<div class="trip-card"><div class="trip-header"><div class="trip-route">${t.loype}</div><div class="trip-date">${formatDato(t.dato)}</div></div><div class="trip-driver">👤 ${t.forer}</div><div class="trip-stats">
+${t.slutt ? `<div class="trip-stat">🕐 <span>Slutt ${t.slutt}</span></div>` : ''}
+${dd.kmKjort!=null ? `<div class="trip-stat">📏 <span>${dd.kmKjort.toFixed(1)} km</span></div>` : ''}
+${dd.timerBrukt!=null ? `<div class="trip-stat">⚙️ <span>${dd.timerBrukt.toFixed(1)} t</span></div>` : (t.timerBruktCalc!=null ? `<div class="trip-stat">⚙️ <span>${t.timerBruktCalc.toFixed(1)} t</span></div>` : '')}
+${t.diesel==='Ja' ? `<div class="trip-stat">⛽ <span>Diesel</span></div>` : ''}
+${t.adblue==='Ja' ? `<div class="trip-stat" style="background:#E8F5E9;border-color:#A5D6A7"><span style="color:#2E7D32">AdBlue</span></div>` : ''}
+${t.forkond===1 ? `<div class="trip-stat"><span class="cond-badge cond-1">● Dårlig føre</span></div>` : t.forkond===2 ? `<div class="trip-stat"><span class="cond-badge cond-2">●● Middels føre</span></div>` : t.forkond===3 ? `<div class="trip-stat"><span class="cond-badge cond-3">●●● Bra føre</span></div>` : ''}
+</div>
+${t.snupunkt && t.snupunkt!=='' ? `<div class="trip-stat" style="background:#FFFBF0;border-color:#F39C12"><span style="color:#D68910;font-size:12px">↩ ${t.snupunkt==='Ja'?'Snudde underveis':t.snupunkt}</span></div>` : ''}
+${t.avstikkere ? t.avstikkere.split('|').map(a=>`<div class="trip-stat" style="background:#F0FBF4;border-color:#A9DFBF"><span style="color:#1E8449;font-size:12px">✓ ${a}</span></div>`).join('') : ''}
+${t.vaer ? `<div class="trip-stat" style="background:var(--snow)"><span style="font-size:15px">${t.vaer}</span></div>` : ''}
+${t.merknader ? `<div class="trip-note">${t.merknader}</div>` : ''}
+</div>`;}).join('');
+}
+// ── LØYPE STATUS ──
+function renderLoypeStatus() {
+const el = document.getElementById('dash-loype-status');
+if (!el || !loyper.length) {
+if (el) el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen løyper definert. Legg til i Admin.</p>';
+return;
+}
+const nå = new Date();
+const for7d = new Date(nå); for7d.setDate(nå.getDate()-7); for7d.setHours(0,0,0,0);
+// Find trips last 7 days
+const siste7 = turer.filter(t => t.dato && new Date(t.dato) >= for7d);
+el.innerHTML = loyper.map(l => {
+const turene = siste7.filter(t => (t.loype||'').split(' + ').some(lt => lt.trim()===l.navn));
+const kjort = turene.length > 0;
+const sisteForer = kjort ? turene[turene.length-1].forer : null;
+const antall = turene.length;
+return `<div class="loype-boks ${kjort?'kjort':'ikke-kjort'}"><div class="loype-snofnugg">${kjort?'✓':'❄'}</div><div class="loype-status-badge ${kjort?'kjort':'ikke-kjort'}">
+${kjort
+? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> Kjørt`
+: `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ikke kjørt`}
+</div><div class="loype-boks-navn">${l.navn}</div>
+${kjort ? `<div class="loype-meta"><strong>${antall}×</strong> denne uken<br>
+Sist: <strong>${sisteForer||'–'}</strong></div>` : '<div class="loype-meta">Ikke kjørt siste 7 dager</div>'}
+</div>`;
+}).join('');
+}
+// ── LOGG ──
+function renderLogg() {
+document.getElementById('logg-loading').style.display='none';
+const tbody = document.getElementById('logg-tbody');
+const empty = document.getElementById('logg-empty');
+const filtrert = filterTurer(turer);
+if (!filtrert.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+empty.style.display='none';
+const diffMap = beregnDiff(turer);
+tbody.innerHTML = filtrert.map(t=>{
+const diff = diffMap[t.id]||{};
+const kmVis = diff.kmKjort!=null ? diff.kmKjort.toFixed(1)+' km' : '–';
+const timerVis = diff.timerBrukt!=null ? diff.timerBrukt.toFixed(1)+' t' : (t.timerBruktCalc!=null ? t.timerBruktCalc.toFixed(1)+' t' : '–');
+return `
+<tr><td style="font-family:var(--mono);font-size:13px;white-space:nowrap">${formatDato(t.dato)}</td><td style="font-weight:500">${t.forer}</td><td>${t.loype}</td><td style="font-family:var(--mono);font-size:12px">${t.slutt||'–'}</td><td style="font-family:var(--mono)">${kmVis}</td><td style="font-family:var(--mono)">${timerVis}</td><td style="text-align:center;font-size:14px">${t.vaer||''}</td><td style="text-align:center">${t.forkond===1?'<span class="cond-badge cond-1">●</span>':t.forkond===2?'<span class="cond-badge cond-2">●●</span>':t.forkond===3?'<span class="cond-badge cond-3">●●●</span>':''}</td><td style="text-align:center">${t.diesel==='Ja' ? '✓' : ''}</td><td style="text-align:center">${t.adblue==='Ja' ? '✓' : ''}</td><td><button class="btn btn-danger" onclick="slettTur('${t.id}')">Slett</button></td></tr>
+${(t.merknader||t.avstikkere||t.snupunkt) ? `<tr><td colspan="9" style="font-size:11px;color:var(--text2);padding-top:2px;padding-bottom:10px">
+${t.snupunkt && t.snupunkt!=='' ? `<span style="color:#D68910;font-weight:600">↩ ${t.snupunkt==='Ja'?'Snudde':t.snupunkt}</span> ` : ''}
+${t.avstikkere ? t.avstikkere.split('|').map(a=>`<span style="background:#F0FBF4;color:#1E8449;border-radius:4px;padding:1px 6px;margin-right:3px;font-weight:600">✓${a}</span>`).join('') : ''}
+${t.merknader ? `<span style="font-style:italic">💬 ${t.merknader}</span>` : ''}
+</td></tr>` : ''}
+`;
+}).join('');
+}
+// ── STATISTIKK ──
+function renderStatistikk() {
+// Use statsFilter (independent from logg filter)
+const _prevFilter = loggFilter;
+loggFilter = statsFilter;
+const filtrertStats = filterTurer(turer);
+loggFilter = _prevFilter;
+const måneder = {};
+filtrertStats.forEach(t => {
+if (!t.dato) return;
+const m = t.dato.substring(0,7);
+måneder[m] = (måneder[m]||0) + (t.km||0);
+});
+const labels = Object.keys(måneder).sort();
+const data = labels.map(m=>måneder[m]);
+const slabel = document.getElementById('stats-sesong-label');
+if (slabel) {
+if (sesongStart || sesongSlutt) slabel.textContent = (sesongStart||'…') + ' – ' + (sesongSlutt||'…');
+else slabel.textContent = 'Alle turer';
+}
+if (chartInst) { chartInst.destroy(); chartInst=null; }
+chartInst = new Chart(document.getElementById('chart-km'), {
+type:'bar', data:{ labels, datasets:[{ label:'Km', data, backgroundColor:'#4A9FD4', borderRadius:5 }] },
+options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+scales:{ y:{beginAtZero:true, grid:{color:'#E8F4FD'}, ticks:{callback:v=>v+' km', font:{size:11}}},
+x:{grid:{display:false}, ticks:{font:{size:11}}} } }
+});
+const forerMap = {};
+filtrertStats.forEach(t => {
+if (!t.forer) return;
+if (!forerMap[t.forer]) forerMap[t.forer]={turer:0,timer:0,diesel:0,adblue:0};
+forerMap[t.forer].turer++;
+forerMap[t.forer].timer += (t.timerBruktCalc||t.timerBrukt)||0;
+if (t.diesel==='Ja') forerMap[t.forer].diesel++;
+if (t.adblue==='Ja') forerMap[t.forer].adblue++;
+});
+const fKeys = Object.keys(forerMap).sort((a,b)=>forerMap[b].turer-forerMap[a].turer);
+const sfEl = document.getElementById('stats-forer');
+document.getElementById('stats-forer-empty').style.display = fKeys.length ? 'none' : 'block';
+sfEl.innerHTML = fKeys.map(f=>`<tr><td style="font-weight:500">${f}</td><td style="font-family:var(--mono)">${forerMap[f].turer}</td><td style="font-family:var(--mono)">${forerMap[f].timer.toFixed(1)} t</td><td style="font-family:var(--mono)">${forerMap[f].diesel}</td><td style="font-family:var(--mono)">${forerMap[f].adblue}</td></tr>`).join('');
+const loypeMap = {};
+turer.forEach(t => {
+if (!t.loype) return;
+if (!loypeMap[t.loype]) loypeMap[t.loype]={turer:0,snudde:0,km:0,timer:0};
+loypeMap[t.loype].turer++;
+if (t.snupunkt==='Ja') loypeMap[t.loype].snudde++;
+loypeMap[t.loype].km += t.km||0;
+loypeMap[t.loype].timer += (t.timerBruktCalc||t.timerBrukt)||0;
+});
+const lKeys = Object.keys(loypeMap).sort((a,b)=>loypeMap[b].turer-loypeMap[a].turer);
+document.getElementById('stats-loype-empty').style.display = lKeys.length ? 'none' : 'block';
+document.getElementById('stats-loype').innerHTML = lKeys.map(l=>`<tr><td style="font-weight:500">${l}</td><td style="font-family:var(--mono)">${loypeMap[l].turer}</td><td>${loypeMap[l].snudde>0?`<span style="color:#D68910;font-weight:600">${loypeMap[l].snudde}x ↩</span>`:'-'}</td><td style="font-family:var(--mono)">${loypeMap[l].km.toFixed(1)}</td><td style="font-family:var(--mono)">${loypeMap[l].timer.toFixed(1)}</td></tr>`).join('');
+// Avstikker statistikk
+const avstMap = {};
+filtrertStats.forEach(t => {
+if (!t.avstikkere) return;
+t.avstikkere.split('|').forEach(a => {
+if (!a) return;
+const key = t.loype + '||' + a;
+if (!avstMap[key]) avstMap[key] = {navn:a, loype:t.loype, antall:0};
+avstMap[key].antall++;
+});
+});
+// Count total trips per loype for percentage
+const turPerLoype = {};
+filtrertStats.forEach(t => { if(t.loype) turPerLoype[t.loype]=(turPerLoype[t.loype]||0)+1; });
+const aKeys = Object.keys(avstMap).sort((a,b)=>avstMap[b].antall-avstMap[a].antall);
+document.getElementById('stats-avstikkere-empty').style.display = aKeys.length ? 'none' : 'block';
+document.getElementById('stats-avstikkere').innerHTML = aKeys.map(k=>{
+const a = avstMap[k];
+const tot = turPerLoype[a.loype]||1;
+const pct = Math.round(a.antall/tot*100);
+return `<tr><td style="font-weight:500">${a.navn}</td><td style="color:var(--text2);font-size:12px">${a.loype}</td><td style="font-family:var(--mono)">${a.antall}</td><td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:var(--border);border-radius:4px;height:6px;max-width:80px"><div style="width:${pct}%;background:var(--accent);border-radius:4px;height:6px"></div></div><span style="font-family:var(--mono);font-size:12px">${pct}%</span></div></td></tr>`;
+}).join('');
+// ── Sjåfør-kort med graf ──
+const diffMapStats = beregnDiff(filtrertStats);
+const forerStats = {};
+filtrertStats.forEach(t => {
+if (!t.forer) return;
+if (!forerStats[t.forer]) forerStats[t.forer] = { okter:0, km:0, timer:0 };
+forerStats[t.forer].okter++;
+const d = diffMapStats[t.id]||{};
+forerStats[t.forer].km += d.kmKjort||0;
+forerStats[t.forer].timer += d.timerBrukt||0;
+});
+const kortEl = document.getElementById('stats-sjaforer-kort');
+const forerNavn = Object.keys(forerStats);
+if (!forerNavn.length) { kortEl.innerHTML='<div class="empty"><p>Ingen data for valgt periode</p></div>'; }
+else {
+// Destroy old driver charts
+Object.keys(window._forerCharts||{}).forEach(k => { try { window._forerCharts[k].destroy(); } catch(e){} });
+window._forerCharts = {};
+kortEl.innerHTML = forerNavn.map(f => {
+const s = forerStats[f];
+const snitt = s.timer > 0 ? (s.km / s.timer).toFixed(1) : '–';
+return `<div style="border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden"><div style="background:linear-gradient(135deg,var(--navy) 0%,var(--mid) 100%);padding:10px 16px;display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;color:white">${f.charAt(0)}</div><div style="font-weight:600;font-size:14px;color:white">${f}</div></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)"><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.okter}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Økter</div></div><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.km.toFixed(1)}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Km kjørt</div></div><div style="padding:12px;text-align:center;border-right:1px solid var(--border)"><div style="font-size:22px;font-weight:600;color:var(--navy);font-family:var(--mono)">${s.timer.toFixed(1)}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Timer</div></div><div style="padding:12px;text-align:center"><div style="font-size:22px;font-weight:600;color:var(--mid);font-family:var(--mono)">${snitt}</div><div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">Km/t</div></div></div><div style="padding:12px;position:relative;height:160px"><canvas id="chart-forer-${f.replace(/\s/g,'_')}" role="img" aria-label="Km kjørt per økt for ${f}"></canvas></div></div>`;
+}).join('');
+// Render per-driver charts
+forerNavn.forEach(f => {
+const turene = filtrertStats.filter(t => t.forer===f)
+.sort((a,b) => new Date(a.dato) - new Date(b.dato));
+const labels = turene.map(t => formatDato(t.dato));
+const kmData = turene.map(t => { const d=diffMapStats[t.id]||{}; return d.kmKjort||0; });
+const timerData = turene.map(t => { const d=diffMapStats[t.id]||{}; return d.timerBrukt||0; });
+const canvasId = 'chart-forer-' + f.replace(/\s/g,'_');
+const canvas = document.getElementById(canvasId);
+if (!canvas) return;
+window._forerCharts[f] = new Chart(canvas, {
+type: 'bar',
+data: {
+labels,
+datasets: [
+{ label: 'Km', data: kmData, backgroundColor: '#2D5A8E', borderRadius: 3, yAxisID: 'y' },
+{ label: 'Timer', data: timerData, backgroundColor: '#4A9FD4', borderRadius: 3, yAxisID: 'y2' }
+]
+},
+options: {
+responsive: true, maintainAspectRatio: false,
+plugins: { legend: { display: false } },
+scales: {
+y:  { beginAtZero:true, position:'left',  grid:{color:'#E8F4FD'}, ticks:{callback:v=>v+' km', font:{size:10}} },
+y2: { beginAtZero:true, position:'right', grid:{display:false},   ticks:{callback:v=>v+' t',  font:{size:10}} },
+x:  { grid:{display:false}, ticks:{font:{size:10}, maxRotation:45} }
+}
+}
+});
+});
+}
+}
+// ── EXPORT ──
+function eksporterCSV() {
+const header = ['Dato','Fører','Løype','Slutt','Km-stand','TimerSlutt','Maskintimer','Diesel','AdBlue','Merknader'];
+const rows = turer.map(t=>[t.dato,t.forer,t.loype,t.slutt,t.km,t.timerSlutt,t.timerBrukt!=null?t.timerBrukt.toFixed(2):'',t.diesel,t.adblue,(t.merknader||'').replace(/,/g,' ')]);
+const csv = [header,...rows].map(r=>r.join(',')).join('\n');
+const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='kjørebok.csv'; a.click();
+}
+// ── LØYPE DATA ──
+let loyper = [];
+async function lagreLoyper() {
+if (!scriptUrl) return;
+try { await apiKall({ action: 'lagreLoyper', loyper }); } catch(e) { console.error('lagreLoyper feil',e); }
+}
+let redigerLoypeIdx = -1;
+function oppdaterLoypeSelect() {
+// Also refresh all open runde selects
+const opts = '<option value="">Velg runde…</option>' +
+loyper.map((l,i) => `<option value="${i}">${l.navn}</option>`).join('');
+document.querySelectorAll('.runde-loype-select').forEach(sel => {
+const current = sel.value;
+sel.innerHTML = opts;
+if (current) sel.value = current;
+});
+}
+// ── MULTI-ROUND SYSTEM ──
+let rundeCounter = 0;
+function leggTilRunde() {
+rundeCounter++;
+const id = rundeCounter;
+const cont = document.getElementById('runder-container');
+const div = document.createElement('div');
+div.className = 'runde-kort';
+div.id = 'runde-' + id;
+div.dataset.rundeId = id;
+div.innerHTML = `
+<div class="runde-kort-header"><div class="runde-nummer">${id}</div><div class="runde-tittel">Velg runde…</div><button type="button" onclick="toggleRundeKollaps(${id})" style="background:none;border:none;cursor:pointer;color:var(--text2);padding:4px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><button type="button" onclick="fjernRunde(${id})" style="background:none;border:none;cursor:pointer;color:var(--danger);padding:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="runde-kort-body"><div class="field" style="margin-bottom:10px"><select class="runde-loype-select" onchange="oppdaterRundeLoype(${id}, this.value)" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><option value="">Velg runde…</option>
+${loyper.map((l,i) => `<option value="${i}">${l.navn}</option>`).join('')}
+</select></div><div id="runde-detaljer-${id}" style="display:none"></div></div>`;
+cont.appendChild(div);
+}
+function fjernRunde(id) {
+const el = document.getElementById('runde-' + id);
+if (el) el.remove();
+oppdaterRundeNummer();
+}
+function toggleRundeKollaps(id) {
+const kort = document.getElementById('runde-' + id);
+kort.classList.toggle('collapsed');
+const svg = kort.querySelector('.runde-kort-header svg');
+if (svg) svg.style.transform = kort.classList.contains('collapsed') ? 'rotate(-90deg)' : '';
+}
+function oppdaterRundeNummer() {
+document.querySelectorAll('.runde-kort').forEach((k, i) => {
+const numEl = k.querySelector('.runde-nummer');
+if (numEl) numEl.textContent = i + 1;
+});
+}
+function oppdaterRundeLoype(id, loypeIdx) {
+const loype = loyper[parseInt(loypeIdx)];
+const kort = document.getElementById('runde-' + id);
+const tittel = kort.querySelector('.runde-tittel');
+if (tittel) tittel.textContent = loype ? loype.navn : 'Velg runde…';
+const detaljer = document.getElementById('runde-detaljer-' + id);
+if (!loype) { detaljer.style.display='none'; return; }
+detaljer.style.display='block';
+detaljer.innerHTML = `
+${loype.avstikkere.length ? `
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Avstikkere</div><div style="margin-bottom:10px">
+${loype.avstikkere.map((a,ai) => `
+<label class="avstikker-item" style="margin-bottom:6px"><input type="checkbox" id="r${id}-avst-${ai}" onchange="toggleAvstikkerStyle(this)"><span class="avstikker-label">${a}</span></label>`).join('')}
+</div>` : ''}
+<label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 13px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0" onclick="toggleRundeSnupunkt(${id})"><input type="radio" id="r${id}-snupunkt" name="snupunkt-radio-${id}" style="width:17px;height:17px;accent-color:#E67E22;cursor:pointer;flex-shrink:0" onclick="event.stopPropagation();toggleRundeSnupunkt(${id})"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:#D68910">Jeg snudde underveis</div></div><svg id="r${id}-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D68910" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg></label><div id="r${id}-snupunkt-panel" style="display:none;margin-top:5px;padding:10px 12px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0">
+${(loype.snupunkter||[]).length
+? (loype.snupunkter||[]).map(s => `<button type="button" class="snupunkt-btn" onclick="velgRundeSnupunkt(${id},'${s}',this)">${s}</button>`).join('')
+: '<p style="font-size:12px;color:#B7770D">Ingen snupunkter definert.</p>'}
+</div>`;
+}
+function toggleRundeSnupunkt(id) {
+const rb = document.getElementById('r'+id+'-snupunkt');
+const panel = document.getElementById('r'+id+'-snupunkt-panel');
+const chevron = document.getElementById('r'+id+'-chevron');
+const isOpen = panel.style.display !== 'none';
+if (isOpen && rb.checked) { rb.checked=false; panel.style.display='none'; chevron.style.transform=''; return; }
+rb.checked=true; panel.style.display='block'; chevron.style.transform='rotate(180deg)';
+}
+function velgRundeSnupunkt(id, navn, btn) {
+const panel = document.getElementById('r'+id+'-snupunkt-panel');
+const current = panel.querySelector('.selected');
+if (current) current.classList.remove('selected');
+if (current !== btn) btn.classList.add('selected');
+}
+function hentRundeData() {
+const runder = [];
+document.querySelectorAll('.runde-kort').forEach(kort => {
+const rid = kort.dataset.rundeId;
+const sel = kort.querySelector('select');
+const loypeIdx = sel ? parseInt(sel.value) : NaN;
+if (isNaN(loypeIdx) || !loyper[loypeIdx]) return;
+const loype = loyper[loypeIdx];
+const kjorteAvst = loype.avstikkere.filter((_,ai) => {
+const cb = document.getElementById(`r${rid}-avst-${ai}`);
+return cb && cb.checked;
+});
+const rb = document.getElementById('r'+rid+'-snupunkt');
+const snudde = rb && rb.checked;
+const valgtSn = snudde ? (() => {
+const btn = kort.querySelector('.snupunkt-btn.selected');
+return btn ? btn.textContent : 'Ja';
+})() : '';
+runder.push({ loype: loype.navn, avstikkere: kjorteAvst, snupunkt: valgtSn });
+});
+return runder;
+}
+// Stub for old single-round functions (kept for compatibility)
+function oppdaterLoypeUI() {}
+function toggleSnupunktPanel() {}
+function velgSnupunkt() {}
+function toggleAvstikkerStyle(cb) {
+cb.closest('.avstikker-item').classList.toggle('checked', cb.checked);
+}
+function visNyLoype() {
+redigerLoypeIdx = -1;
+document.getElementById('loype-navn-input').value = '';
+document.getElementById('loype-modal-avstikkere').innerHTML = '';
+document.getElementById('loype-modal-snupunkter').innerHTML = '';
+document.getElementById('loype-modal-title').textContent = 'Ny hovedrunde';
+leggTilAvstikkerInput();
+document.getElementById('loype-modal').classList.add('open');
+}
+function redigerLoype(idx) {
+redigerLoypeIdx = idx;
+const l = loyper[idx];
+document.getElementById('loype-navn-input').value = l.navn;
+document.getElementById('loype-modal-title').textContent = 'Rediger runde';
+const cont = document.getElementById('loype-modal-avstikkere');
+cont.innerHTML = '';
+l.avstikkere.forEach(a => leggTilAvstikkerInput(a));
+const scont = document.getElementById('loype-modal-snupunkter');
+scont.innerHTML = '';
+(l.snupunkter||[]).forEach(s => leggTilSnupunktInput(s));
+document.getElementById('loype-modal').classList.add('open');
+}
+function leggTilAvstikkerInput(verdi='') {
+const cont = document.getElementById('loype-modal-avstikkere');
+const div = document.createElement('div');
+div.className = 'avstikker-admin-row';
+div.innerHTML = `<input type="text" placeholder="Navn på avstikker…" value="${verdi}"><button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm">✕</button>`;
+cont.appendChild(div);
+div.querySelector('input').focus();
+}
+function leggTilSnupunktInput(verdi='') {
+const cont = document.getElementById('loype-modal-snupunkter');
+const div = document.createElement('div');
+div.className = 'avstikker-admin-row';
+div.innerHTML = `<input type="text" placeholder="f.eks. Lysevann, Kobberhaugen…" value="${verdi}" style="border-color:#F5CBA7;background:#FFFBF0"><button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm">✕</button>`;
+cont.appendChild(div);
+div.querySelector('input').focus();
+}
+function lukkLoypeModal() { document.getElementById('loype-modal').classList.remove('open'); }
+async function lagreLoype() {
+const navn = document.getElementById('loype-navn-input').value.trim();
+if (!navn) { alert('Fyll inn navn på runden.'); return; }
+const avInputs = document.querySelectorAll('#loype-modal-avstikkere input[type=text]');
+const avstikkere = [...avInputs].map(i=>i.value.trim()).filter(Boolean);
+const snInputs = document.querySelectorAll('#loype-modal-snupunkter input[type=text]');
+const snupunkter = [...snInputs].map(i=>i.value.trim()).filter(Boolean);
+const obj = { navn, avstikkere, snupunkter };
+if (redigerLoypeIdx >= 0) loyper[redigerLoypeIdx] = obj;
+else loyper.push(obj);
+await lagreLoyper();
+lukkLoypeModal();
+oppdaterLoypeSelect();
+renderAdminLoyper();
+}
+async function slettLoype(idx) {
+if (!confirm('Slett runden «' + loyper[idx].navn + '»?')) return;
+loyper.splice(idx,1);
+await lagreLoyper();
+oppdaterLoypeSelect();
+renderAdminLoyper();
+}
+function renderAdminLoyper() {
+const el = document.getElementById('admin-loype-liste');
+if (!el) return;
+if (!loyper.length) { el.innerHTML='<p style="color:var(--text2);font-size:13px;padding:4px 0">Ingen løyper lagt inn ennå. Trykk «+ Ny runde» for å starte.</p>'; return; }
+el.innerHTML = loyper.map((l,i) => `
+<div class="loype-admin-item"><div class="loype-admin-header"><div class="loype-admin-name">${l.navn}</div><span class="badge-km">${l.avstikkere.length} avstikker${l.avstikkere.length!==1?'e':''}</span><button class="btn btn-sm btn-outline" onclick="redigerLoype(${i})" style="padding:5px 10px;font-size:12px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettLoype(${i})">Slett</button></div><div class="loype-admin-body"><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Avstikkere</div><div style="margin-bottom:8px">${l.avstikkere.length ? l.avstikkere.map(a=>`<span class="badge-km" style="margin-right:5px;margin-bottom:4px">${a}</span>`).join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div><div style="font-size:11px;color:#B7770D;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Snupunkter</div><div>${(l.snupunkter||[]).length ? (l.snupunkter||[]).map(s=>`<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:#FEF5E7;color:#784212;font-weight:600;border:1px solid #F5CBA7;margin-right:5px;margin-bottom:4px">${s}</span>`).join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div></div></div>`).join('');
+}
+</script>
+<script>
+
+// ── SESONG ──
+let sesongStart = '';
+let sesongSlutt = '';
+let loggFilter = 'uke';
+async function lagreSesong() {
+sesongStart = document.getElementById('admin-sesong-start').value;
+sesongSlutt = document.getElementById('admin-sesong-slutt').value;
+const maxKm = document.getElementById('admin-max-km').value || '150';
+const maxTimer = document.getElementById('admin-max-timer').value || '10';
+try {
+await apiKall({ action: 'lagreInnstillinger', innstillinger: { sesongStart, sesongSlutt, maxKm, maxTimer } });
+} catch(e) { console.error('lagreInnstillinger feil', e); }
+const msg = document.getElementById('sesong-lagret');
+msg.style.display = 'inline'; setTimeout(() => msg.style.display='none', 2000);
+}
+function filterTurer(liste) {
+const now = new Date();
+if (loggFilter === 'uke') {
+const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
+const monday = new Date(now); monday.setDate(now.getDate() - day); monday.setHours(0,0,0,0);
+return liste.filter(t => t.dato && new Date(t.dato) >= monday);
+}
+if (loggFilter === '30d') {
+const d30 = new Date(now); d30.setDate(now.getDate() - 30); d30.setHours(0,0,0,0);
+return liste.filter(t => t.dato && new Date(t.dato) >= d30);
+}
+if (loggFilter === 'sesong') {
+if (!sesongStart && !sesongSlutt) return liste;
+return liste.filter(t => {
+if (!t.dato) return false;
+const d = new Date(t.dato);
+const year = d.getFullYear();
+function parseDDMM(str, yr) {
+const parts = str.split('.');
+if (parts.length !== 2) return null;
+return new Date(yr, parseInt(parts[1])-1, parseInt(parts[0]));
+}
+if (sesongStart) {
+// Season may span year boundary (e.g. 01.11 – 30.04)
+const start = parseDDMM(sesongStart, year);
+const startPrev = parseDDMM(sesongStart, year-1);
+if (start && startPrev) {
+const validStart = d >= startPrev ? startPrev : start;
+if (d < validStart) return false;
+}
+}
+if (sesongSlutt) {
+const slutt = parseDDMM(sesongSlutt, year);
+const sluttNext = parseDDMM(sesongSlutt, year+1);
+if (slutt && sluttNext) {
+const validSlutt = d <= slutt ? slutt : sluttNext;
+if (d > validSlutt) return false;
+}
+}
+return true;
+});
+}
+return liste; // alle
+}
+function setLoggFilter(f) {
+loggFilter = f;
+['sesong','uke','30d','alle'].forEach(id => {
+document.getElementById('filter-'+id).classList.toggle('active', id === f);
+});
+renderLogg();
+}
+let statsFilter = 'uke';
+function setStatsFilter(f) {
+statsFilter = f;
+['sesong','uke','30d','alle'].forEach(id => {
+document.getElementById('stats-filter-'+id).classList.toggle('active', id === f);
+});
+renderStatistikk();
+}
+let dashFilter = 'uke';
+function setDashFilter(f) {
+dashFilter = f;
+['sesong','uke','30d','alle'].forEach(id => {
+document.getElementById('dash-filter-'+id).classList.toggle('active', id === f);
+});
+renderDashboard();
+}
+function renderAdmin_sesong() {
+if (sesongStart) document.getElementById('admin-sesong-start').value = sesongStart;
+if (sesongSlutt) document.getElementById('admin-sesong-slutt').value = sesongSlutt;
+if (window._maxKm) document.getElementById('admin-max-km').value = window._maxKm;
+if (window._maxTimer) document.getElementById('admin-max-timer').value = window._maxTimer;
+}
+// ── ADMIN ──
+const PIN = '1234';
+let adminLoggetInn = false;
+let forere = ['Kenneth','Stian','Thomas'];
+let maskiner = [];
+let aktivMaskin = null;
+let editCondVal = 0;
+let redigerForerIdx = -1;
+async function lagreForere() {
+if (!scriptUrl) return;
+try { await apiKall({ action: 'lagreForere', forere }); } catch(e) { console.error('lagreForere feil',e); }
+}
+function sjekkPin() {
+const val = document.getElementById('pin-input').value;
+const dots = document.querySelectorAll('.pin-dot');
+dots.forEach((d,i) => d.classList.toggle('filled', i < val.length));
+if (val.length === 4) {
+if (val === PIN) {
+adminLoggetInn = true;
+document.getElementById('admin-lock').style.display = 'none';
+document.getElementById('admin-panel').style.display = 'block';
+document.getElementById('pin-input').value = '';
+document.getElementById('pin-feil').style.display = 'none';
+dots.forEach(d => d.classList.remove('filled'));
+renderAdmin();
+} else {
+document.getElementById('pin-feil').style.display = 'block';
+document.getElementById('pin-input').value = '';
+dots.forEach(d => d.classList.remove('filled'));
+}
+}
+}
+function loggUtAdmin() {
+adminLoggetInn = false;
+document.getElementById('admin-lock').style.display = 'block';
+document.getElementById('admin-panel').style.display = 'none';
+showTab('dashboard');
+}
+function lagreAdminUrl() {
+// URL er hardkodet i HTML-filen
+alert('URL er hardkodet i appen. Kontakt administrator for å endre.');
+}
+function renderAdmin() {
+if (!adminLoggetInn) return;
+oppdaterForerSelect();
+renderAdminLoyper();
+renderAdmin_sesong();
+renderAdminMaskiner();
+// Fører liste
+const el = document.getElementById('admin-forere-list');
+el.innerHTML = forere.length ? forere.map((f,i) => `
+<div class="forer-list-item"><div class="forer-name">${f}</div><button class="btn btn-sm btn-outline" onclick="redigerForer(${i})" style="padding:5px 10px;font-size:12px">Endre</button><button class="btn btn-sm btn-danger" onclick="slettForer(${i})">Slett</button></div>`).join('') : '<p style="color:var(--text2);font-size:13px">Ingen førere registrert.</p>';
+// Tur-liste for redigering
+const tbody = document.getElementById('admin-turer-tbody');
+const empty = document.getElementById('admin-turer-empty');
+if (!turer.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+empty.style.display='none';
+tbody.innerHTML = turer.map(t => `<tr><td style="font-family:var(--mono);font-size:12px;white-space:nowrap">${formatDato(t.dato)}</td><td style="font-weight:500">${t.forer}</td><td>${t.loype}</td><td style="font-family:var(--mono);font-size:12px">${t.slutt||'–'}</td><td>${t.forkond===1?'<span class="cond-badge cond-1">●</span>':t.forkond===2?'<span class="cond-badge cond-2">●●</span>':t.forkond===3?'<span class="cond-badge cond-3">●●●</span>':'–'}</td><td><button class="btn btn-sm btn-outline" onclick="opneEditModal('${t.id}')" style="font-size:12px;padding:5px 10px">Rediger</button></td></tr>`).join('');
+}
+function visNyForer() { redigerForerIdx=-1; document.getElementById('forer-navn-input').value=''; document.getElementById('forer-modal-title').textContent='Legg til fører'; document.getElementById('forer-modal').classList.add('open'); }
+function redigerForer(i) { redigerForerIdx=i; document.getElementById('forer-navn-input').value=forere[i]; document.getElementById('forer-modal-title').textContent='Endre fører'; document.getElementById('forer-modal').classList.add('open'); }
+function lukkForerModal() { document.getElementById('forer-modal').classList.remove('open'); }
+async function slettForer(i) { if(!confirm('Slett '+forere[i]+'?')) return; forere.splice(i,1); await lagreForere(); oppdaterForerSelect(); renderAdmin(); }
+async function lagreForerNavn() {
+const navn = document.getElementById('forer-navn-input').value.trim();
+if (!navn) return;
+if (redigerForerIdx >= 0) forere[redigerForerIdx] = navn;
+else forere.push(navn);
+await lagreForere(); oppdaterForerSelect(); lukkForerModal(); renderAdmin();
+}
+function opneEditModal(id) {
+const t = turer.find(x=>x.id==id);
+if (!t) return;
+document.getElementById('edit-id').value = t.id;
+document.getElementById('edit-dato').value = t.dato||'';
+document.getElementById('edit-forer').value = t.forer||'';
+document.getElementById('edit-loype').value = t.loype||'';
+document.getElementById('edit-slutt').value = t.slutt||'';
+document.getElementById('edit-km').value = t.km||'';
+document.getElementById('edit-timer').value = t.timerSlutt||'';
+document.getElementById('edit-diesel').checked = t.diesel==='Ja';
+document.getElementById('edit-adblue').checked = t.adblue==='Ja';
+document.getElementById('edit-merknader').value = t.merknader||'';
+editCondVal = t.forkond||0;
+document.querySelectorAll('#edit-cond-bar .cond-btn').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.val)===editCondVal));
+document.getElementById('edit-modal').classList.add('open');
+}
+function lukkModal() { document.getElementById('edit-modal').classList.remove('open'); }
+function setEditCond(val) {
+editCondVal = editCondVal===val ? 0 : val;
+document.querySelectorAll('#edit-cond-bar .cond-btn').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.val)===editCondVal));
+}
+async function lagreEditTur() {
+const id = document.getElementById('edit-id').value;
+const t = turer.find(x=>x.id==id);
+if (!t) return;
+const oppdatert = {
+...t,
+dato: document.getElementById('edit-dato').value,
+forer: document.getElementById('edit-forer').value,
+loype: document.getElementById('edit-loype').value,
+slutt: document.getElementById('edit-slutt').value,
+km: parseFloat(document.getElementById('edit-km').value)||0,
+timerSlutt: document.getElementById('edit-timer').value||'',
+diesel: document.getElementById('edit-diesel').checked ? 'Ja' : '',
+adblue: document.getElementById('edit-adblue').checked ? 'Ja' : '',
+forkond: editCondVal,
+merknader: document.getElementById('edit-merknader').value.trim()
+};
+try {
+setSyncStatus('loading','Lagrer…');
+// Delete old, add new
+await apiKall({ action: 'slett', id });
+await apiKall({ action: 'leggTil', tur: oppdatert });
+setSyncStatus('ok','Lagret!');
+lukkModal();
+await hentData();
+renderAdmin();
+} catch(err) {
+setSyncStatus('error','Feil');
+alert('Kunne ikke lagre: ' + err.message);
+}
+}
+// ── REGISTRERT MODAL ──
+function visRegistrertModal(tur) {
+// Bruk tur-objektet direkte (lokalt, fersk data) for denne turens verdier
+// Finn forrige tur på samme maskin blant alle turer (ekskluder denne turen)
+const andreTurer = turer.filter(t => String(t.id) !== String(tur.id));
+const maskinNavn = tur.maskin || '';
+const sammeMaskin = maskinNavn
+? andreTurer.filter(t => t.maskin === maskinNavn)
+: andreTurer;
+const sorted = sammeMaskin.sort((a,b) =>
+new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
+);
+const forrigeTur = sorted.length > 0 ? sorted[sorted.length-1] : null;
+// ── Denne turen ──
+// Tid medgått: diff mellom timerteller denne og forrige
+let tidBrukt = '–';
+const timerNy = parseFloat(tur.timerSlutt);
+const timerForrige = forrigeTur ? parseFloat(forrigeTur.timerSlutt) : (aktivMaskin ? parseFloat(aktivMaskin.timerStart) : NaN);
+if (!isNaN(timerNy) && timerNy > 0 && !isNaN(timerForrige) && timerForrige > 0) {
+const diff = timerNy - timerForrige;
+if (diff > 0) {
+const h = Math.floor(diff);
+const m = Math.round((diff - h) * 60);
+tidBrukt = h > 0 ? `${h}t${m > 0 ? ' ' + m + 'min' : ''}` : `${m} min`;
+}
+}
+// Km kjørt: diff i km-stand
+let kmKjort = '–';
+const kmNy = parseFloat(tur.km);
+const kmForrige = forrigeTur ? parseFloat(forrigeTur.km) : (aktivMaskin ? parseFloat(aktivMaskin.kmStart) : NaN);
+if (!isNaN(kmNy) && kmNy > 0 && !isNaN(kmForrige) && kmForrige > 0) {
+const diff = kmNy - kmForrige;
+if (diff > 0) kmKjort = diff.toFixed(1) + ' km';
+}
+// ── Sesong totalt ──
+const sesongTurer_alle = filterTurer(turer);
+const sesongTurer = sesongTurer_alle.length;
+const alleMedKm = sesongTurer_alle.filter(t => parseFloat(t.km) > 0).map(t => parseFloat(t.km)).sort((a,b) => a-b);
+const sesongKm = alleMedKm.length >= 2
+? (alleMedKm[alleMedKm.length-1] - alleMedKm[0]).toFixed(1) + ' km'
+: '–';
+const alleMedTimer = sesongTurer_alle.filter(t => parseFloat(t.timerSlutt) > 0).map(t => parseFloat(t.timerSlutt));
+const sesongTimer = alleMedTimer.length >= 2
+? (Math.max(...alleMedTimer) - Math.min(...alleMedTimer)).toFixed(1) + ' t'
+: '–';
+// ── Sjåfør sesong ──
+const forerNavn = tur.forer || '';
+const forerTurer = turer.filter(t => t.forer === forerNavn);
+const forerSesongTurer = forerTurer.length;
+const forerMedKm = forerTurer.filter(t => parseFloat(t.km) > 0).map(t => parseFloat(t.km)).sort((a,b) => a-b);
+const forerKm = forerMedKm.length >= 2
+? (forerMedKm[forerMedKm.length-1] - forerMedKm[0]).toFixed(1) + ' km'
+: '–';
+// For sjåfør-timer: sum up individual trip timer diffs
+const forerSorted = [...forerTurer].sort((a,b) => {
+return new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'));
+});
+let forerTimerTotalt = 0;
+for (let i = 1; i < forerSorted.length; i++) {
+const ts = parseFloat(forerSorted[i].timerSlutt);
+const tp = parseFloat(forerSorted[i-1].timerSlutt);
+if (ts > 0 && tp > 0 && ts > tp) forerTimerTotalt += ts - tp;
+}
+const forerTimer = forerTimerTotalt > 0 ? forerTimerTotalt.toFixed(1) + ' t' : '–';
+// ── Populate modal ──
+document.getElementById('reg-loype-tekst').textContent = (tur.loype||'') + (forerNavn ? ' · ' + forerNavn : '');
+document.getElementById('reg-tid').textContent = tidBrukt;
+document.getElementById('reg-km').textContent = kmKjort;
+document.getElementById('reg-sesong-turer').textContent = sesongTurer;
+document.getElementById('reg-sesong-km').textContent = sesongKm;
+document.getElementById('reg-sesong-timer').textContent = sesongTimer;
+document.getElementById('reg-forer-label').textContent = forerNavn ? forerNavn + ' denne sesongen' : 'Din sesong';
+document.getElementById('reg-forer-turer').textContent = forerSesongTurer;
+document.getElementById('reg-forer-km').textContent = forerKm;
+document.getElementById('reg-forer-timer').textContent = forerTimer;
+document.getElementById('registrert-modal').classList.add('open');
+}
+function lukkRegistrertModal() {
+document.getElementById('registrert-modal').classList.remove('open');
+}
+// ── MASKINER ──
+let redigerMaskinIdx = -1;
+async function lagreMaskiner_api() {
+if (!scriptUrl) return;
+try { await apiKall({ action: 'lagreMaskiner', maskiner }); } catch(e) { console.error('lagreMaskiner feil',e); }
+}
+function oppdaterMaskinSelect() {
+// Update aktiv maskin display in admin
+renderAdminMaskiner();
+}
+function visNyMaskin() {
+redigerMaskinIdx = -1;
+document.getElementById('maskin-navn-input').value = '';
+document.getElementById('maskin-km-input').value = '';
+document.getElementById('maskin-timer-input').value = '';
+document.getElementById('maskin-aktiv-input').checked = maskiner.length === 0;
+document.getElementById('maskin-modal-title').textContent = 'Ny maskin';
+document.getElementById('maskin-modal').classList.add('open');
+}
+function redigerMaskin(idx) {
+redigerMaskinIdx = idx;
+const m = maskiner[idx];
+document.getElementById('maskin-navn-input').value = m.navn;
+document.getElementById('maskin-km-input').value = m.kmStart||'';
+document.getElementById('maskin-timer-input').value = m.timerStart||'';
+document.getElementById('maskin-aktiv-input').checked = m.aktiv||false;
+document.getElementById('maskin-modal-title').textContent = 'Rediger maskin';
+document.getElementById('maskin-modal').classList.add('open');
+}
+function lukkMaskinModal() { document.getElementById('maskin-modal').classList.remove('open'); }
+async function lagreMaskin() {
+const navn = document.getElementById('maskin-navn-input').value.trim();
+if (!navn) { alert('Fyll inn navn på maskinen.'); return; }
+const aktiv = document.getElementById('maskin-aktiv-input').checked;
+if (aktiv) maskiner.forEach(m => m.aktiv = false);
+const obj = {
+navn,
+kmStart: parseFloat(document.getElementById('maskin-km-input').value)||0,
+timerStart: parseFloat(document.getElementById('maskin-timer-input').value)||0,
+aktiv
+};
+if (redigerMaskinIdx >= 0) maskiner[redigerMaskinIdx] = obj;
+else maskiner.push(obj);
+aktivMaskin = maskiner.find(m=>m.aktiv) || maskiner[0] || null;
+await lagreMaskiner_api();
+lukkMaskinModal();
+renderAdminMaskiner();
+}
+async function slettMaskin(idx) {
+if (!confirm('Slett maskinen «'+maskiner[idx].navn+'»?')) return;
+maskiner.splice(idx,1);
+aktivMaskin = maskiner.find(m=>m.aktiv) || maskiner[0] || null;
+await lagreMaskiner_api();
+renderAdminMaskiner();
+}
+async function settAktivMaskin(idx) {
+maskiner.forEach((m,i) => m.aktiv = i===idx);
+aktivMaskin = maskiner[idx];
+await lagreMaskiner_api();
+renderAdminMaskiner();
+}
+function renderAdminMaskiner() {
+const el = document.getElementById('admin-maskin-liste');
+if (!el) return;
+if (!maskiner.length) {
+el.innerHTML='<p style="color:var(--text2);font-size:13px">Ingen maskiner registrert ennå.</p>';
+return;
+}
+el.innerHTML = maskiner.map((m,i) => `
+<div class="forer-list-item"><div style="flex:1"><div style="font-weight:600;font-size:14px;color:var(--text)">${m.navn}
+${m.aktiv ? '<span style="margin-left:6px;background:var(--ice);color:var(--mid);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;border:1px solid var(--border)">Aktiv</span>' : ''}
+</div><div style="font-size:12px;color:var(--text2);margin-top:2px">
+Km-start: ${m.kmStart||0} &nbsp;·&nbsp; Timer-start: ${m.timerStart||0}
+</div></div>
+${!m.aktiv ? `<button class="btn btn-sm btn-outline" onclick="settAktivMaskin(${i})" style="font-size:11px;padding:5px 10px">Sett aktiv</button>` : ''}
+<button class="btn btn-sm btn-outline" onclick="redigerMaskin(${i})" style="font-size:12px;padding:5px 10px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettMaskin(${i})">Slett</button></div>`).join('');
+}
+// ── VÆR ──
+const SORLI_LAT = 60.0598;
+const SORLI_LON = 10.8499;
+function vaerIkon(kode, temp) {
+// WMO weather codes -> emoji + beskrivelse
+if (kode === 0) return { ikon: '☀️', tekst: 'Klart' };
+if (kode <= 2) return { ikon: '🌤️', tekst: 'Lettskyet' };
+if (kode === 3) return { ikon: '☁️', tekst: 'Overskyet' };
+if (kode <= 49) return { ikon: '🌫️', tekst: 'Tåke' };
+if (kode <= 57) return { ikon: '🌧️', tekst: 'Yr/dis' };
+if (kode <= 65) return { ikon: '🌧️', tekst: 'Regn' };
+if (kode <= 67) return { ikon: '🌨️', tekst: 'Sludd' };
+if (kode <= 77) return { ikon: '❄️', tekst: 'Snø' };
+if (kode <= 82) return { ikon: '🌦️', tekst: 'Byger' };
+if (kode <= 86) return { ikon: '🌨️', tekst: 'Snøbyger' };
+if (kode <= 99) return { ikon: '⛈️', tekst: 'Torden' };
+return { ikon: '🌡️', tekst: '' };
+}
+async function hentVaer(dato, klokkeslett) {
+try {
+// Build datetime string for historical lookup
+const dt = dato + 'T' + (klokkeslett || '12:00');
+const date = dato; // YYYY-MM-DD
+const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + SORLI_LAT + '&longitude=' + SORLI_LON + '&hourly=temperature_2m,weathercode&start_date=' + date + '&end_date=' + date + '&timezone=Europe%2FOslo';
+const res = await fetch(url);
+const data = await res.json();
+if (!data.hourly) return null;
+// Find closest hour
+const hour = klokkeslett ? parseInt(klokkeslett.split(':')[0]) : 12;
+const idx = Math.min(hour, data.hourly.time.length - 1);
+const temp = data.hourly.temperature_2m[idx];
+const kode = data.hourly.weathercode[idx];
+return { temp: Math.round(temp), kode, ...vaerIkon(kode, temp) };
+} catch(e) {
+console.error('Vær-feil:', e);
+return null;
+}
+}
+// ── INIT ──
+const _now = new Date();
+document.getElementById('f-dato').value = _now.toISOString().split('T')[0];
+document.getElementById('f-slutt').value = _now.getHours().toString().padStart(2,'0') + ':' + _now.getMinutes().toString().padStart(2,'0');
+oppdaterForerSelect();
+oppdaterLoypeSelect();
+sjekkSetup();
+if (scriptUrl) { setSyncStatus('loading','Henter…'); hentData(); }
+setInterval(()=>{ if(scriptUrl && document.visibilityState==='visible') hentData(); }, 60000);
+
+</script></body></html>
