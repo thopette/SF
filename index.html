@@ -591,10 +591,11 @@ if (!t.forer) return;
 if (!forerStats[t.forer]) forerStats[t.forer] = { okter:0, km:0, timer:0, turer:[] };
 forerStats[t.forer].okter++;
 // Timer: bruk Maskintimer (per-tur diff) direkte
-const timerPerTur = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+// Timer: bruk Maskintimer direkte, eller diff fra TimerSlutt som fallback
+const d = diffMapSesong[t.id]||{};
+const timerPerTur = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||(d.timerBrukt||0);
 forerStats[t.forer].timer += timerPerTur;
 // Km: bruk diff fra beregnDiff
-const d = diffMapSesong[t.id]||{};
 forerStats[t.forer].km += d.kmKjort||0;
 forerStats[t.forer].turer.push(t);
 });
@@ -616,7 +617,10 @@ const turene = sesongTurerStats.filter(t => t.forer===f)
 .sort((a,b) => new Date(a.dato) - new Date(b.dato));
 const labels = turene.map(t => formatDato(t.dato));
 const kmData = turene.map(t => { const d=diffMapSesong[t.id]||{}; return d.kmKjort||0; });
-const timerData = turene.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0);
+const timerData = turene.map(t => {
+const d2 = diffMapSesong[t.id]||{};
+return parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||(d2.timerBrukt||0);
+});
 const canvasId = 'chart-forer-' + f.replace(/\s/g,'_');
 const canvas = document.getElementById(canvasId);
 if (!canvas) return;
