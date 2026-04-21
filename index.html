@@ -245,7 +245,10 @@ if (id==='statistikk') renderStatistikk();
 }
 }
 if (id==='admin') { renderAdmin(); }
-if (id==='ny') { if (document.getElementById('runder-container').children.length===0 && loyper.length > 0) leggTilRunde(); else if (document.getElementById('runder-container').children.length===0) { setTimeout(()=>{ if(loyper.length>0 && document.getElementById('runder-container').children.length===0) leggTilRunde(); }, 1500); } }
+if (id==='ny') {
+oppdaterStandHint();
+if (document.getElementById('runder-container').children.length===0 && loyper.length > 0) leggTilRunde(); else if (document.getElementById('runder-container').children.length===0) { setTimeout(()=>{ if(loyper.length>0 && document.getElementById('runder-container').children.length===0) leggTilRunde(); }, 1500); }
+}
 }
 // ── FØREFORHOLD ──
 let condVal = 0;
