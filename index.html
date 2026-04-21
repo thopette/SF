@@ -43,8 +43,8 @@ Logg
 Statistikk
 </button><button class="nav-btn" onclick="showTab('admin')" id="btn-admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="18" cy="5" r="2.5" fill="currentColor" stroke="none"/><line x1="18" y1="3" x2="18" y2="2"/><line x1="18" y1="8" x2="18" y2="7"/><line x1="16" y1="4" x2="15" y2="3.5"/><line x1="20" y1="6" x2="21" y2="6.5"/><line x1="16" y1="6" x2="15" y2="6.5"/><line x1="20" y1="4" x2="21" y2="3.5"/></svg>
 Admin
-</button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn active" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-30d" onclick="setDashFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
-Løypestatus – siste 7 dager
+</button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn active" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-7d" onclick="setDashFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="dash-filter-30d" onclick="setDashFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+Løypestatus – denne uken
 </div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section" id="tab-ny"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Registrer ny kjøretur
 </div><div class="card-body"><div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Runder kjørt denne økten</label><button type="button" onclick="leggTilRunde()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--mid);background:transparent;color:var(--mid);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -57,11 +57,11 @@ Middels
 Bra
 </button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Merknader</label><textarea id="f-merknader" placeholder="Utstyr, feil, observasjoner…"></textarea></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-primary" id="lagre-btn" onclick="lagreTur()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
 Lagre tur
-</button></div></div></div></div><div class="section" id="tab-logg"><div class="filter-bar"><button class="filter-btn" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn active" id="filter-uke" onclick="setLoggFilter('uke')">Denne uken</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button><button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="hentData()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+</button></div></div></div></div><div class="section" id="tab-logg"><div class="filter-bar"><button class="filter-btn" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn active" id="filter-uke" onclick="setLoggFilter('uke')">Denne uken</button><button class="filter-btn" id="filter-7d" onclick="setLoggFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button><button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="hentData()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
 Oppdater
 </button><button class="btn btn-outline btn-sm" onclick="eksporterCSV()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
 CSV
-</button></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div><div class="table-wrap"><table><thead><tr><th>Dato</th><th>Fører</th><th>Løype</th><th>Slutt</th><th>Km kjørt</th><th>Timer</th><th>Vær</th><th>Føre</th><th>Diesel</th><th>AdBlue</th><th></th></tr></thead><tbody id="logg-tbody"></tbody></table><div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny tur» for å starte.</p></div></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn active" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+</button></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div><div class="table-wrap"><table><thead><tr><th>Dato</th><th>Fører</th><th>Løype</th><th>Slutt</th><th>Km kjørt</th><th>Timer</th><th>Vær</th><th>Føre</th><th>Diesel</th><th>AdBlue</th><th></th></tr></thead><tbody id="logg-tbody"></tbody></table><div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny tur» for å starte.</p></div></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn active" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-7d" onclick="setStatsFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
 Km kjørt per måned
 <span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører</div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Maskintimer</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Per løype</div><div class="table-wrap"><table><thead><tr><th>Løype</th><th>Turer</th><th>Snudde</th><th>Km totalt</th><th>Timer</th></tr></thead><tbody id="stats-loype"></tbody></table><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Avstikkere – kjørefrekvens</div><div class="table-wrap"><table><thead><tr><th>Avstikker</th><th>Løype</th><th>Antall kjørt</th><th>Av totalt turer</th></tr></thead><tbody id="stats-avstikkere"></tbody></table><div id="stats-avstikkere-empty" class="empty" style="display:none"><p>Ingen avstikkerdata</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 Sjåførstatistikk
@@ -411,12 +411,12 @@ const totalTimer = Object.values(diffMapDash).reduce((s,d)=>s+(d.timerBrukt||0),
 const dieselTurer = filtrertDash.filter(t=>t.diesel==='Ja').length;
 const adBlueTurer = filtrertDash.filter(t=>t.adblue==='Ja').length;
 const totalKm = Object.values(diffMapDash).reduce((s,d)=>s+(d.kmKjort||0),0);
-const filterLabels = {sesong:'Sesongen',uke:'Denne uken','30d':'Siste 30 dager',alle:'Totalt'};
+const filterLabels = {sesong:'Sesongen',uke:'Denne uken','7d':'Siste 7 dager','30d':'Siste 30 dager',alle:'Totalt'};
 document.getElementById('dash-metrics').innerHTML = `
 <div class="metric"><div class="metric-label">Turer – ${filterLabels[dashFilter]}</div><div class="metric-value">${filtrertDash.length}</div></div><div class="metric"><div class="metric-label">Km kjørt</div><div class="metric-value">${totalKm.toFixed(1)}</div><div class="metric-sub">kilometer</div></div><div class="metric"><div class="metric-label">Maskintimer</div><div class="metric-value">${totalTimer.toFixed(1)}</div><div class="metric-sub">timer</div></div><div class="metric"><div class="metric-label">Diesel / AdBlue</div><div class="metric-value">${dieselTurer} / ${adBlueTurer}</div><div class="metric-sub">påfyllinger</div></div>
 `;
 // Update card label
-const labelMap = {sesong:'Siste turer – sesongen',uke:'Turer denne uken','30d':'Turer siste 30 dager',alle:'Alle turer'};
+const labelMap = {sesong:'Siste turer – sesongen',uke:'Turer denne uken','7d':'Turer siste 7 dager','30d':'Turer siste 30 dager',alle:'Alle turer'};
 const labelEl = document.getElementById('dash-recent-label');
 if (labelEl) labelEl.textContent = labelMap[dashFilter];
 renderLoypeStatus();
@@ -450,9 +450,10 @@ if (el) el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen løyp
 return;
 }
 const nå = new Date();
-const for7d = new Date(nå); for7d.setDate(nå.getDate()-7); for7d.setHours(0,0,0,0);
-// Find trips last 7 days
-const siste7 = turer.filter(t => t.dato && new Date(t.dato) >= for7d);
+const _day = nå.getDay() === 0 ? 6 : nå.getDay() - 1;
+const mandag = new Date(nå); mandag.setDate(nå.getDate() - _day); mandag.setHours(0,0,0,0);
+// Samme ukefilter som dashboard
+const siste7 = turer.filter(t => t.dato && new Date(t.dato) >= mandag);
 el.innerHTML = loyper.map(l => {
 const turene = siste7.filter(t => (t.loype||'').split(' + ').some(lt => lt.trim()===l.navn));
 const kjort = turene.length > 0;
@@ -464,7 +465,7 @@ ${kjort
 : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ikke kjørt`}
 </div><div class="loype-boks-navn">${l.navn}</div>
 ${kjort ? `<div class="loype-meta"><strong>${antall}×</strong> denne uken<br>
-Sist: <strong>${sisteForer||'–'}</strong></div>` : '<div class="loype-meta">Ikke kjørt siste 7 dager</div>'}
+Sist: <strong>${sisteForer||'–'}</strong></div>` : '<div class="loype-meta">Ikke kjørt denne uken</div>'}
 </div>`;
 }).join('');
 }
@@ -834,6 +835,10 @@ const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
 const monday = new Date(now); monday.setDate(now.getDate() - day); monday.setHours(0,0,0,0);
 return liste.filter(t => t.dato && new Date(t.dato) >= monday);
 }
+if (loggFilter === '7d') {
+const d7 = new Date(now); d7.setDate(now.getDate() - 7); d7.setHours(0,0,0,0);
+return liste.filter(t => t.dato && new Date(t.dato) >= d7);
+}
 if (loggFilter === '30d') {
 const d30 = new Date(now); d30.setDate(now.getDate() - 30); d30.setHours(0,0,0,0);
 return liste.filter(t => t.dato && new Date(t.dato) >= d30);
@@ -873,7 +878,7 @@ return liste; // alle
 }
 function setLoggFilter(f) {
 loggFilter = f;
-['sesong','uke','30d','alle'].forEach(id => {
+['sesong','uke','7d','30d','alle'].forEach(id => {
 document.getElementById('filter-'+id).classList.toggle('active', id === f);
 });
 renderLogg();
@@ -881,7 +886,7 @@ renderLogg();
 let statsFilter = 'uke';
 function setStatsFilter(f) {
 statsFilter = f;
-['sesong','uke','30d','alle'].forEach(id => {
+['sesong','uke','7d','30d','alle'].forEach(id => {
 document.getElementById('stats-filter-'+id).classList.toggle('active', id === f);
 });
 renderStatistikk();
@@ -889,7 +894,7 @@ renderStatistikk();
 let dashFilter = 'uke';
 function setDashFilter(f) {
 dashFilter = f;
-['sesong','uke','30d','alle'].forEach(id => {
+['sesong','uke','7d','30d','alle'].forEach(id => {
 document.getElementById('dash-filter-'+id).classList.toggle('active', id === f);
 });
 renderDashboard();
