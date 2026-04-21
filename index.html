@@ -39,7 +39,7 @@ Løypestatus – denne uken
 Registrer ny kjøretur
 </div><div class="card-body"><div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Runder kjørt denne økten</label><button type="button" onclick="leggTilRunde()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--mid);background:transparent;color:var(--mid);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 Legg til runde
-</button></div><div id="runder-container"></div></div><hr class="divider" data-label="Tid og stand" style="margin-top:16px"><div class="form-grid two"><div class="field"><label>Slutt (kl.)</label><input type="time" id="f-slutt"></div><div class="field"><label>Km-stand ved slutt</label><input type="number" id="f-km" placeholder="0.0" min="0" step="0.1"></div></div><hr class="divider" data-label="Driftsdata" style="margin-top:16px"><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Timerteller ved slutt</label><input type="number" id="f-timer-slutt" placeholder="0.0" step="0.1" min="0"></div></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-diesel" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte diesel</span></label><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-adblue" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte AdBlue</span></label></div><hr class="divider" data-label="Føreforhold" style="margin-top:16px"><div class="field" style="margin-bottom:12px"><label>Føreforhold</label><div class="cond-bar" id="cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setCond(1)"><div class="cond-dots"><div class="dot"></div></div>
+</button></div><div id="runder-container"></div></div><hr class="divider" data-label="Tid og stand" style="margin-top:16px"><div class="form-grid two"><div class="field"><label>Slutt (kl.)</label><input type="time" id="f-slutt"></div><div class="field"><label>Km-stand ved slutt</label><input type="number" id="f-km" placeholder="0.0" min="0" step="0.1"><div id="hint-km" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div><hr class="divider" data-label="Driftsdata" style="margin-top:16px"><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Timerteller ved slutt</label><input type="number" id="f-timer-slutt" placeholder="0.0" step="0.1" min="0"><div id="hint-timer" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-diesel" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte diesel</span></label><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-adblue" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte AdBlue</span></label></div><hr class="divider" data-label="Føreforhold" style="margin-top:16px"><div class="field" style="margin-bottom:12px"><label>Føreforhold</label><div class="cond-bar" id="cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setCond(1)"><div class="cond-dots"><div class="dot"></div></div>
 Dårlig
 </button><button type="button" class="cond-btn" data-val="2" onclick="setCond(2)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div></div>
 Middels
@@ -381,6 +381,29 @@ alert('Kunne ikke slette: ' + err.message);
 function oppdaterDataLists() {
 oppdaterForerSelect();
 oppdaterLoypeSelect();
+oppdaterStandHint();
+}
+function oppdaterStandHint() {
+const hintKm = document.getElementById('hint-km');
+const hintTimer = document.getElementById('hint-timer');
+if (!hintKm || !hintTimer) return;
+// Find last trip for active machine
+const maskinNavn = aktivMaskin ? aktivMaskin.navn : '';
+const sorted = [...turer].sort((a,b) =>
+new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
+);
+const relevante = maskinNavn ? sorted.filter(t => t.maskin === maskinNavn) : sorted;
+const sisteT = relevante.length > 0 ? relevante[relevante.length-1] : null;
+if (sisteT) {
+hintKm.innerHTML = `⬆ Forrige: <strong>${sisteT.km}</strong> km`;
+hintTimer.innerHTML = `⬆ Forrige: <strong>${sisteT.timerSlutt}</strong> timer`;
+} else if (aktivMaskin) {
+hintKm.innerHTML = `⬆ Maskinstart: <strong>${aktivMaskin.kmStart||0}</strong> km`;
+hintTimer.innerHTML = `⬆ Maskinstart: <strong>${aktivMaskin.timerStart||0}</strong> timer`;
+} else {
+hintKm.innerHTML = '';
+hintTimer.innerHTML = '';
+}
 }
 function oppdaterForerSelect() {
 const opts = forere.map(f=>`<option value="${f}">${f}</option>`).join('');
