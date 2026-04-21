@@ -1092,7 +1092,12 @@ alert('Kunne ikke lagre: ' + err.message);
 function visRegistrertModal(tur) {
 // ── Denne turen ──
 // Bruk Maskintimer direkte fra tur-objektet (per-tur verdi)
-const turTimer = parseFloat(tur.timerBrukt)||0;
+// Beregn timer fra timerSlutt diff mot forrige tur
+const forrigeTimerRef = sammeMaskin.length > 0
+? Math.max(...sammeMaskin.map(t => parseFloat(t.timerSlutt)||0))
+: (aktivMaskin ? parseFloat(aktivMaskin.timerStart)||0 : 0);
+const timerNyVal = parseFloat(tur.timerSlutt)||0;
+const turTimer = parseFloat(tur.timerBrukt)||(timerNyVal > 0 && forrigeTimerRef > 0 && timerNyVal > forrigeTimerRef ? timerNyVal - forrigeTimerRef : 0);
 const tidBrukt = turTimer > 0
 ? (Math.floor(turTimer) > 0
 ? `${Math.floor(turTimer)}t${Math.round((turTimer - Math.floor(turTimer))*60) > 0 ? ' ' + Math.round((turTimer - Math.floor(turTimer))*60) + 'min' : ''}`
@@ -1112,9 +1117,12 @@ const kmKjort = (kmNy > 0 && forrigeKmRef > 0 && kmNy > forrigeKmRef)
 ? (kmNy - forrigeKmRef).toFixed(1) + ' km'
 : '–';
 
-// ── Sesong totalt – bruk diffMap på alle turer ──
+// ── Sesong totalt – alltid sesong-filter ──
 const diffMapAlt = beregnDiff(turer);
+const _prevLogg = loggFilter;
+loggFilter = 'sesong';
 const sesongTurer_alle = filterTurer(turer);
+loggFilter = _prevLogg;
 const sesongTurer = sesongTurer_alle.length;
 const sesongKm = sesongTurer_alle.reduce((s,t) => s+(diffMapAlt[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
 const sesongTimer = sesongTurer_alle.reduce((s,t) => s+(parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0).toFixed(1) + ' t';
