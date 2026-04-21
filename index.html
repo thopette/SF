@@ -437,20 +437,8 @@ const diffMapAlle = beregnDiff(turer);
 const totalTimer = filtrertDash.reduce((s,t)=>s+(parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0),0);
 const dieselTurer = filtrertDash.filter(t=>t.diesel==='Ja').length;
 const adBlueTurer = filtrertDash.filter(t=>t.adblue==='Ja').length;
-// Km: bruk diff mellom første og siste km-stand i perioden per maskin
-const maskinerIPeriode = [...new Set(filtrertDash.map(t=>t.maskin||'__'))];
-let totalKm = 0;
-maskinerIPeriode.forEach(maskin => {
-const turene = filtrertDash.filter(t=>(t.maskin||'__')===maskin)
-.sort((a,b)=>new Date(a.dato+' '+(a.slutt||'00:00'))-new Date(b.dato+' '+(b.slutt||'00:00')));
-if (turene.length >= 2) {
-const forste = parseFloat(turene[0].km)||0;
-const siste = parseFloat(turene[turene.length-1].km)||0;
-if (siste > forste) totalKm += siste - forste;
-} else if (turene.length === 1) {
-totalKm += diffMapAlle[turene[0].id]?.kmKjort||0;
-}
-});
+// Km: summer diff per tur i perioden fra diffMapAlle (beregnet på alle turer)
+const totalKm = filtrertDash.reduce((s,t) => s + (diffMapAlle[t.id]?.kmKjort||0), 0);
 const diffMapDash = diffMapAlle;
 const filterLabels = {sesong:'Sesongen',uke:'Denne uken','7d':'Siste 7 dager','30d':'Siste 30 dager',alle:'Totalt'};
 document.getElementById('dash-metrics').innerHTML = `
