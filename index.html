@@ -290,16 +290,20 @@ const maskinNavn = aktivMaskin ? aktivMaskin.navn : '';
 const turerSammeMaskin = maskinNavn
 ? sorted.filter(t => t.maskin === maskinNavn)
 : sorted;
-const sisteT = turerSammeMaskin.length > 0 ? turerSammeMaskin[turerSammeMaskin.length-1] : null;
-// Referansepunkt: bruk forrige tur på samme maskin.
-// Første tur på ny maskin → bruk maskinens startdata som referanse.
+// Bruk høyest km-stand og høyest timerteller som referanse (samme som hint)
+const sisteT = turerSammeMaskin.length > 0
+? turerSammeMaskin.reduce((best, t) => (parseFloat(t.km)||0) > (parseFloat(best.km)||0) ? t : best, turerSammeMaskin[0])
+: null;
+const sisteTimerT = turerSammeMaskin.length > 0
+? turerSammeMaskin.reduce((best, t) => (parseFloat(t.timerSlutt)||0) > (parseFloat(best.timerSlutt)||0) ? t : best, turerSammeMaskin[0])
+: null;
 let sisteKm = 0;
 let sisteTimer = 0;
 let referanseKilde = '';
 if (sisteT) {
 sisteKm = parseFloat(sisteT.km)||0;
-sisteTimer = parseFloat(sisteT.timerSlutt)||0;
-referanseKilde = 'forrige tur';
+sisteTimer = parseFloat(sisteTimerT?.timerSlutt)||0;
+referanseKilde = 'nåværende maskinstand';
 } else if (aktivMaskin && (aktivMaskin.kmStart > 0 || aktivMaskin.timerStart > 0)) {
 sisteKm = parseFloat(aktivMaskin.kmStart)||0;
 sisteTimer = parseFloat(aktivMaskin.timerStart)||0;
