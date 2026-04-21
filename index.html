@@ -1090,68 +1090,41 @@ alert('Kunne ikke lagre: ' + err.message);
 }
 // ── REGISTRERT MODAL ──
 function visRegistrertModal(tur) {
-// Bruk tur-objektet direkte (lokalt, fersk data) for denne turens verdier
-// Finn forrige tur på samme maskin blant alle turer (ekskluder denne turen)
-const andreTurer = turer.filter(t => String(t.id) !== String(tur.id));
-const maskinNavn = tur.maskin || '';
-const sammeMaskin = maskinNavn
-? andreTurer.filter(t => t.maskin === maskinNavn)
-: andreTurer;
-const sorted = sammeMaskin.sort((a,b) =>
-new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
-);
-const forrigeTur = sorted.length > 0 ? sorted[sorted.length-1] : null;
 // ── Denne turen ──
-// Tid medgått: diff mellom timerteller denne og forrige
-let tidBrukt = '–';
-const timerNy = parseFloat(tur.timerSlutt);
-const timerForrige = forrigeTur ? parseFloat(forrigeTur.timerSlutt) : (aktivMaskin ? parseFloat(aktivMaskin.timerStart) : NaN);
-if (!isNaN(timerNy) && timerNy > 0 && !isNaN(timerForrige) && timerForrige > 0) {
-const diff = timerNy - timerForrige;
-if (diff > 0) {
-const h = Math.floor(diff);
-const m = Math.round((diff - h) * 60);
-tidBrukt = h > 0 ? `${h}t${m > 0 ? ' ' + m + 'min' : ''}` : `${m} min`;
-}
-}
-// Km kjørt: diff i km-stand
-let kmKjort = '–';
-const kmNy = parseFloat(tur.km);
-const kmForrige = forrigeTur ? parseFloat(forrigeTur.km) : (aktivMaskin ? parseFloat(aktivMaskin.kmStart) : NaN);
-if (!isNaN(kmNy) && kmNy > 0 && !isNaN(kmForrige) && kmForrige > 0) {
-const diff = kmNy - kmForrige;
-if (diff > 0) kmKjort = diff.toFixed(1) + ' km';
-}
-// ── Sesong totalt ──
+// Bruk Maskintimer direkte fra tur-objektet (per-tur verdi)
+const turTimer = parseFloat(tur.timerBrukt)||0;
+const tidBrukt = turTimer > 0
+? (Math.floor(turTimer) > 0
+? `${Math.floor(turTimer)}t${Math.round((turTimer - Math.floor(turTimer))*60) > 0 ? ' ' + Math.round((turTimer - Math.floor(turTimer))*60) + 'min' : ''}`
+: `${Math.round(turTimer*60)} min`)
+: '–';
+
+// Km kjørt: diff mot forrige tur med høyest km-stand
+const andreTurer = turer.filter(t => String(t.id) !== String(tur.id));
+const sammeMaskin = tur.maskin
+? andreTurer.filter(t => t.maskin === tur.maskin)
+: andreTurer;
+const forrigeKmRef = sammeMaskin.length > 0
+? Math.max(...sammeMaskin.map(t => parseFloat(t.km)||0))
+: (aktivMaskin ? parseFloat(aktivMaskin.kmStart)||0 : 0);
+const kmNy = parseFloat(tur.km)||0;
+const kmKjort = (kmNy > 0 && forrigeKmRef > 0 && kmNy > forrigeKmRef)
+? (kmNy - forrigeKmRef).toFixed(1) + ' km'
+: '–';
+
+// ── Sesong totalt – bruk diffMap på alle turer ──
+const diffMapAlt = beregnDiff(turer);
 const sesongTurer_alle = filterTurer(turer);
 const sesongTurer = sesongTurer_alle.length;
-const alleMedKm = sesongTurer_alle.filter(t => parseFloat(t.km) > 0).map(t => parseFloat(t.km)).sort((a,b) => a-b);
-const sesongKm = alleMedKm.length >= 2
-? (alleMedKm[alleMedKm.length-1] - alleMedKm[0]).toFixed(1) + ' km'
-: '–';
-const alleMedTimer = sesongTurer_alle.filter(t => parseFloat(t.timerSlutt) > 0).map(t => parseFloat(t.timerSlutt));
-const sesongTimer = alleMedTimer.length >= 2
-? (Math.max(...alleMedTimer) - Math.min(...alleMedTimer)).toFixed(1) + ' t'
-: '–';
+const sesongKm = sesongTurer_alle.reduce((s,t) => s+(diffMapAlt[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
+const sesongTimer = sesongTurer_alle.reduce((s,t) => s+(parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0).toFixed(1) + ' t';
+
 // ── Sjåfør sesong ──
 const forerNavn = tur.forer || '';
-const forerTurer = turer.filter(t => t.forer === forerNavn);
+const forerTurer = sesongTurer_alle.filter(t => t.forer === forerNavn);
 const forerSesongTurer = forerTurer.length;
-const forerMedKm = forerTurer.filter(t => parseFloat(t.km) > 0).map(t => parseFloat(t.km)).sort((a,b) => a-b);
-const forerKm = forerMedKm.length >= 2
-? (forerMedKm[forerMedKm.length-1] - forerMedKm[0]).toFixed(1) + ' km'
-: '–';
-// For sjåfør-timer: sum up individual trip timer diffs
-const forerSorted = [...forerTurer].sort((a,b) => {
-return new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'));
-});
-let forerTimerTotalt = 0;
-for (let i = 1; i < forerSorted.length; i++) {
-const ts = parseFloat(forerSorted[i].timerSlutt);
-const tp = parseFloat(forerSorted[i-1].timerSlutt);
-if (ts > 0 && tp > 0 && ts > tp) forerTimerTotalt += ts - tp;
-}
-const forerTimer = forerTimerTotalt > 0 ? forerTimerTotalt.toFixed(1) + ' t' : '–';
+const forerKm = forerTurer.reduce((s,t) => s+(diffMapAlt[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
+const forerTimer = forerTurer.reduce((s,t) => s+(parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0).toFixed(1) + ' t';
 // ── Populate modal ──
 document.getElementById('reg-loype-tekst').textContent = (tur.loype||'') + (forerNavn ? ' · ' + forerNavn : '');
 document.getElementById('reg-tid').textContent = tidBrukt;
