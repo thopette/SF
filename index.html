@@ -1172,8 +1172,13 @@ const forerSesongTurer = forerTurer.length;
 const diffForModal = beregnDiff(turer);
 const forerKm = forerTurer.reduce((s,t) => s+(diffForModal[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
 // Bruk KUN Maskintimer (kolonne H) – dette er per-tur timer direkte fra maskin
-const forerTimerSum = forerTurer.reduce((s,t) =>
-s + (parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0);
+let forerTimerSum = 0;
+forerTurer.forEach(t => {
+const v = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+forerTimerSum += v;
+console.log(`  ${t.dato} ${t.forer}: timerBrukt=${t.timerBrukt}, timerBruktCalc=${t.timerBruktCalc} → ${v}`);
+});
+console.log(`TOTAL ${forerNavn}: ${forerTimerSum.toFixed(2)}t fra ${forerTurer.length} turer`);
 const forerTimer = forerTimerSum > 0 ? forerTimerSum.toFixed(1) + ' t' : '–';
 // ── Populate modal ──
 document.getElementById('reg-loype-tekst').textContent = (tur.loype||'') + (forerNavn ? ' · ' + forerNavn : '');
