@@ -1091,8 +1091,13 @@ alert('Kunne ikke lagre: ' + err.message);
 // ── REGISTRERT MODAL ──
 function visRegistrertModal(tur) {
 // ── Denne turen ──
-// Bruk Maskintimer direkte fra tur-objektet (per-tur verdi)
-// Beregn timer fra timerSlutt diff mot forrige tur
+// Definer sammeMaskin FØRST
+const andreTurer = turer.filter(t => String(t.id) !== String(tur.id));
+const sammeMaskin = tur.maskin
+? andreTurer.filter(t => t.maskin === tur.maskin)
+: andreTurer;
+
+// Tid medgått
 const forrigeTimerRef = sammeMaskin.length > 0
 ? Math.max(...sammeMaskin.map(t => parseFloat(t.timerSlutt)||0))
 : (aktivMaskin ? parseFloat(aktivMaskin.timerStart)||0 : 0);
@@ -1103,12 +1108,6 @@ const tidBrukt = turTimer > 0
 ? `${Math.floor(turTimer)}t${Math.round((turTimer - Math.floor(turTimer))*60) > 0 ? ' ' + Math.round((turTimer - Math.floor(turTimer))*60) + 'min' : ''}`
 : `${Math.round(turTimer*60)} min`)
 : '–';
-
-// Km kjørt: diff mot forrige tur med høyest km-stand
-const andreTurer = turer.filter(t => String(t.id) !== String(tur.id));
-const sammeMaskin = tur.maskin
-? andreTurer.filter(t => t.maskin === tur.maskin)
-: andreTurer;
 const forrigeKmRef = sammeMaskin.length > 0
 ? Math.max(...sammeMaskin.map(t => parseFloat(t.km)||0))
 : (aktivMaskin ? parseFloat(aktivMaskin.kmStart)||0 : 0);
