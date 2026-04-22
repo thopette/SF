@@ -1172,13 +1172,8 @@ const forerSesongTurer = forerTurer.length;
 const diffForModal = beregnDiff(turer);
 const forerKm = forerTurer.reduce((s,t) => s+(diffForModal[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
 // Bruk KUN Maskintimer (kolonne H) – dette er per-tur timer direkte fra maskin
-let forerTimerSum = 0;
-forerTurer.forEach(t => {
-const v = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
-forerTimerSum += v;
-console.log(`  ${t.dato} ${t.forer}: timerBrukt=${t.timerBrukt}, timerBruktCalc=${t.timerBruktCalc} → ${v}`);
-});
-console.log(`TOTAL ${forerNavn}: ${forerTimerSum.toFixed(2)}t fra ${forerTurer.length} turer`);
+const forerTimerSum = forerTurer.reduce((s,t) =>
+s + (parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0);
 const forerTimer = forerTimerSum > 0 ? forerTimerSum.toFixed(1) + ' t' : '–';
 // ── Populate modal ──
 document.getElementById('reg-loype-tekst').textContent = (tur.loype||'') + (forerNavn ? ' · ' + forerNavn : '');
@@ -1314,7 +1309,11 @@ return null;
 }
 // ── INIT ──
 const _now = new Date();
-document.getElementById('f-dato').value = _now.toISOString().split('T')[0];
+// Bruk lokal dato, ikke UTC
+const _localDato = _now.getFullYear() + '-' +
+String(_now.getMonth()+1).padStart(2,'0') + '-' +
+String(_now.getDate()).padStart(2,'0');
+document.getElementById('f-dato').value = _localDato;
 document.getElementById('f-slutt').value = _now.getHours().toString().padStart(2,'0') + ':' + _now.getMinutes().toString().padStart(2,'0');
 oppdaterForerSelect();
 oppdaterLoypeSelect();
