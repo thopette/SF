@@ -208,8 +208,30 @@ leggTilRunde();
 }
 if (cfg.innstillinger) {
 const s = cfg.innstillinger;
-if (s.sesongStart) sesongStart = s.sesongStart;
-if (s.sesongSlutt) sesongSlutt = s.sesongSlutt;
+if (s.sesongStart) {
+// Strip to DD.MM format if full date came from Sheets
+const raw = String(s.sesongStart);
+if (raw.includes('-') || raw.includes('T')) {
+// Parse date and extract DD.MM
+const d = new Date(raw);
+if (!isNaN(d)) {
+const day = String(d.getDate()).padStart(2,'0');
+const month = String(d.getMonth()+1).padStart(2,'0');
+sesongStart = day + '.' + month;
+} else sesongStart = raw.substring(0,5);
+} else sesongStart = raw;
+}
+if (s.sesongSlutt) {
+const raw = String(s.sesongSlutt);
+if (raw.includes('-') || raw.includes('T')) {
+const d = new Date(raw);
+if (!isNaN(d)) {
+const day = String(d.getDate()).padStart(2,'0');
+const month = String(d.getMonth()+1).padStart(2,'0');
+sesongSlutt = day + '.' + month;
+} else sesongSlutt = raw.substring(0,5);
+} else sesongSlutt = raw;
+}
 if (s.maxKm) window._maxKm = s.maxKm;
 if (s.maxTimer) window._maxTimer = s.maxTimer;
 }
