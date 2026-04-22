@@ -1132,11 +1132,8 @@ const sesongTurer_alle = filterTurer(turer);
 loggFilter = _prevLogg;
 const sesongTurer = sesongTurer_alle.length;
 const sesongKm = sesongTurer_alle.reduce((s,t) => s+(diffMapAlt[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
-const sesongTimerSum = sesongTurer_alle.reduce((s,t) => {
-const direkte = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
-const fraKal = diffMapAlt[t.id]?.timerBrukt||0;
-return s + (direkte > 0 ? direkte : fraKal);
-}, 0);
+const sesongTimerSum = sesongTurer_alle.reduce((s,t) =>
+s + (parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0);
 const sesongTimer = sesongTimerSum > 0 ? sesongTimerSum.toFixed(1) + ' t' : '–';
 
 // ── Sjåfør sesong ──
@@ -1146,11 +1143,9 @@ const forerSesongTurer = forerTurer.length;
 // Timer og km - bruk samme diffkart
 const diffForModal = beregnDiff(turer);
 const forerKm = forerTurer.reduce((s,t) => s+(diffForModal[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
-const forerTimerSum = forerTurer.reduce((s,t) => {
-const direkte = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
-const fraKal = diffForModal[t.id]?.timerBrukt||0;
-return s + (direkte > 0 ? direkte : fraKal);
-}, 0);
+// Bruk KUN Maskintimer (kolonne H) – dette er per-tur timer direkte fra maskin
+const forerTimerSum = forerTurer.reduce((s,t) =>
+s + (parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0);
 const forerTimer = forerTimerSum > 0 ? forerTimerSum.toFixed(1) + ' t' : '–';
 // ── Populate modal ──
 document.getElementById('reg-loype-tekst').textContent = (tur.loype||'') + (forerNavn ? ' · ' + forerNavn : '');
