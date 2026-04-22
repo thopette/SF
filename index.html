@@ -1124,14 +1124,26 @@ const sesongTurer_alle = filterTurer(turer);
 loggFilter = _prevLogg;
 const sesongTurer = sesongTurer_alle.length;
 const sesongKm = sesongTurer_alle.reduce((s,t) => s+(diffMapAlt[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
-const sesongTimer = sesongTurer_alle.reduce((s,t) => s+(parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0).toFixed(1) + ' t';
+const sesongTimerSum = sesongTurer_alle.reduce((s,t) => {
+const direkte = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+const fraKal = diffMapAlt[t.id]?.timerBrukt||0;
+return s + (direkte > 0 ? direkte : fraKal);
+}, 0);
+const sesongTimer = sesongTimerSum > 0 ? sesongTimerSum.toFixed(1) + ' t' : '–';
 
 // ── Sjåfør sesong ──
 const forerNavn = tur.forer || '';
 const forerTurer = sesongTurer_alle.filter(t => t.forer === forerNavn);
 const forerSesongTurer = forerTurer.length;
 const forerKm = forerTurer.reduce((s,t) => s+(diffMapAlt[t.id]?.kmKjort||0), 0).toFixed(1) + ' km';
-const forerTimer = forerTurer.reduce((s,t) => s+(parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0), 0).toFixed(1) + ' t';
+// Timer: bruk Maskintimer hvis tilgjengelig, ellers diff fra TimerSlutt
+const diffForModal = beregnDiff(turer);
+const forerTimerSum = forerTurer.reduce((s,t) => {
+const direkte = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+const fraKal = diffForModal[t.id]?.timerBrukt||0;
+return s + (direkte > 0 ? direkte : fraKal);
+}, 0);
+const forerTimer = forerTimerSum > 0 ? forerTimerSum.toFixed(1) + ' t' : '–';
 // ── Populate modal ──
 document.getElementById('reg-loype-tekst').textContent = (tur.loype||'') + (forerNavn ? ' · ' + forerNavn : '');
 document.getElementById('reg-tid').textContent = tidBrukt;
