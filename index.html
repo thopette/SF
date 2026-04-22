@@ -56,7 +56,7 @@ Oppdater
 CSV
 </button></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div><div class="table-wrap"><table><thead><tr><th>Dato</th><th>Fører</th><th>Løype</th><th>Slutt</th><th>Km kjørt</th><th>Timer</th><th>Vær</th><th>Føre</th><th>Diesel</th><th>AdBlue</th><th></th></tr></thead><tbody id="logg-tbody"></tbody></table><div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny tur» for å starte.</p></div></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn active" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-7d" onclick="setStatsFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
 Km kjørt per måned
-<span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører</div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Maskintimer</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Per løype</div><div class="table-wrap"><table><thead><tr><th>Løype</th><th>Turer</th><th>Snudde</th><th>Km totalt</th><th>Timer</th></tr></thead><tbody id="stats-loype"></tbody></table><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Avstikkere – kjørefrekvens</div><div class="table-wrap"><table><thead><tr><th>Avstikker</th><th>Løype</th><th>Antall kjørt</th><th>Av totalt turer</th></tr></thead><tbody id="stats-avstikkere"></tbody></table><div id="stats-avstikkere-empty" class="empty" style="display:none"><p>Ingen avstikkerdata</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+<span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører</div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Km kjørt</th><th>Maskintimer</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Per løype</div><div class="table-wrap"><table><thead><tr><th>Løype</th><th>Turer</th><th>Snudde</th><th>Km totalt</th><th>Timer</th></tr></thead><tbody id="stats-loype"></tbody></table><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Avstikkere – kjørefrekvens</div><div class="table-wrap"><table><thead><tr><th>Avstikker</th><th>Løype</th><th>Antall kjørt</th><th>Av totalt turer</th></tr></thead><tbody id="stats-avstikkere"></tbody></table><div id="stats-avstikkere-empty" class="empty" style="display:none"><p>Ingen avstikkerdata</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 Sjåførstatistikk – denne sesongen
 </div><div class="card-body" id="stats-sjaforer-kort"></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 Admin – logg inn
@@ -96,27 +96,35 @@ return new Date(str);
 }
 function beregnDiff(turer) {
 // Returns a map of tur.id -> { kmKjort, timerBrukt }
-// sorted per machine chronologically
+// Bruker KmPerTur fra sheet direkte hvis tilgjengelig, ellers beregner diff
 const sorted = [...turer].sort((a,b) =>
 new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
 );
-const maskinSiste = {}; // maskin -> last {km, timer}
+const maskinSiste = {};
 const diffMap = {};
 sorted.forEach(t => {
 const maskin = t.maskin || '__ingen__';
 const kmNy = parseFloat(t.km)||0;
 const timerNy = parseFloat(t.timerSlutt)||0;
 const prev = maskinSiste[maskin];
-let kmKjort = null, timerBrukt = null;
+// Bruk kolonne-verdier direkte hvis tilgjengelig
+let kmKjort = t.kmPerTur != null ? t.kmPerTur : null;
+let timerBrukt = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||null;
+// Fallback: beregn fra diff
+if (kmKjort === null) {
 if (prev) {
 if (kmNy > 0 && prev.km > 0 && kmNy > prev.km) kmKjort = kmNy - prev.km;
+} else {
+const m = maskiner.find(m => m.navn === t.maskin);
+if (m && kmNy > 0 && m.kmStart > 0 && kmNy > m.kmStart) kmKjort = kmNy - m.kmStart;
+}
+}
+if (timerBrukt === null) {
+if (prev) {
 if (timerNy > 0 && prev.timer > 0 && timerNy > prev.timer) timerBrukt = timerNy - prev.timer;
 } else {
-// First trip for this machine – use maskin startdata if available
 const m = maskiner.find(m => m.navn === t.maskin);
-if (m) {
-if (kmNy > 0 && m.kmStart > 0 && kmNy > m.kmStart) kmKjort = kmNy - m.kmStart;
-if (timerNy > 0 && m.timerStart > 0 && timerNy > m.timerStart) timerBrukt = timerNy - m.timerStart;
+if (m && timerNy > 0 && m.timerStart > 0 && timerNy > m.timerStart) timerBrukt = timerNy - m.timerStart;
 }
 }
 diffMap[t.id] = { kmKjort, timerBrukt };
@@ -192,6 +200,8 @@ avstikkere: t.Avstikkere || '',
 snupunkt: t.Snupunkt || '',
 maskin: t.Maskin || '',
 vaer: t.Vaer || '',
+kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur)||null : null,
+kmPerTime: t.KmPerTime !== '' ? parseFloat(t.KmPerTime)||null : null,
 timerBruktCalc: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null
 }));
 // Hent config (førere + løyper)
@@ -386,6 +396,7 @@ avstikkere: kjorteAvstikkere.join('|'),
 snupunkt: snupunkt,
 maskin: aktivMaskin ? aktivMaskin.navn : '',
 timerStartMaskin: aktivMaskin ? aktivMaskin.timerStart : '',
+kmStartMaskin: aktivMaskin ? aktivMaskin.kmStart : '',
 merknader: document.getElementById('f-merknader').value.trim()
 };
 try {
@@ -589,10 +600,12 @@ scales:{ y:{beginAtZero:true, grid:{color:'#E8F4FD'}, ticks:{callback:v=>v+' km'
 x:{grid:{display:false}, ticks:{font:{size:11}}} } }
 });
 const forerMap = {};
+const diffMapForer = beregnDiff(turer);
 filtrertStats.forEach(t => {
 if (!t.forer) return;
-if (!forerMap[t.forer]) forerMap[t.forer]={turer:0,timer:0,diesel:0,adblue:0};
+if (!forerMap[t.forer]) forerMap[t.forer]={turer:0,km:0,timer:0,diesel:0,adblue:0};
 forerMap[t.forer].turer++;
+forerMap[t.forer].km += diffMapForer[t.id]?.kmKjort||0;
 forerMap[t.forer].timer += (t.timerBruktCalc||t.timerBrukt)||0;
 if (t.diesel==='Ja') forerMap[t.forer].diesel++;
 if (t.adblue==='Ja') forerMap[t.forer].adblue++;
@@ -600,7 +613,26 @@ if (t.adblue==='Ja') forerMap[t.forer].adblue++;
 const fKeys = Object.keys(forerMap).sort((a,b)=>forerMap[b].turer-forerMap[a].turer);
 const sfEl = document.getElementById('stats-forer');
 document.getElementById('stats-forer-empty').style.display = fKeys.length ? 'none' : 'block';
-sfEl.innerHTML = fKeys.map(f=>`<tr><td style="font-weight:500">${f}</td><td style="font-family:var(--mono)">${forerMap[f].turer}</td><td style="font-family:var(--mono)">${forerMap[f].timer.toFixed(1)} t</td><td style="font-family:var(--mono)">${forerMap[f].diesel}</td><td style="font-family:var(--mono)">${forerMap[f].adblue}</td></tr>`).join('');
+const totTurer = fKeys.reduce((s,f)=>s+forerMap[f].turer,0);
+const totKm = fKeys.reduce((s,f)=>s+forerMap[f].km,0);
+const totTimer = fKeys.reduce((s,f)=>s+forerMap[f].timer,0);
+const totDiesel = fKeys.reduce((s,f)=>s+forerMap[f].diesel,0);
+const totAdblue = fKeys.reduce((s,f)=>s+forerMap[f].adblue,0);
+sfEl.innerHTML = fKeys.map(f=>`<tr>
+<td style="font-weight:500">${f}</td>
+<td style="font-family:var(--mono)">${forerMap[f].turer}</td>
+<td style="font-family:var(--mono)">${forerMap[f].km.toFixed(1)} km</td>
+<td style="font-family:var(--mono)">${forerMap[f].timer.toFixed(1)} t</td>
+<td style="font-family:var(--mono)">${forerMap[f].diesel}</td>
+<td style="font-family:var(--mono)">${forerMap[f].adblue}</td>
+</tr>`).join('') + `<tr style="border-top:2px solid var(--border);background:var(--snow);font-weight:600">
+<td style="font-weight:700;color:var(--navy)">Totalt</td>
+<td style="font-family:var(--mono);font-weight:700">${totTurer}</td>
+<td style="font-family:var(--mono);font-weight:700">${totKm.toFixed(1)} km</td>
+<td style="font-family:var(--mono);font-weight:700">${totTimer.toFixed(1)} t</td>
+<td style="font-family:var(--mono);font-weight:700">${totDiesel}</td>
+<td style="font-family:var(--mono);font-weight:700">${totAdblue}</td>
+</tr>`;
 const loypeMap = {};
 turer.forEach(t => {
 if (!t.loype) return;
