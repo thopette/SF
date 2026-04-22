@@ -938,28 +938,34 @@ if (!sesongStart && !sesongSlutt) return liste;
 return liste.filter(t => {
 if (!t.dato) return false;
 const d = parseDato(t.dato);
-const year = d.getFullYear();
 function parseDDMM(str, yr) {
 const parts = str.split('.');
 if (parts.length !== 2) return null;
 return new Date(yr, parseInt(parts[1])-1, parseInt(parts[0]));
 }
-if (sesongStart) {
-// Season may span year boundary (e.g. 01.11 – 30.04)
-const start = parseDDMM(sesongStart, year);
-const startPrev = parseDDMM(sesongStart, year-1);
-if (start && startPrev) {
-const validStart = d >= startPrev ? startPrev : start;
-if (d < validStart) return false;
+if (sesongStart && sesongSlutt) {
+const startM = parseInt(sesongStart.split('.')[1]);
+const sluttM = parseInt(sesongSlutt.split('.')[1]);
+const yr = d.getFullYear();
+if (startM > sluttM) {
+// Sesong spenner over årsskiftet (f.eks. 01.11 – 30.04)
+const s1 = parseDDMM(sesongStart, yr-1);
+const e1 = parseDDMM(sesongSlutt, yr);
+const s2 = parseDDMM(sesongStart, yr);
+const e2 = parseDDMM(sesongSlutt, yr+1);
+return (d >= s1 && d <= e1) || (d >= s2 && d <= e2);
+} else {
+// Sesong innenfor samme år
+const s = parseDDMM(sesongStart, yr);
+const e = parseDDMM(sesongSlutt, yr);
+return d >= s && d <= e;
 }
-}
-if (sesongSlutt) {
-const slutt = parseDDMM(sesongSlutt, year);
-const sluttNext = parseDDMM(sesongSlutt, year+1);
-if (slutt && sluttNext) {
-const validSlutt = d <= slutt ? slutt : sluttNext;
-if (d > validSlutt) return false;
-}
+} else if (sesongStart) {
+return d >= parseDDMM(sesongStart, d.getFullYear()) ||
+d >= parseDDMM(sesongStart, d.getFullYear()-1);
+} else if (sesongSlutt) {
+return d <= parseDDMM(sesongSlutt, d.getFullYear()) ||
+d <= parseDDMM(sesongSlutt, d.getFullYear()+1);
 }
 return true;
 });
