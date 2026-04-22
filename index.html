@@ -86,6 +86,14 @@ const parts = str.substring(0,10).split('-');
 if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
 return str;
 }
+function parseDato(str) {
+// Always parse as local date using just YYYY-MM-DD part
+if (!str) return null;
+const d = str.substring(0,10);
+const parts = d.split('-');
+if (parts.length === 3) return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+return new Date(str);
+}
 function beregnDiff(turer) {
 // Returns a map of tur.id -> { kmKjort, timerBrukt }
 // sorted per machine chronologically
@@ -174,7 +182,7 @@ try {
 const data = await apiKall({ action: 'hentAlle' });
 if (data.feil) throw new Error(data.feil);
 turer = (data.turer || []).map(t => ({
-id: t.ID, dato: t.Dato, forer: t['Fører'], loype: t['Løype'],
+id: t.ID, dato: t.Dato ? t.Dato.substring(0,10) : '', forer: t['Fører'], loype: t['Løype'],
 slutt: t.Slutt, km: parseFloat(t.Km)||0,
 timerSlutt: t.TimerSlutt,
 timerBrukt: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null,
@@ -492,7 +500,7 @@ const nå = new Date();
 const _day = nå.getDay() === 0 ? 6 : nå.getDay() - 1;
 const mandag = new Date(nå); mandag.setDate(nå.getDate() - _day); mandag.setHours(0,0,0,0);
 // Samme ukefilter som dashboard
-const siste7 = turer.filter(t => t.dato && new Date(t.dato) >= mandag);
+const siste7 = turer.filter(t => t.dato && parseDato(t.dato) >= mandag);
 el.innerHTML = loyper.map(l => {
 const turene = siste7.filter(t => (t.loype||'').split(' + ').some(lt => lt.trim()===l.navn));
 const kjort = turene.length > 0;
@@ -636,7 +644,7 @@ const s = forerStats[f];
 // Fallback: beregn km fra første/siste km-stand for denne føreren
 let kmBrukt = s.km;
 if (kmBrukt === 0 && s.turer.length >= 2) {
-const sorterteTurer = [...s.turer].sort((a,b) => new Date(a.dato) - new Date(b.dato));
+const sorterteTurer = [...s.turer].sort((a,b) => parseDato(a.dato) - parseDato(b.dato));
 const forsteKm = parseFloat(sorterteTurer[0].km)||0;
 const sisteKm = parseFloat(sorterteTurer[sorterteTurer.length-1].km)||0;
 if (sisteKm > forsteKm) kmBrukt = sisteKm - forsteKm;
@@ -648,7 +656,7 @@ return `<div style="border:1px solid var(--border);border-radius:var(--radius);m
 // Render per-driver charts
 forerNavn.forEach(f => {
 const turene = sesongTurerStats.filter(t => t.forer===f)
-.sort((a,b) => new Date(a.dato) - new Date(b.dato));
+.sort((a,b) => parseDato(a.dato) - parseDato(b.dato));
 const labels = turene.map(t => formatDato(t.dato));
 const diffAlleKart = beregnDiff(turer);
 const kmData = turene.map(t => { const d=diffAlleKart[t.id]||{}; return d.kmKjort||0; });
@@ -893,21 +901,21 @@ const now = new Date();
 if (loggFilter === 'uke') {
 const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
 const monday = new Date(now); monday.setDate(now.getDate() - day); monday.setHours(0,0,0,0);
-return liste.filter(t => t.dato && new Date(t.dato) >= monday);
+return liste.filter(t => t.dato && parseDato(t.dato) >= monday);
 }
 if (loggFilter === '7d') {
 const d7 = new Date(now); d7.setDate(now.getDate() - 7); d7.setHours(0,0,0,0);
-return liste.filter(t => t.dato && new Date(t.dato) >= d7);
+return liste.filter(t => t.dato && parseDato(t.dato) >= d7);
 }
 if (loggFilter === '30d') {
 const d30 = new Date(now); d30.setDate(now.getDate() - 30); d30.setHours(0,0,0,0);
-return liste.filter(t => t.dato && new Date(t.dato) >= d30);
+return liste.filter(t => t.dato && parseDato(t.dato) >= d30);
 }
 if (loggFilter === 'sesong') {
 if (!sesongStart && !sesongSlutt) return liste;
 return liste.filter(t => {
 if (!t.dato) return false;
-const d = new Date(t.dato);
+const d = parseDato(t.dato);
 const year = d.getFullYear();
 function parseDDMM(str, yr) {
 const parts = str.split('.');
