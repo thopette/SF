@@ -274,11 +274,11 @@ aktivMaskin = maskiner.find(m=>m.aktiv) || maskiner[0] || null;
 oppdaterMaskinSelect();
 }
 setSyncStatus('ok', 'Synkronisert');
+_dataLastet = true;
+_sisteHenting = Date.now();
 oppdaterDataLists();
 const tab = document.querySelector('.section.active').id.replace('tab-','');
-if (tab==='dashboard') renderDashboard();
-if (tab==='logg') renderLogg();
-if (tab==='statistikk') renderStatistikk();
+renderAktivFane(tab);
 } catch (err) {
 if (err.message && err.message.includes('Tidsfrist')) {
 setSyncStatus('error', 'Tidsavbrudd – prøver igjen…');
@@ -366,12 +366,20 @@ function showTab(id) {
 document.getElementById('tab-'+t).classList.toggle('active', t===id);
 document.getElementById('btn-'+t).classList.toggle('active', t===id);
 });
-// Vis cached data umiddelbart
-if (_dataLastet) renderAktivFane(id);
-// Hent ferske data i bakgrunnen hvis cache er utløpt
+if (_dataLastet) {
+// Data er klar – vis umiddelbart
+renderAktivFane(id);
+// Hent i bakgrunnen hvis cache er utløpt
 const cacheUtlopt = (Date.now() - _sisteHenting) > CACHE_TTL;
 if (cacheUtlopt && ['dashboard','logg','statistikk'].includes(id)) {
 hentDataBakgrunn();
+}
+} else {
+// Data lastes fortsatt – vis liten spinner i fanen
+const el = document.getElementById('tab-'+id);
+if (el && ['dashboard','logg','statistikk'].includes(id)) {
+el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:60px 20px;color:var(--text2)"><div class="spinner"></div><span>Henter data…</span></div>';
+}
 }
 if (id==='ny') {
 oppdaterStandHint();
