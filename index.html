@@ -290,24 +290,89 @@ console.error(err);
 }
 }
 // ── TABS ──
-const _lasterFaner = new Set();
-setInterval(() => { _lasterFaner.clear(); }, 5 * 60 * 1000);
+// Cache-strategi: hent ved oppstart, vis cached umiddelbart, refresh i bakgrunnen
+let _dataLastet = false;
+let _sisteHenting = 0;
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutter
+
+function renderAktivFane(id) {
+if (id==='dashboard') renderDashboard();
+if (id==='logg') renderLogg();
+if (id==='statistikk') renderStatistikk();
+if (id==='admin') renderAdmin();
+}
+
+async function hentDataBakgrunn() {
+// Hent stille i bakgrunnen uten å vise loader
+if (!scriptUrl) return;
+try {
+const data = await apiKall({ action: 'hentAlle' });
+if (data.feil) return;
+turer = (data.turer || []).map(t => ({
+id: t.ID, dato: t.Dato ? t.Dato.substring(0,10) : '', forer: t['Fører'], loype: t['Løype'],
+slutt: t.Slutt, km: parseFloat(t.Km)||0,
+timerSlutt: t.TimerSlutt,
+timerBrukt: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null,
+timerBruktCalc: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null,
+diesel: t.Diesel || '', adblue: t.AdBlue || '', forkond: parseInt(t.Forkond)||0,
+merknader: t.Merknader || '', avstikkere: t.Avstikkere || '',
+snupunkt: t.Snupunkt || '', maskin: t.Maskin || '', vaer: t.Vaer || '',
+kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur)||null : null,
+kmPerTime: t.KmPerTime !== '' ? parseFloat(t.KmPerTime)||null : null
+}));
+const cfg = await apiKall({ action: 'hentConfig' });
+if (cfg.forere && cfg.forere.length) forere = cfg.forere;
+if (cfg.loyper) loyper = cfg.loyper;
+if (cfg.innstillinger) {
+const s = cfg.innstillinger;
+if (s.sesongStart) {
+const raw = String(s.sesongStart);
+if (raw.includes('-')||raw.includes('T')) {
+const d = new Date(raw);
+if (!isNaN(d)) sesongStart = String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');
+else sesongStart = raw.substring(0,5);
+} else sesongStart = raw;
+}
+if (s.sesongSlutt) {
+const raw = String(s.sesongSlutt);
+if (raw.includes('-')||raw.includes('T')) {
+const d = new Date(raw);
+if (!isNaN(d)) sesongSlutt = String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');
+else sesongSlutt = raw.substring(0,5);
+} else sesongSlutt = raw;
+}
+if (s.maxKm) window._maxKm = s.maxKm;
+if (s.maxTimer) window._maxTimer = s.maxTimer;
+}
+if (cfg.maskiner) {
+maskiner = cfg.maskiner;
+aktivMaskin = maskiner.find(m=>m.aktiv) || maskiner[0] || null;
+}
+_sisteHenting = Date.now();
+_dataLastet = true;
+oppdaterDataLists();
+// Oppdater aktiv fane stille
+const aktivFane = document.querySelector('.section.active')?.id?.replace('tab-','');
+if (aktivFane) renderAktivFane(aktivFane);
+setSyncStatus('ok', 'Synkronisert');
+} catch(e) {
+setSyncStatus('error', 'Feil ved henting');
+console.error(e);
+}
+}
+
 function showTab(id) {
 ['dashboard','ny','logg','statistikk','admin'].forEach(t => {
 document.getElementById('tab-'+t).classList.toggle('active', t===id);
 document.getElementById('btn-'+t).classList.toggle('active', t===id);
 });
-if (['dashboard','logg','statistikk'].includes(id)) {
-if (!_lasterFaner.has(id)) {
-_lasterFaner.add(id);
-hentData();
-} else {
-if (id==='dashboard') renderDashboard();
-if (id==='logg') renderLogg();
-if (id==='statistikk') renderStatistikk();
+// Vis cached data umiddelbart
+if (_dataLastet) renderAktivFane(id);
+// Hent ferske data i bakgrunnen hvis cache er utløpt
+const cacheUtlopt = (Date.now() - _sisteHenting) > CACHE_TTL;
+if (cacheUtlopt && ['dashboard','logg','statistikk'].includes(id)) {
+hentDataBakgrunn();
 }
-}
-if (id==='admin') { renderAdmin(); }
 if (id==='ny') {
 oppdaterStandHint();
 if (document.getElementById('runder-container').children.length===0 && loyper.length > 0) leggTilRunde(); else if (document.getElementById('runder-container').children.length===0) { setTimeout(()=>{ if(loyper.length>0 && document.getElementById('runder-container').children.length===0) leggTilRunde(); }, 1500); }
@@ -435,7 +500,6 @@ document.getElementById('f-adblue').checked=false;
 setCond(0);
 hideLoading();
 btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Lagre tur';
-_lasterFaner.clear();
 showTab('dashboard');
 await hentData();
 visRegistrertModal(tur);
@@ -1427,7 +1491,10 @@ document.getElementById('f-slutt').value = _now.getHours().toString().padStart(2
 oppdaterForerSelect();
 oppdaterLoypeSelect();
 sjekkSetup();
-if (scriptUrl) { setSyncStatus('loading','Henter…'); hentData(); }
+if (scriptUrl) { setSyncStatus('loading','Henter…'); hentData().then(() => {
+// Start bakgrunns-refresh hvert 10. minutt
+setInterval(() => { if(scriptUrl && document.visibilityState==='visible') hentDataBakgrunn(); }, CACHE_TTL);
+}); }
 // Auto-refresh fjernet – data hentes ved fanebytte
 
 </script></body></html>
