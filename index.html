@@ -1042,7 +1042,7 @@ ${l.avstikkere.map((a,ai) => `
 </label>`).join('')}` : ''}
 <div style="margin-top:8px" onclick="event.stopPropagation()">
 <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 13px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0" onclick="toggleRVSnupunkt(${i}, event)">
-<input type="checkbox" id="rv${i}-snupunkt" style="width:17px;height:17px;accent-color:#E67E22;cursor:pointer;flex-shrink:0" onclick="event.stopPropagation()">
+<input type="checkbox" id="rv${i}-snupunkt" style="width:17px;height:17px;accent-color:#E67E22;cursor:pointer;flex-shrink:0" onchange="oppdaterRVSnupunktUI(${i})" onclick="event.stopPropagation()">
 <div style="flex:1;font-size:13px;font-weight:600;color:#D68910">Jeg snudde underveis</div>
 <svg id="rv${i}-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D68910" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
 </label>
@@ -1094,16 +1094,25 @@ const countEl = document.getElementById('runder-valgt-count');
 if (countEl) countEl.textContent = count > 0 ? `(${count} valgt)` : '';
 }
 
-function toggleRVSnupunkt(i, e) {
-e.stopPropagation();
-// Let the label naturally toggle the checkbox, just update UI after
-setTimeout(() => {
+function oppdaterRVSnupunktUI(i) {
 const cb = document.getElementById('rv'+i+'-snupunkt');
 const panel = document.getElementById('rv'+i+'-snupunkt-panel');
 const chev = document.getElementById('rv'+i+'-chevron');
+if (!cb) return;
 panel.style.display = cb.checked ? 'block' : 'none';
 chev.style.transform = cb.checked ? 'rotate(180deg)' : '';
-}, 0);
+if (!cb.checked) {
+// Nullstill snupunkt-valg
+const btns = panel.querySelectorAll('.snupunkt-btn');
+btns.forEach(b => b.classList.remove('selected'));
+}
+}
+function toggleRVSnupunkt(i, e) {
+e.stopPropagation();
+const cb = document.getElementById('rv'+i+'-snupunkt');
+if (!cb) return;
+cb.checked = !cb.checked;
+oppdaterRVSnupunktUI(i);
 }
 
 function velgRVSnupunkt(i, navn, btn) {
