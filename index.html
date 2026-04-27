@@ -70,7 +70,7 @@
 <div class="ldot" style="background:#1A2B4A;animation-delay:0.8s"></div>
 </div>
 </div>
-<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 14:38</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 14:55</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -82,8 +82,8 @@ Statistikk
 Admin
 </button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn active" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-7d" onclick="setDashFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="dash-filter-30d" onclick="setDashFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Løypestatus – denne uken
-</div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section" id="tab-ny"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-Registrer ny kjøreøkt
+</div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section" id="tab-ny"><div class="card"><div class="card-header" id="ny-okt-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+<span id="ny-okt-tittel">Registrer ny kjøreøkt</span>
 </div><div class="card-body"><div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px">
 <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Runder kjørt denne økten <span id="runder-valgt-count" style="color:var(--mid);font-weight:700"></span></label>
 <div id="runder-grid" style="display:flex;flex-direction:column;gap:8px"></div>
@@ -93,8 +93,9 @@ Dårlig
 Middels
 </button><button type="button" class="cond-btn" data-val="3" onclick="setCond(3)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
 Bra
-</button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Merknader</label><textarea id="f-merknader" placeholder="Utstyr, feil, observasjoner…"></textarea></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-primary" id="lagre-btn" onclick="lagreTur()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
-Lagre økt
+</button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Merknader</label><textarea id="f-merknader" placeholder="Utstyr, feil, observasjoner…"></textarea></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-outline btn-sm" id="avbryt-edit-btn" onclick="avbrytEdit()" style="display:none">Avbryt</button>
+<button class="btn btn-primary" id="lagre-btn" onclick="lagreEllerOppdater()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+<span id="lagre-btn-tekst">Lagre økt</span>
 </button></div></div></div></div><div class="section" id="tab-logg"><div class="filter-bar"><button class="filter-btn active" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn" id="filter-uke" onclick="setLoggFilter('uke')">Denne uken</button><button class="filter-btn" id="filter-7d" onclick="setLoggFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button><button class="btn btn-outline btn-sm" style="margin-left:auto" onclick="hentData()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
 Oppdater
 </button><button class="btn btn-outline btn-sm" onclick="eksporterCSV()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -499,6 +500,8 @@ byggRundeGrid();
 }
 // ── FØREFORHOLD ──
 let condVal = 0;
+let editModus = false;   // true når vi redigerer en eksisterende økt
+let editTurId = null;    // ID til turen som redigeres
 function setCond(val) {
 condVal = condVal === val ? 0 : val;
 document.querySelectorAll('.cond-btn').forEach(btn => {
@@ -630,6 +633,126 @@ alert('Kunne ikke lagre: ' + err.message);
 btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Lagre økt';
 }
 // ── SLETT ──
+function lagreEllerOppdater() {
+if (editModus) {
+oppdaterTur();
+} else {
+lagreTur();
+}
+}
+
+function settEditModus(aktiv) {
+editModus = aktiv;
+const tittel = document.getElementById('ny-okt-tittel');
+const btnTekst = document.getElementById('lagre-btn-tekst');
+const avbrytBtn = document.getElementById('avbryt-edit-btn');
+const header = document.getElementById('ny-okt-header');
+if (tittel) tittel.textContent = aktiv ? 'Endre økt' : 'Registrer ny kjøreøkt';
+if (btnTekst) btnTekst.textContent = aktiv ? 'Lagre endringer' : 'Lagre økt';
+if (avbrytBtn) avbrytBtn.style.display = aktiv ? 'inline-flex' : 'none';
+if (header) {
+header.style.background = aktiv
+? 'linear-gradient(135deg, #7D3C98 0%, #A569BD 100%)'
+: 'linear-gradient(135deg, var(--navy) 0%, var(--mid) 100%)';
+}
+}
+
+function avbrytEdit() {
+editModus = false;
+editTurId = null;
+settEditModus(false);
+nullstillRunder();
+['f-forer','f-slutt','f-km','f-timer-slutt','f-merknader'].forEach(id => {
+const el = document.getElementById(id); if(el) el.value='';
+});
+document.getElementById('f-diesel').checked = false;
+document.getElementById('f-adblue').checked = false;
+setCond(0);
+const _now = new Date();
+const _localDato = _now.getFullYear() + '-' +
+String(_now.getMonth()+1).padStart(2,'0') + '-' +
+String(_now.getDate()).padStart(2,'0');
+document.getElementById('f-dato').value = _localDato;
+showTab('logg');
+}
+
+async function åpneEditIFane(id) {
+const t = turer.find(x => String(x.id) === String(id));
+if (!t) return;
+editTurId = id;
+settEditModus(true);
+showTab('ny');
+// Fyll inn felt
+document.getElementById('f-dato').value = t.dato||'';
+document.getElementById('f-forer').value = t.forer||'';
+document.getElementById('f-slutt').value = t.slutt||'';
+document.getElementById('f-km').value = t.km||'';
+document.getElementById('f-timer-slutt').value = t.timerSlutt||'';
+document.getElementById('f-diesel').checked = t.diesel==='Ja';
+document.getElementById('f-adblue').checked = t.adblue==='Ja';
+setCond(t.forkond||0);
+document.getElementById('f-merknader').value = t.merknader||'';
+oppdaterStandHint();
+// Velg runder
+const valgtRunder = (t.loype||'').split(' + ').map(r=>r.trim()).filter(Boolean);
+loyper.forEach((l, i) => {
+const kort = document.getElementById('runde-valg-'+i);
+if (!kort) return;
+const skalVelges = valgtRunder.includes(l.navn);
+if (skalVelges && !kort.classList.contains('aktiv')) {
+toggleRundeValg(i);
+}
+});
+// Scroll to top
+window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function oppdaterTur() {
+if (!scriptUrl) return;
+const dato = document.getElementById('f-dato').value;
+const forer = document.getElementById('f-forer').value.trim();
+const runder = hentRundeData();
+if (!dato || !forer || runder.length === 0) {
+alert('Velg dato, fører og minst én runde.'); return;
+}
+const loype = runder.map(r => r.loype).join(' + ');
+const kjorteAvstikkere = runder.flatMap(r => r.avstikkere);
+const snupunkt = runder.map(r => r.snupunkt).filter(Boolean).join(', ');
+const oppdatert = {
+id: editTurId,
+dato, forer, loype,
+slutt: document.getElementById('f-slutt').value,
+km: parseFloat(document.getElementById('f-km').value)||0,
+timerSlutt: document.getElementById('f-timer-slutt').value||'',
+diesel: document.getElementById('f-diesel').checked ? 'Ja' : '',
+adblue: document.getElementById('f-adblue').checked ? 'Ja' : '',
+forkond: condVal > 0 ? condVal.toString() : '',
+avstikkere: kjorteAvstikkere.join('|'),
+snupunkt: snupunkt,
+maskin: aktivMaskin ? aktivMaskin.navn : '',
+timerStartMaskin: aktivMaskin ? aktivMaskin.timerStart : '',
+kmStartMaskin: aktivMaskin ? aktivMaskin.kmStart : '',
+merknader: document.getElementById('f-merknader').value.trim()
+};
+const btn = document.getElementById('lagre-btn');
+btn.disabled = true;
+showLoading('Lagrer endringer…');
+try {
+setSyncStatus('loading', 'Lagrer…');
+await apiKall({ action: 'slett', id: editTurId });
+await apiKall({ action: 'leggTil', tur: oppdatert });
+setSyncStatus('ok', 'Lagret!');
+hideLoading();
+avbrytEdit();
+await hentData();
+} catch(err) {
+hideLoading();
+setSyncStatus('error', 'Feil');
+alert('Kunne ikke lagre: ' + err.message);
+}
+btn.disabled = false;
+}
+
 async function slettTur(id) {
 if (!confirm('Slett denne økten fra Google Sheets?')) return;
 try {
@@ -782,12 +905,12 @@ return `<tr style="${idx%2===0?'background:var(--white)':'background:var(--snow)
 <td style="text-align:center;font-size:16px">${t.diesel==='Ja'?'✓':''}</td>
 <td style="text-align:center;font-size:16px">${t.adblue==='Ja'?'✓':''}</td>
 <td style="display:flex;gap:4px">
-<button onclick="opneEditModal('${t.id}')" style="background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 7px;cursor:pointer;font-size:12px;color:var(--text2)">✏️</button>
+<button onclick="åpneEditIFane('${t.id}')" style="background:transparent;border:1px solid var(--border);border-radius:5px;padding:3px 7px;cursor:pointer;font-size:12px;color:var(--text2)">✏️</button>
 <button onclick="slettTur('${t.id}')" style="background:#E74C3C;border:none;border-radius:5px;padding:3px 8px;cursor:pointer;display:flex;align-items:center;justify-content:center">
 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
 </button></td>
 </tr>
-${(t.merknader||t.avstikkere||t.snupunkt) ? `<tr><td colspan="10" style="font-size:11px;color:var(--text2);padding-top:2px;padding-bottom:10px">
+${(t.merknader||t.avstikkere||t.snupunkt) ? `<tr style="${idx%2===0?'background:var(--white)':'background:var(--snow)'}"><td colspan="10" style="font-size:11px;color:var(--text2);padding-top:2px;padding-bottom:10px;border-bottom:1px solid var(--border)">
 ${t.snupunkt && t.snupunkt!=='' ? `<span style="color:#D68910;font-weight:600">↩ ${t.snupunkt==='Ja'?'Snudde':t.snupunkt}</span> ` : ''}
 ${t.avstikkere ? t.avstikkere.split('|').map(a=>`<span style="background:#F0FBF4;color:#1E8449;border-radius:4px;padding:1px 6px;margin-right:3px;font-weight:600">✓${a}</span>`).join('') : ''}
 ${t.merknader ? `<span style="font-style:italic">💬 ${t.merknader}</span>` : ''}
@@ -824,7 +947,7 @@ ${t.avstikkere ? t.avstikkere.split('|').map(a=>`<span style="background:#F0FBF4
 ${t.merknader ? `<span style="font-style:italic">💬 ${t.merknader}</span>` : ''}
 </div>` : ''}
 <div class="logg-kort-actions">
-<button class="btn btn-sm btn-outline" onclick="opneEditModal('${t.id}')" style="font-size:11px;padding:3px 8px">✏️ Rediger</button>
+<button class="btn btn-sm btn-outline" onclick="åpneEditIFane('${t.id}')" style="font-size:11px;padding:3px 8px">✏️ Rediger</button>
 <button class="btn btn-danger" onclick="slettTur('${t.id}')" style="font-size:11px;padding:3px 8px">🗑 Slett</button>
 </div>
 </div>`;
