@@ -70,7 +70,7 @@
 <div class="ldot" style="background:#1A2B4A;animation-delay:0.8s"></div>
 </div>
 </div>
-<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 13:26</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 14:07</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -124,11 +124,36 @@ Maskiner
 Sesonginnstillinger
 </div><div class="card-body"><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Sesongstart (DD.MM)</label><input type="text" id="admin-sesong-start" placeholder="01.11" maxlength="5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Sesongslutt (DD.MM)</label><input type="text" id="admin-sesong-slutt" placeholder="30.04" maxlength="5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
 Google Sheets tilkobling
-</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="edit-modal"><div class="modal"><h3>Rediger tur</h3><input type="hidden" id="edit-id"><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Dato</label><input type="date" id="edit-dato"></div><div class="field"><label>Fører</label><select id="edit-forer"><option value="">Velg…</option></select></div></div><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Runde(r)</label>
-<div id="edit-runder-grid" style="display:flex;flex-direction:column;gap:6px;margin-top:4px"></div>
-</div></div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Slutt (kl.)</label><input type="time" id="edit-slutt"></div><div class="field"><label>Km-stand</label><input type="number" id="edit-km" step="0.1" min="0"></div></div><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Timerteller ved slutt</label><input type="number" id="edit-timer" step="0.1" min="0"></div></div><div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" id="edit-diesel" style="width:18px;height:18px;accent-color:var(--mid)"> Fylte diesel
-</label><label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" id="edit-adblue" style="width:18px;height:18px;accent-color:var(--mid)"> Fylte AdBlue
-</label></div><div class="field" style="margin-bottom:10px"><label>Føreforhold</label><div class="cond-bar" id="edit-cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setEditCond(1)"><div class="cond-dots"><div class="dot"></div></div>Dårlig</button><button type="button" class="cond-btn" data-val="2" onclick="setEditCond(2)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div></div>Middels</button><button type="button" class="cond-btn" data-val="3" onclick="setEditCond(3)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>Bra</button></div></div><div class="field"><label>Merknader</label><textarea id="edit-merknader" style="min-height:60px;width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></textarea></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreEditTur()">Lagre endringer</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
+</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="edit-modal"><div class="modal" style="max-width:520px;max-height:90vh;overflow-y:auto"><h3>Rediger økt</h3><input type="hidden" id="edit-id">
+<div class="form-grid two" style="margin-bottom:12px">
+<div class="field"><label>Dato</label><input type="date" id="edit-dato"></div>
+<div class="field"><label>Fører</label><select id="edit-forer"><option value="">Velg…</option></select></div>
+</div>
+<div style="margin-bottom:12px">
+<label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Runde(r)</label>
+<div id="edit-runder-grid" style="display:flex;flex-direction:column;gap:6px"></div>
+</div>
+<div class="form-grid two" style="margin-bottom:10px">
+<div class="field"><label>Slutt (kl.)</label><input type="time" id="edit-slutt"></div>
+<div class="field"><label>Km-stand</label><input type="number" id="edit-km" step="0.1" min="0"></div>
+</div>
+<div class="form-grid full" style="margin-bottom:10px">
+<div class="field"><label>Timerteller ved slutt</label><input type="number" id="edit-timer" step="0.1" min="0"></div>
+</div>
+<div style="display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap">
+<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" id="edit-diesel" style="width:18px;height:18px;accent-color:var(--mid)"> Fylte diesel</label>
+<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px"><input type="checkbox" id="edit-adblue" style="width:18px;height:18px;accent-color:var(--mid)"> Fylte AdBlue</label>
+</div>
+<div class="field" style="margin-bottom:10px"><label>Føreforhold</label>
+<div class="cond-bar" id="edit-cond-bar">
+<button type="button" class="cond-btn" data-val="1" onclick="setEditCond(1)"><div class="cond-dots"><div class="dot"></div></div>Dårlig</button>
+<button type="button" class="cond-btn" data-val="2" onclick="setEditCond(2)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div></div>Middels</button>
+<button type="button" class="cond-btn" data-val="3" onclick="setEditCond(3)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>Bra</button>
+</div></div>
+<div class="field"><label>Merknader</label><textarea id="edit-merknader" style="min-height:60px;width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></textarea></div>
+<div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreEditTur()">Lagre endringer</button></div>
+</div></div>
+<div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
 Avstikkere / tilbringere
 <button type="button" onclick="leggTilAvstikkerInput()" style="float:right;font-size:11px;color:var(--mid);background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-avstikkere"></div><div style="font-size:11px;font-weight:600;color:#B7770D;text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span>Faste snupunkter</span><button type="button" onclick="leggTilSnupunktInput()" style="font-size:11px;color:#E67E22;background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-snupunkter"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px">Estimat (brukes ved kombinerte turer)</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
@@ -1982,31 +2007,25 @@ if (redigerForerIdx >= 0) forere[redigerForerIdx] = navn;
 else forere.push(navn);
 await lagreForere(); oppdaterForerSelect(); lukkForerModal(); renderAdmin();
 }
-function toggleEditRunde(cb) {
-const lbl = cb.closest('label');
-if (lbl) {
-lbl.style.borderColor = cb.checked ? 'var(--accent)' : 'var(--border)';
-lbl.style.background = cb.checked ? 'var(--ice)' : 'var(--snow)';
-const span = lbl.querySelector('span');
-if (span) { span.style.fontWeight = cb.checked ? '600' : '400'; span.style.color = cb.checked ? 'var(--navy)' : 'var(--text2)'; }
-}
-}
 function opneEditModal(id) {
 const t = turer.find(x=>x.id==id);
 if (!t) return;
 document.getElementById('edit-id').value = t.id;
 document.getElementById('edit-dato').value = t.dato||'';
 document.getElementById('edit-forer').value = t.forer||'';
-// Build runde grid in edit modal
+// Build runde grid - same style as Ny økt
 const editGrid = document.getElementById('edit-runder-grid');
 if (editGrid) {
 const valgtRunder = (t.loype||'').split(' + ').map(r=>r.trim()).filter(Boolean);
 editGrid.innerHTML = loyper.map((l,i) => {
 const erValgt = valgtRunder.includes(l.navn);
-return '<label style="display:flex;align-items:center;gap:10px;padding:8px 12px;border:1.5px solid '+(erValgt?'var(--accent)':'var(--border)')+';border-radius:8px;background:'+(erValgt?'var(--ice)':'var(--snow)')+';cursor:pointer;transition:all 0.15s">' +
-'<input type="checkbox" data-loype="'+l.navn+'" '+(erValgt?'checked':'')+' style="width:16px;height:16px;accent-color:var(--mid);cursor:pointer" onchange="toggleEditRunde(this)">' +
-'<span style="font-size:13px;font-weight:' + (erValgt?'600':'400') + ';color:' + (erValgt?'var(--navy)':'var(--text2)') + '">' + l.navn + '</span>' +
-'</label>';
+return '<div class="runde-valg-kort' + (erValgt?' aktiv':'') + '" id="edit-runde-'+i+'" onclick="toggleEditRunde('+i+')" style="margin-bottom:0">' +
+'<div class="runde-valg-header">' +
+'<div class="runde-valg-nr" id="edit-runde-nr-'+i+'" style="' + (erValgt?'background:var(--mid);color:white':'') + '">' + (erValgt?'✓':'–') + '</div>' +
+'<div class="runde-valg-navn" style="' + (erValgt?'color:var(--navy);font-weight:600':'') + '">' + l.navn + '</div>' +
+'<div class="runde-valg-check" style="' + (erValgt?'background:var(--mid);border-color:var(--mid)':'') + '">' +
+'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:' + (erValgt?'block':'none') + '"><polyline points="20 6 9 17 4 12"/></svg>' +
+'</div></div></div>';
 }).join('');
 }
 document.getElementById('edit-slutt').value = t.slutt||'';
@@ -2018,6 +2037,20 @@ document.getElementById('edit-merknader').value = t.merknader||'';
 editCondVal = t.forkond||0;
 document.querySelectorAll('#edit-cond-bar .cond-btn').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.val)===editCondVal));
 document.getElementById('edit-modal').classList.add('open');
+}
+
+function toggleEditRunde(i) {
+const kort = document.getElementById('edit-runde-'+i);
+if (!kort) return;
+const aktiv = kort.classList.toggle('aktiv');
+const nr = document.getElementById('edit-runde-nr-'+i);
+const check = kort.querySelector('.runde-valg-check svg');
+const navn = kort.querySelector('.runde-valg-navn');
+if (nr) { nr.textContent = aktiv?'✓':'–'; nr.style.background=aktiv?'var(--mid)':''; nr.style.color=aktiv?'white':''; }
+if (check) check.style.display = aktiv?'block':'none';
+const checkEl = kort.querySelector('.runde-valg-check');
+if (checkEl) { checkEl.style.background=aktiv?'var(--mid)':''; checkEl.style.borderColor=aktiv?'var(--mid)':''; }
+if (navn) { navn.style.color=aktiv?'var(--navy)':''; navn.style.fontWeight=aktiv?'600':''; }
 }
 function lukkModal() { document.getElementById('edit-modal').classList.remove('open'); }
 function setEditCond(val) {
@@ -2032,7 +2065,7 @@ const oppdatert = {
 ...t,
 dato: document.getElementById('edit-dato').value,
 forer: document.getElementById('edit-forer').value,
-loype: Array.from(document.querySelectorAll('#edit-runder-grid input[type=checkbox]:checked')).map(cb=>cb.dataset.loype).join(' + ') || t.loype,
+loype: Array.from(document.querySelectorAll('#edit-runder-grid .runde-valg-kort.aktiv')).map(el=>loyper[parseInt(el.id.replace('edit-runde-',''))].navn).join(' + ') || t.loype,
 slutt: document.getElementById('edit-slutt').value,
 km: parseFloat(document.getElementById('edit-km').value)||0,
 timerSlutt: document.getElementById('edit-timer').value||'',
