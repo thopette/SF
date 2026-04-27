@@ -70,7 +70,7 @@
 <div class="ldot" style="background:#1A2B4A;animation-delay:0.8s"></div>
 </div>
 </div>
-<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 09:48</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 10:00</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny tur
@@ -861,22 +861,50 @@ return `<tr>
 </tr>`;
 const loypeMap = {};
 const diffMapLoype = beregnDiff(turer);
+
+function parseTemp(vaer) {
+if (!vaer) return null;
+const m = vaer.match(/-?\d+/);
+return m ? parseInt(m[0]) : null;
+}
+
 filtrertStats.forEach(t => {
 if (!t.loype) return;
-if (!loypeMap[t.loype]) loypeMap[t.loype]={turer:0,snudde:0,km:0,timer:0,snupunkter:{},avstikkere:{},forkond:[0,0,0],sisteDato:'',sisteForer:''};
-loypeMap[t.loype].turer++;
+if (!loypeMap[t.loype]) loypeMap[t.loype]={
+turer:0,km:0,timer:0,
+snupunkter:{},avstikkere:{},
+forkond:[0,0,0],
+forere:{},
+vaer:{},temps:[],
+sisteDato:'',sisteForer:''
+};
+const L = loypeMap[t.loype];
+L.turer++;
 if (t.snupunkt && t.snupunkt!=='') {
 const sp = t.snupunkt==='Ja'?'Snudde':t.snupunkt;
-loypeMap[t.loype].snupunkter[sp]=(loypeMap[t.loype].snupunkter[sp]||0)+1;
+L.snupunkter[sp]=(L.snupunkter[sp]||0)+1;
 }
 if (t.avstikkere) t.avstikkere.split('|').filter(Boolean).forEach(a=>{
-loypeMap[t.loype].avstikkere[a]=(loypeMap[t.loype].avstikkere[a]||0)+1;
+L.avstikkere[a]=(L.avstikkere[a]||0)+1;
 });
 const fk = (parseInt(t.forkond)||1)-1;
-if (fk>=0&&fk<3) loypeMap[t.loype].forkond[fk]++;
-loypeMap[t.loype].km += diffMapLoype[t.id]?.kmKjort||0;
-loypeMap[t.loype].timer += parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
-if (!loypeMap[t.loype].sisteDato||t.dato>loypeMap[t.loype].sisteDato){loypeMap[t.loype].sisteDato=t.dato;loypeMap[t.loype].sisteForer=t.forer;}
+if (fk>=0&&fk<3) L.forkond[fk]++;
+L.km += diffMapLoype[t.id]?.kmKjort||0;
+L.timer += parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+// Sjåfør
+const fn = t.forer||'–';
+if (!L.forere[fn]) L.forere[fn]={turer:0,km:0,timer:0};
+L.forere[fn].turer++;
+L.forere[fn].km += diffMapLoype[t.id]?.kmKjort||0;
+L.forere[fn].timer += parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+// Vær
+if (t.vaer) {
+const ikon = t.vaer.split(' ')[0];
+L.vaer[ikon]=(L.vaer[ikon]||0)+1;
+const temp = parseTemp(t.vaer);
+if (temp!==null) L.temps.push(temp);
+}
+if (!L.sisteDato||t.dato>L.sisteDato){L.sisteDato=t.dato;L.sisteForer=t.forer;}
 });
 const lKeys = Object.keys(loypeMap).sort((a,b)=>loypeMap[b].turer-loypeMap[a].turer);
 document.getElementById('stats-loype-empty').style.display = lKeys.length ? 'none' : 'block';
@@ -903,6 +931,11 @@ ${d.sisteDato?`<div style="font-size:10px;color:var(--text2);margin-top:6px">Sis
 
 window._loypeMapCache = loypeMap;
 
+function lukkLoypePanel() {
+document.getElementById('stats-loype-panel').style.display='none';
+document.querySelectorAll('.loype-stat-kort').forEach(k=>k.classList.remove('aktiv'));
+}
+
 function visLoypePanel(navn, el) {
 const allKort = grid.querySelectorAll('.loype-stat-kort');
 const erAktiv = el.classList.contains('aktiv');
@@ -912,16 +945,56 @@ el.classList.add('aktiv');
 const d = window._loypeMapCache[navn];
 if (!d) return;
 const tot = d.turer||1;
-// Avstikkere
+
+// ── Nøkkeltall ──
+const snittKm = d.turer>0 ? (d.km/d.turer).toFixed(1) : '–';
+const snittKmT = d.timer>0 ? (d.km/d.timer).toFixed(1) : '–';
+const nokkelHtml = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:16px">
+${[
+['Turer', d.turer],
+['Km totalt', d.km.toFixed(1)],
+['Snitt km/tur', snittKm],
+['Km/t', snittKmT],
+['Timer', d.timer.toFixed(1)]
+].map(([lbl,val])=>`<div style="text-align:center;padding:10px 6px;background:var(--white);border:1px solid var(--border);border-radius:8px">
+<div style="font-size:18px;font-weight:700;color:var(--navy);font-family:var(--mono)">${val}</div>
+<div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">${lbl}</div>
+</div>`).join('')}
+</div>`;
+
+// ── Sjåfører ──
+const forereArr = Object.entries(d.forere).sort((a,b)=>b[1].turer-a[1].turer);
+const maxForerTurer = forereArr.length ? forereArr[0][1].turer : 1;
+const forerHtml = forereArr.map(([navn,s])=>{
+const pct=Math.round(s.turer/tot*100);
+const fornavn = navn.split(' ')[0];
+return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid var(--border)">
+<div style="width:28px;height:28px;border-radius:50%;background:var(--ice);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--mid);flex-shrink:0">${fornavn.charAt(0)}</div>
+<div style="flex:1">
+<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px">${fornavn}</div>
+<div style="height:4px;background:var(--border);border-radius:2px"><div style="width:${pct}%;height:4px;background:var(--mid);border-radius:2px"></div></div>
+</div>
+<div style="text-align:right;flex-shrink:0">
+<div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--navy)">${s.turer}×</div>
+<div style="font-size:10px;color:var(--text2)">${s.km.toFixed(0)} km</div>
+</div>
+</div>`;
+}).join('');
+
+// ── Avstikkere ──
 const avst = Object.entries(d.avstikkere).sort((a,b)=>b[1]-a[1]);
 const avHtml = avst.length ? avst.map(([navn,ant])=>{
 const pct=Math.round(ant/tot*100);
 return `<div style="margin-bottom:8px">
-<div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:500;color:var(--text)">${navn}</span><span style="font-family:var(--mono);font-size:12px;color:var(--mid);font-weight:600">${ant}× <span style="color:var(--text2);font-weight:400">(${pct}%)</span></span></div>
-<div style="display:flex;align-items:center;gap:8px"><div class="avst-bar"><div class="avst-bar-inner" style="width:${pct}%"></div></div></div>
+<div style="display:flex;justify-content:space-between;margin-bottom:3px">
+<span style="font-size:13px;font-weight:500;color:var(--text)">${navn}</span>
+<span style="font-family:var(--mono);font-size:12px;color:var(--mid);font-weight:600">${ant}× <span style="color:var(--text2);font-weight:400">(${pct}%)</span></span>
+</div>
+<div class="avst-bar"><div class="avst-bar-inner" style="width:${pct}%"></div></div>
 </div>`;
 }).join('') : '<p style="font-size:12px;color:var(--text2)">Ingen avstikkere registrert</p>';
-// Snupunkter
+
+// ── Snupunkter ──
 const snup = Object.entries(d.snupunkter).sort((a,b)=>b[1]-a[1]);
 const snHtml = snup.length ? snup.map(([navn,ant])=>{
 const pct=Math.round(ant/tot*100);
@@ -930,24 +1003,65 @@ return `<div style="display:flex;justify-content:space-between;align-items:cente
 <span style="font-family:var(--mono);font-size:12px;color:var(--text2)">${ant}× (${pct}%)</span>
 </div>`;
 }).join('') : '<p style="font-size:12px;color:var(--text2)">Ingen snupunkter registrert</p>';
-// Føreforhold
-const fkTot = d.forkond[0]+d.forkond[1]+d.forkond[2]||1;
-const fkHtml = `<div style="display:flex;gap:8px;align-items:center">
-<div style="flex:1;text-align:center;padding:8px;background:#FEF2F2;border-radius:8px;border:1px solid #FECACA"><div style="font-size:16px;font-weight:700;color:#C0392B;font-family:var(--mono)">${d.forkond[0]}</div><div style="font-size:10px;color:#C0392B">Dårlig</div></div>
-<div style="flex:1;text-align:center;padding:8px;background:#FFFBF0;border-radius:8px;border:1px solid #F5CBA7"><div style="font-size:16px;font-weight:700;color:#D68910;font-family:var(--mono)">${d.forkond[1]}</div><div style="font-size:10px;color:#D68910">Middels</div></div>
-<div style="flex:1;text-align:center;padding:8px;background:#F0FBF4;border-radius:8px;border:1px solid #A9DFBF"><div style="font-size:16px;font-weight:700;color:#1E8449;font-family:var(--mono)">${d.forkond[2]}</div><div style="font-size:10px;color:#1E8449">Bra</div></div>
+
+// ── Føreforhold ──
+const fkHtml = `<div style="display:flex;gap:8px">
+<div style="flex:1;text-align:center;padding:8px;background:#FEF2F2;border-radius:8px;border:1px solid #FECACA">
+<div style="font-size:20px;font-weight:700;color:#C0392B;font-family:var(--mono)">${d.forkond[0]}</div>
+<div style="font-size:10px;color:#C0392B;margin-top:2px">● Dårlig</div></div>
+<div style="flex:1;text-align:center;padding:8px;background:#FFFBF0;border-radius:8px;border:1px solid #F5CBA7">
+<div style="font-size:20px;font-weight:700;color:#D68910;font-family:var(--mono)">${d.forkond[1]}</div>
+<div style="font-size:10px;color:#D68910;margin-top:2px">●● Middels</div></div>
+<div style="flex:1;text-align:center;padding:8px;background:#F0FBF4;border-radius:8px;border:1px solid #A9DFBF">
+<div style="font-size:20px;font-weight:700;color:#1E8449;font-family:var(--mono)">${d.forkond[2]}</div>
+<div style="font-size:10px;color:#1E8449;margin-top:2px">●●● Bra</div></div>
 </div>`;
+
+// ── Vær ──
+let vaerHtml = '';
+if (Object.keys(d.vaer).length > 0) {
+const vaerArr = Object.entries(d.vaer).sort((a,b)=>b[1]-a[1]);
+const ikonHtml = vaerArr.map(([ikon,ant])=>
+`<div style="text-align:center;padding:8px 12px;background:var(--white);border:1px solid var(--border);border-radius:8px">
+<div style="font-size:22px">${ikon}</div>
+<div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--navy);margin-top:4px">${ant}×</div>
+</div>`).join('');
+let tempStr = '';
+if (d.temps.length > 0) {
+const snitt = Math.round(d.temps.reduce((s,t)=>s+t,0)/d.temps.length);
+const kald = Math.min(...d.temps);
+const varm = Math.max(...d.temps);
+tempStr = `<div style="display:flex;gap:8px;margin-top:8px">
+<div style="flex:1;text-align:center;padding:7px;background:var(--ice);border:1px solid var(--border);border-radius:7px">
+<div style="font-size:14px;font-weight:700;color:var(--navy);font-family:var(--mono)">${snitt}°C</div>
+<div style="font-size:10px;color:var(--text2)">Snitt</div></div>
+<div style="flex:1;text-align:center;padding:7px;background:#EBF5FB;border:1px solid #AED6F1;border-radius:7px">
+<div style="font-size:14px;font-weight:700;color:#1A5276;font-family:var(--mono)">${kald}°C</div>
+<div style="font-size:10px;color:#1A5276">Kaldest</div></div>
+<div style="flex:1;text-align:center;padding:7px;background:#FEF9E7;border:1px solid #F9E79F;border-radius:7px">
+<div style="font-size:14px;font-weight:700;color:#7D6608;font-family:var(--mono)">${varm}°C</div>
+<div style="font-size:10px;color:#7D6608">Varmest</div></div>
+</div>`;
+}
+vaerHtml = `<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 8px">🌡️ Vær</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">${ikonHtml}</div>${tempStr}`;
+}
+
 panel.style.display='block';
 panel.innerHTML = `
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
 <div style="font-size:15px;font-weight:600;color:var(--navy)">${navn}</div>
-<button onclick="document.getElementById('stats-loype-panel').style.display='none';document.querySelectorAll('.loype-stat-kort').forEach(k=>k.classList.remove('aktiv'))" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:18px;line-height:1">×</button>
+<button onclick="lukkLoypePanel()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;line-height:1;padding:0 4px">×</button>
 </div>
-<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Avstikkere</div>
+${nokkelHtml}
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">👤 Sjåfører</div>
+${forerHtml}
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 8px">🔀 Avstikkere</div>
 ${avHtml}
-${snup.length?`<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Snupunkter</div>${snHtml}`:''}
-<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Føreforhold</div>
-${fkHtml}`;
+${snup.length ? `<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 8px">↩ Snupunkter</div>${snHtml}` : ''}
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:14px 0 8px">●●● Føreforhold</div>
+${fkHtml}
+${vaerHtml}`;
 panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 // Avstikker statistikk
