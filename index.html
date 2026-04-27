@@ -70,7 +70,7 @@
 <div class="ldot" style="background:#1A2B4A;animation-delay:0.8s"></div>
 </div>
 </div>
-<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 10:40</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 11:20</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny tur
@@ -1247,6 +1247,15 @@ function oppdaterLoypeSelect() {
 byggRundeGrid();
 }
 // ── RUNDE VALG SYSTEM ──
+function lagSnupunktKnapper(snupunkter, idx) {
+if (!snupunkter||!snupunkter.length) return '<p style="font-size:12px;color:#B7770D">Ingen snupunkter definert.</p>';
+return snupunkter.map(function(s) {
+return '<button type="button" class="snupunkt-btn" onclick="event.stopPropagation();velgRVSnupunkt(' + idx + ',\'' + s.replace(/\'/g, "\\'") + '\',this)">' + s + '</button>';
+}).join('');
+}
+function lagSettAktivKnapp(idx) {
+return '<button class="btn btn-sm btn-outline" onclick="settAktivMaskin(' + idx + ')" style="font-size:11px;padding:5px 10px">Sett aktiv</button>';
+}
 function byggRundeGrid() {
 const grid = document.getElementById('runder-grid');
 if (!grid) return;
@@ -1254,40 +1263,39 @@ if (!loyper.length) {
 grid.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen runder definert. Legg til i Admin.</p>';
 return;
 }
-grid.innerHTML = loyper.map((l, i) => `
-<div class="runde-valg-kort" id="runde-valg-${i}" onclick="toggleRundeValg(${i})">
-<div class="runde-valg-header">
-<div class="runde-valg-nr" id="runde-nr-${i}">–</div>
-<div class="runde-valg-navn">${l.navn}</div>
-<div class="runde-valg-check" id="runde-check-${i}">
-<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
-</div>
-</div>
-<div class="runde-valg-body" id="runde-body-${i}">
-${l.avstikkere.length ? `
-<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 6px">Avstikkere</div>
-${l.avstikkere.map((a,ai) => `
-<label class="avstikker-item" style="margin-bottom:6px" onclick="event.stopPropagation()">
-<input type="checkbox" id="rv${i}-avst-${ai}" onchange="toggleAvstikkerStyle(this)">
-<span class="avstikker-label">${a}</span>
-</label>`).join('')}` : ''}
-<div style="margin-top:8px" onclick="event.stopPropagation()">
-<label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 13px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0" onclick="toggleRVSnupunkt(${i}, event)">
-<input type="checkbox" id="rv${i}-snupunkt" style="width:17px;height:17px;accent-color:#E67E22;cursor:pointer;flex-shrink:0" onchange="oppdaterRVSnupunktUI(${i})" onclick="event.stopPropagation()">
-<div style="flex:1;font-size:13px;font-weight:600;color:#D68910">Jeg snudde underveis</div>
-<svg id="rv${i}-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D68910" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
-</label>
-<div id="rv${i}-snupunkt-panel" style="display:none;margin-top:5px;padding:10px 12px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0">
-${(l.snupunkter||[]).length
-? (l.snupunkter||[]).map(s => `<button type="button" class="snupunkt-btn" onclick="event.stopPropagation();velgRVSnupunkt(${i},'${s}',this)">${s}</button>`).join('')
-: '<p style="font-size:12px;color:#B7770D">Ingen snupunkter definert.</p>'}
-</div>
-</div>
-</div>
-</div>`).join('');
+grid.innerHTML = loyper.map(function(l, i) {
+var avst = '';
+if (l.avstikkere.length) {
+avst = '<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 6px">Avstikkere</div>';
+avst += l.avstikkere.map(function(a, ai) {
+return '<label class="avstikker-item" style="margin-bottom:6px" onclick="event.stopPropagation()">' +
+'<input type="checkbox" id="rv' + i + '-avst-' + ai + '" onchange="toggleAvstikkerStyle(this)">' +
+'<span class="avstikker-label">' + a + '</span></label>';
+}).join('');
+}
+var snupunktPanel = '<div style="margin-top:8px" onclick="event.stopPropagation()">' +
+'<label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 13px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0" onclick="toggleRVSnupunkt(' + i + ', event)">' +
+'<input type="checkbox" id="rv' + i + '-snupunkt" style="width:17px;height:17px;accent-color:#E67E22;cursor:pointer;flex-shrink:0" onchange="oppdaterRVSnupunktUI(' + i + ')" onclick="event.stopPropagation()">' +
+'<div style="flex:1;font-size:13px;font-weight:600;color:#D68910">Jeg snudde underveis</div>' +
+'<svg id="rv' + i + '-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D68910" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>' +
+'</label>' +
+'<div id="rv' + i + '-snupunkt-panel" style="display:none;margin-top:5px;padding:10px 12px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0">' +
+lagSnupunktKnapper(l.snupunkter||[], i) +
+'</div></div>';
+return '<div class="runde-valg-kort" id="runde-valg-' + i + '" onclick="toggleRundeValg(' + i + ')">' +
+'<div class="runde-valg-header">' +
+'<div class="runde-valg-nr" id="runde-nr-' + i + '">–</div>' +
+'<div class="runde-valg-navn">' + l.navn + '</div>' +
+'<div class="runde-valg-check" id="runde-check-' + i + '">' +
+'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>' +
+'</div></div>' +
+'<div class="runde-valg-body" id="runde-body-' + i + '">' +
+avst +
+snupunktPanel +
+'</div></div>';
+}).join('');
 oppdaterRundeNummer();
 }
-
 function toggleRundeValg(i) {
 const kort = document.getElementById('runde-valg-'+i);
 const aktiv = kort.classList.toggle('aktiv');
@@ -1469,8 +1477,27 @@ function renderAdminLoyper() {
 const el = document.getElementById('admin-loype-liste');
 if (!el) return;
 if (!loyper.length) { el.innerHTML='<p style="color:var(--text2);font-size:13px;padding:4px 0">Ingen løyper lagt inn ennå. Trykk «+ Ny runde» for å starte.</p>'; return; }
-el.innerHTML = loyper.map((l,i) => `
-<div class="loype-admin-item"><div class="loype-admin-header"><div class="loype-admin-name">${l.navn}</div><span class="badge-km">${l.avstikkere.length} avst.</span><span class="badge-km" style="background:#FEF9E7;color:#7D6608;border-color:#F9E79F">≈${l.kmEstimat||1}km / ${l.timerEstimat||0.5}t</span><button class="btn btn-sm btn-outline" onclick="redigerLoype(${i})" style="padding:5px 10px;font-size:12px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettLoype(${i})">Slett</button></div><div class="loype-admin-body"><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Avstikkere</div><div style="margin-bottom:8px">${l.avstikkere.length ? l.avstikkere.map(a=>`<span class="badge-km" style="margin-right:5px;margin-bottom:4px">${a}</span>`).join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div><div style="font-size:11px;color:#B7770D;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Snupunkter</div><div>${(l.snupunkter||[]).length ? (l.snupunkter||[]).map(s=>`<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:#FEF5E7;color:#784212;font-weight:600;border:1px solid #F5CBA7;margin-right:5px;margin-bottom:4px">${s}</span>`).join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div></div></div>`).join('');
+el.innerHTML = loyper.map((l,i) => {
+// Beregn baseline for denne runden
+const reneKjøringer = turer.filter(t => t.loype === l.navn);
+const diffMapAdmin = beregnDiff(turer);
+const kmVerdier = reneKjøringer.map(t => diffMapAdmin[t.id]?.kmKjort||0).filter(v=>v>0);
+const timerVerdier = reneKjøringer.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0).filter(v=>v>0);
+const baselineKm = kmVerdier.length>=2 ? (kmVerdier.reduce((s,v)=>s+v,0)/kmVerdier.length).toFixed(1) : null;
+const baselineTimer = timerVerdier.length>=2 ? (timerVerdier.reduce((s,v)=>s+v,0)/timerVerdier.length).toFixed(2) : null;
+const antallRene = Math.min(kmVerdier.length, timerVerdier.length);
+const brukerHistorikk = antallRene >= 2;
+const baselineHtml = brukerHistorikk
+? `<div style="font-size:11px;color:#1E8449;background:#F0FBF4;border:1px solid #A9DFBF;border-radius:6px;padding:5px 10px;margin-top:8px">
+✓ Historikk aktiv (${antallRene} rene kjøringer): <strong>${baselineKm} km / ${baselineTimer} t</strong> – brukes i fordeling
+</div>`
+: `<div style="font-size:11px;color:#D68910;background:#FFFBF0;border:1px solid #F5CBA7;border-radius:6px;padding:5px 10px;margin-top:8px">
+⏳ Ikke nok historikk (${antallRene} av 2 nødvendige) – bruker admin-estimat
+</div>`;
+return `
+<div class="loype-admin-item"><div class="loype-admin-header"><div class="loype-admin-name">${l.navn}</div><span class="badge-km">${l.avstikkere.length} avst.</span><span class="badge-km" style="background:#FEF9E7;color:#7D6608;border-color:#F9E79F">≈${l.kmEstimat||1}km / ${l.timerEstimat||0.5}t</span><button class="btn btn-sm btn-outline" onclick="redigerLoype(${i})" style="padding:5px 10px;font-size:12px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettLoype(${i})">Slett</button></div><div class="loype-admin-body"><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Avstikkere</div><div style="margin-bottom:8px">${l.avstikkere.length ? l.avstikkere.map(a=>`<span class="badge-km" style="margin-right:5px;margin-bottom:4px">${a}</span>`).join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div><div style="font-size:11px;color:#B7770D;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Snupunkter</div><div>${(l.snupunkter||[]).length ? (l.snupunkter||[]).map(s=>'<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:#FEF5E7;color:#784212;font-weight:600;border:1px solid #F5CBA7;margin-right:5px;margin-bottom:4px">'+s+'</span>').join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div></div>${baselineHtml}
+</div>`;
+}).join('');
 }
 </script>
 <script>
@@ -1827,14 +1854,11 @@ if (!maskiner.length) {
 el.innerHTML='<p style="color:var(--text2);font-size:13px">Ingen maskiner registrert ennå.</p>';
 return;
 }
-el.innerHTML = maskiner.map((m,i) => `
-<div class="forer-list-item"><div style="flex:1"><div style="font-weight:600;font-size:14px;color:var(--text)">${m.navn}
-${m.aktiv ? '<span style="margin-left:6px;background:var(--ice);color:var(--mid);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;border:1px solid var(--border)">Aktiv</span>' : ''}
-</div><div style="font-size:12px;color:var(--text2);margin-top:2px">
-Km-start: <strong>${m.kmStart||0}</strong> &nbsp;·&nbsp; Timer-start: <strong>${m.timerStart||0}</strong>
-</div></div>
-${!m.aktiv ? `<button class="btn btn-sm btn-outline" onclick="settAktivMaskin(${i})" style="font-size:11px;padding:5px 10px">Sett aktiv</button>` : ''}
-<button class="btn btn-sm btn-outline" onclick="redigerMaskin(${i})" style="font-size:12px;padding:5px 10px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettMaskin(${i})">Slett</button></div>`).join('');
+el.innerHTML = maskiner.map((m,i) => {
+const aktivBadge = m.aktiv ? '<span style="margin-left:6px;background:var(--ice);color:var(--mid);font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;border:1px solid var(--border)">Aktiv</span>' : '';
+const settAktivBtn = !m.aktiv ? lagSettAktivKnapp(i) : '';
+return '<div class="forer-list-item"><div style="flex:1"><div style="font-weight:600;font-size:14px;color:var(--text)">' + m.navn + aktivBadge + '</div><div style="font-size:12px;color:var(--text2);margin-top:2px">Km-start: <strong>' + (m.kmStart||0) + '</strong> &nbsp;·&nbsp; Timer-start: <strong>' + (m.timerStart||0) + '</strong></div></div>' + settAktivBtn + '<button class="btn btn-sm btn-outline" onclick="redigerMaskin(' + i + ')" style="font-size:12px;padding:5px 10px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettMaskin(' + i + ')">Slett</button></div>';
+}).join('');
 }
 // ── VÆR ──
 const SORLI_LAT = 60.0598;
