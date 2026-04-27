@@ -1096,12 +1096,14 @@ if (countEl) countEl.textContent = count > 0 ? `(${count} valgt)` : '';
 
 function toggleRVSnupunkt(i, e) {
 e.stopPropagation();
+// Let the label naturally toggle the checkbox, just update UI after
+setTimeout(() => {
 const cb = document.getElementById('rv'+i+'-snupunkt');
-cb.checked = !cb.checked;
 const panel = document.getElementById('rv'+i+'-snupunkt-panel');
 const chev = document.getElementById('rv'+i+'-chevron');
 panel.style.display = cb.checked ? 'block' : 'none';
 chev.style.transform = cb.checked ? 'rotate(180deg)' : '';
+}, 0);
 }
 
 function velgRVSnupunkt(i, navn, btn) {
