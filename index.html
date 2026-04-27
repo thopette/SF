@@ -70,7 +70,7 @@
 <div class="ldot" style="background:#1A2B4A;animation-delay:0.8s"></div>
 </div>
 </div>
-<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 10:32</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+<script>const scriptUrl="https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";</script><div class="topbar"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="rgba(255,255,255,0.15)"/><path d="M6 20 Q14 8 22 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="#4A9FD4"/><rect x="7" y="21" width="14" height="2" rx="1" fill="rgba(255,255,255,0.4)"/></svg><div class="topbar-titles"><h1>SF Maskinlogg</h1><div class="topbar-sub">Langrennsløype · v27.04 10:40</div></div><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Ikke tilkoblet</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny tur
@@ -1010,17 +1010,17 @@ const tot = d.turer||1;
 
 // ── Nøkkeltall ──
 const snittKm = d.turer>0 ? (d.km/d.turer).toFixed(1) : '–';
-const estimatNotat = d.harEstimat ? '<div style="font-size:11px;color:#D68910;background:#FFFBF0;border:1px solid #F5CBA7;border-radius:6px;padding:5px 10px;margin-bottom:12px">≈ Noen turer er estimert pga. kombinerte økter</div>' : '';
+const estimatNotat = ''; // Estimat vises med ≈ i tallboksene
 const snittKmT = d.timer>0 ? (d.km/d.timer).toFixed(1) : '–';
 const nokkelHtml = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:16px">
 ${[
-['Turer', d.turer],
-['Km totalt', d.km.toFixed(1)],
-['Snitt km/tur', snittKm],
-['Km/t', snittKmT],
-['Timer', d.timer.toFixed(1)]
-].map(([lbl,val])=>`<div style="text-align:center;padding:10px 6px;background:var(--white);border:1px solid var(--border);border-radius:8px">
-<div style="font-size:18px;font-weight:700;color:var(--navy);font-family:var(--mono)">${val}</div>
+['Turer', d.turer, false],
+['Km totalt', d.km.toFixed(1), d.harEstimat],
+['Snitt km/tur', snittKm, d.harEstimat],
+['Km/t', snittKmT, d.harEstimat],
+['Timer', d.timer.toFixed(1), d.harEstimat]
+].map(([lbl,val,est])=>`<div style="text-align:center;padding:10px 6px;background:var(--white);border:1px solid var(--border);border-radius:8px${est?';border-color:#F5CBA7':''}">
+<div style="font-size:18px;font-weight:700;color:var(--navy);font-family:var(--mono)">${est?'≈':''}${val}</div>
 <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-top:3px">${lbl}</div>
 </div>`).join('')}
 </div>`;
@@ -1044,8 +1044,12 @@ return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;borde
 </div>`;
 }).join('');
 
-// ── Avstikkere ──
-const avst = Object.entries(d.avstikkere).sort((a,b)=>b[1]-a[1]);
+// ── Avstikkere – kun de som tilhører denne runden ──
+const loypeDef = loyper.find(l => l.navn === navn);
+const gyldigeAvst = loypeDef ? loypeDef.avstikkere : null;
+const avst = Object.entries(d.avstikkere)
+.filter(([a]) => !gyldigeAvst || gyldigeAvst.includes(a))
+.sort((a,b)=>b[1]-a[1]);
 const avHtml = avst.length ? avst.map(([navn,ant])=>{
 const pct=Math.round(ant/tot*100);
 return `<div style="margin-bottom:8px">
@@ -1111,9 +1115,7 @@ vaerHtml = `<div style="font-size:11px;font-weight:600;color:var(--text2);text-t
 }
 
 panel.style.display='block';
-panel.innerHTML = `
-${estimatNotat}
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+panel.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
 <div style="font-size:15px;font-weight:600;color:var(--navy)">${navn}</div>
 <button onclick="lukkLoypePanel()" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;line-height:1;padding:0 4px">×</button>
 </div>
