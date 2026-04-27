@@ -9,6 +9,31 @@
 .logo-blink-red { animation: logoBlink 1.2s ease-in-out infinite 0.6s; position:absolute; top:0;left:0; }
 .logo-wrap { position:relative; width:140px; height:140px; }
 @keyframes logoBlink { 0%,49%,100%{opacity:1} 50%,99%{opacity:0} } @keyframes spin { to { transform: rotate(360deg); } } @media (max-width: 480px) { .form-grid.three { grid-template-columns: 1fr 1fr; } .form-grid.three .field:last-child { grid-column: span 2; } .section { padding: 12px; } } @media (min-width: 700px) { .form-grid { grid-template-columns: repeat(3, 1fr); } .form-grid.two { grid-template-columns: 1fr 1fr; } } .cond-bar { display:flex; gap:8px; margin-top:4px; } .cond-btn { flex:1; padding:12px 8px; border-radius:8px; border:1.5px solid var(--border); background:var(--snow); cursor:pointer; font-family:var(--sans); font-size:13px; font-weight:500; color:var(--text2); text-align:center; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:4px; } .cond-btn .cond-dots { display:flex; gap:3px; justify-content:center; } .cond-btn .dot { width:10px; height:10px; border-radius:50%; background:var(--border); transition:background 0.15s; } .cond-btn[data-val="1"].active { border-color:#E74C3C; background:#FEF2F2; color:#C0392B; } .cond-btn[data-val="1"].active .dot { background:#E74C3C; } .cond-btn[data-val="2"].active { border-color:#F39C12; background:#FFFBF0; color:#D68910; } .cond-btn[data-val="2"].active .dot { background:#F39C12; } .cond-btn[data-val="3"].active { border-color:#27AE60; background:#F0FBF4; color:#1E8449; } .cond-btn[data-val="3"].active .dot { background:#27AE60; } .cond-badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; font-weight:600; } .cond-1 { background:#FEF2F2; color:#C0392B; } .cond-2 { background:#FFFBF0; color:#D68910; } .cond-3 { background:#F0FBF4; color:#1E8449; } .admin-section { background:var(--snow); border-radius:var(--radius); border:1px solid var(--border); padding:16px; margin-bottom:14px; } .admin-section h3 { font-size:13px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; } .forer-list-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:0.5px solid var(--border); } .forer-list-item:last-child { border-bottom:none; } .forer-name { flex:1; font-size:14px; font-weight:500; color:var(--text); } .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; align-items:center; justify-content:center; padding:20px; } .modal-bg.open { display:flex; } .modal { background:var(--white); border-radius:var(--radius); padding:20px; width:100%; max-width:440px; box-shadow:0 8px 32px rgba(0,0,0,0.2); } .modal h3 { font-size:16px; font-weight:600; color:var(--navy); margin-bottom:16px; } .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; } .tag { display:inline-block; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600; background:var(--ice); color:var(--mid); border:1px solid var(--border); } .admin-pin-overlay { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 20px; gap:16px; } .pin-input { text-align:center; font-size:28px; font-family:var(--mono); letter-spacing:8px; width:140px; } .pin-dots { display:flex; gap:10px; margin:8px 0; } .pin-dot { width:14px; height:14px; border-radius:50%; background:var(--border); transition:background 0.2s; } .pin-dot.filled { background:var(--mid); } .loype-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; } .loype-boks { border-radius:var(--radius); padding:14px; border:1.5px solid var(--border); transition:all 0.2s; position:relative; overflow:hidden; } .loype-boks.kjort { background:#F0FBF4; border-color:#A9DFBF; } .loype-boks.ikke-kjort { background:var(--snow); border-color:var(--border); } .loype-boks-navn { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:6px; line-height:1.3; } .loype-boks.ikke-kjort .loype-boks-navn { color:var(--text2); } .loype-status-badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:3px 8px; border-radius:999px; margin-bottom:8px; } .loype-status-badge.kjort { background:#D5F5E3; color:#1E8449; } .loype-status-badge.ikke-kjort { background:var(--border); color:var(--text2); } .loype-meta { font-size:11px; color:var(--text2); line-height:1.6; } .loype-meta strong { color:var(--text); font-weight:500; } .loype-snofnugg { position:absolute; right:10px; top:10px; opacity:0.15; font-size:28px; } .filter-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; } .filter-btn { padding:7px 14px; border-radius:20px; border:1.5px solid var(--border); background:var(--white); font-family:var(--sans); font-size:12px; font-weight:500; color:var(--text2); cursor:pointer; transition:all 0.15s; } .filter-btn.active { background:var(--mid); color:white; border-color:var(--mid); } .filter-btn:hover:not(.active) { border-color:var(--mid); color:var(--mid); } .ldot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:ldot-pulse 1.2s ease-in-out infinite; } .ldot:nth-child(2) { animation-delay:0.2s; } .ldot:nth-child(3) { animation-delay:0.4s; } @keyframes ldot-pulse { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} } @keyframes snowcat-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} } #snowcat-svg { animation: snowcat-bounce 1s ease-in-out infinite; } .avstikker-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border:1.5px solid var(--border); border-radius:8px; background:var(--snow); margin-bottom:7px; cursor:pointer; transition:all 0.15s; } .avstikker-item.checked { border-color:var(--accent); background:var(--ice); } .avstikker-item input[type=checkbox] { width:18px; height:18px; accent-color:var(--mid); cursor:pointer; flex-shrink:0; } .avstikker-label { font-size:14px; font-weight:500; color:var(--text); } .loype-admin-item { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:10px; overflow:hidden; } .loype-admin-header { display:flex; align-items:center; gap:8px; padding:12px 14px; background:var(--snow); border-bottom:1px solid var(--border); } .loype-admin-name { font-weight:600; font-size:14px; color:var(--navy); flex:1; } .loype-admin-body { padding:12px 14px; } .avstikker-admin-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; } .avstikker-admin-row input[type=text] { flex:1; padding:7px 10px; border:1px solid var(--border); border-radius:6px; font-family:var(--sans); font-size:13px; color:var(--text); background:var(--white); } .badge-km { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; background:var(--ice); color:var(--mid); font-weight:600; border:1px solid var(--border); } .vaer-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:500; background:var(--snow); border:1px solid var(--border); color:var(--text); } .vaer-badge .vaer-ikon { font-size:16px; line-height:1; } .snupunkt-btn { display:block; width:100%; text-align:left; padding:9px 12px; margin-bottom:6px; border:1.5px solid #F5CBA7; border-radius:7px; background:white; font-family:var(--sans); font-size:13px; font-weight:500; color:#784212; cursor:pointer; transition:all 0.15s; } .snupunkt-btn:last-child { margin-bottom:0; } .snupunkt-btn.selected { background:#F39C12; color:white; border-color:#E67E22; } .snupunkt-btn:hover:not(.selected) { background:#FEF5E7; border-color:#F39C12; }
+.loype-stat-kort { border:1.5px solid var(--border); border-radius:var(--radius); padding:14px; background:var(--white); cursor:pointer; transition:all 0.15s; position:relative; }
+.loype-stat-kort:hover { border-color:var(--accent); background:var(--ice); }
+.loype-stat-kort.aktiv { border-color:var(--accent); background:var(--ice); box-shadow:0 0 0 2px rgba(74,159,212,0.2); }
+.loype-stat-kort-navn { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:8px; line-height:1.3; }
+.loype-stat-tall { display:flex; gap:10px; margin-bottom:8px; }
+.loype-stat-tall-item { flex:1; text-align:center; }
+.loype-stat-tall-val { font-size:18px; font-weight:600; color:var(--navy); font-family:var(--mono); line-height:1; }
+.loype-stat-tall-lbl { font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; margin-top:2px; }
+.loype-freq-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.loype-freq-bar-inner { height:100%; background:var(--accent); border-radius:2px; transition:width 0.3s; }
+.loype-chevron { position:absolute; bottom:8px; right:10px; color:var(--accent); transition:transform 0.2s; font-size:12px; }
+.loype-stat-kort.aktiv .loype-chevron { transform:rotate(180deg); }
+.runde-valg-kort { border:1.5px solid var(--border); border-radius:var(--radius); background:var(--white); cursor:pointer; transition:all 0.15s; overflow:hidden; }
+.runde-valg-kort.aktiv { border-color:var(--accent); background:var(--ice); }
+.runde-valg-header { display:flex; align-items:center; gap:10px; padding:12px 14px; user-select:none; }
+.runde-valg-nr { width:22px; height:22px; border-radius:50%; background:var(--border); color:var(--text2); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; }
+.runde-valg-kort.aktiv .runde-valg-nr { background:var(--mid); color:white; }
+.runde-valg-navn { font-size:14px; font-weight:500; color:var(--text2); flex:1; transition:color 0.15s; }
+.runde-valg-kort.aktiv .runde-valg-navn { color:var(--navy); font-weight:600; }
+.runde-valg-check { width:20px; height:20px; border-radius:50%; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; }
+.runde-valg-kort.aktiv .runde-valg-check { background:var(--mid); border-color:var(--mid); }
+.runde-valg-body { display:none; padding:0 14px 14px; border-top:1px solid var(--border); }
+.runde-valg-kort.aktiv .runde-valg-body { display:block; }
+.avst-bar { height:6px; background:var(--border); border-radius:3px; overflow:hidden; flex:1; }
+.avst-bar-inner { height:100%; background:var(--mid); border-radius:3px; }
 /* Hybrid logg layout */
 .logg-desktop { display:block; }
 .logg-mobil { display:none; }
@@ -58,9 +83,10 @@ Admin
 Løypestatus – denne uken
 </div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section" id="tab-ny"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Registrer ny kjøretur
-</div><div class="card-body"><div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Runder kjørt denne økten</label><button type="button" onclick="leggTilRunde()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1.5px solid var(--mid);background:transparent;color:var(--mid);font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-Legg til runde
-</button></div><div id="runder-container"></div></div><hr class="divider" data-label="Tid og stand" style="margin-top:16px"><div class="form-grid two"><div class="field"><label>Slutt (kl.)</label><input type="time" id="f-slutt"></div><div class="field"><label>Km-stand ved slutt</label><input type="number" id="f-km" placeholder="0.0" min="0" step="0.1"><div id="hint-km" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div><hr class="divider" data-label="Driftsdata" style="margin-top:16px"><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Timerteller ved slutt</label><input type="number" id="f-timer-slutt" placeholder="0.0" step="0.1" min="0"><div id="hint-timer" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-diesel" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte diesel</span></label><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-adblue" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte AdBlue</span></label></div><hr class="divider" data-label="Føreforhold" style="margin-top:16px"><div class="field" style="margin-bottom:12px"><label>Føreforhold</label><div class="cond-bar" id="cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setCond(1)"><div class="cond-dots"><div class="dot"></div></div>
+</div><div class="card-body"><div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px">
+<label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Runder kjørt denne økten <span id="runder-valgt-count" style="color:var(--mid);font-weight:700"></span></label>
+<div id="runder-grid" style="display:flex;flex-direction:column;gap:8px"></div>
+</div><hr class="divider" data-label="Tid og stand" style="margin-top:16px"><div class="form-grid two"><div class="field"><label>Slutt (kl.)</label><input type="time" id="f-slutt"></div><div class="field"><label>Km-stand ved slutt</label><input type="number" id="f-km" placeholder="0.0" min="0" step="0.1"><div id="hint-km" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div><hr class="divider" data-label="Driftsdata" style="margin-top:16px"><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Timerteller ved slutt</label><input type="number" id="f-timer-slutt" placeholder="0.0" step="0.1" min="0"><div id="hint-timer" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-diesel" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte diesel</span></label><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-adblue" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte AdBlue</span></label></div><hr class="divider" data-label="Føreforhold" style="margin-top:16px"><div class="field" style="margin-bottom:12px"><label>Føreforhold</label><div class="cond-bar" id="cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setCond(1)"><div class="cond-dots"><div class="dot"></div></div>
 Dårlig
 </button><button type="button" class="cond-btn" data-val="2" onclick="setCond(2)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div></div>
 Middels
@@ -81,7 +107,9 @@ CSV
 <div class="logg-mobil" id="logg-mobil"></div>
 <div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny tur» for å starte.</p></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn active" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-7d" onclick="setStatsFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
 Km kjørt per måned
-<span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører</div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Km kjørt</th><th>Maskintimer</th><th>Km/t</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Per løype</div><div class="table-wrap"><table><thead><tr><th>Løype</th><th>Turer</th><th>Snudde</th><th>Km totalt</th><th>Timer</th><th>Km/t</th></tr></thead><tbody id="stats-loype"></tbody></table><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header">Avstikkere – kjørefrekvens</div><div class="table-wrap"><table><thead><tr><th>Avstikker</th><th>Løype</th><th>Antall kjørt</th><th>Av totalt turer</th></tr></thead><tbody id="stats-avstikkere"></tbody></table><div id="stats-avstikkere-empty" class="empty" style="display:none"><p>Ingen avstikkerdata</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+<span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører</div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Km kjørt</th><th>Maskintimer</th><th>Km/t</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+Runder – statistikk
+</div><div class="card-body" id="stats-loype-container"><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div><div id="stats-loype-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px"></div><div id="stats-loype-panel" style="display:none;border:1.5px solid var(--accent);border-radius:var(--radius);background:var(--ice);padding:16px;margin-top:4px"></div></div></div><div class="card"><div class="card-header">Avstikkere – kjørefrekvens</div><div class="table-wrap"><table><thead><tr><th>Avstikker</th><th>Løype</th><th>Antall kjørt</th><th>Av totalt turer</th></tr></thead><tbody id="stats-avstikkere"></tbody></table><div id="stats-avstikkere-empty" class="empty" style="display:none"><p>Ingen avstikkerdata</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 Sjåførstatistikk – denne sesongen
 </div><div class="card-body" id="stats-sjaforer-kort"></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 Admin – logg inn
@@ -233,11 +261,9 @@ if (cfg.forere && cfg.forere.length) forere = cfg.forere;
 if (cfg.loyper) loyper = cfg.loyper;
 // Refresh runde selects now that loyper are loaded
 oppdaterLoypeSelect();
-// If on ny-tur tab with empty container, add first round now
-const rCont = document.getElementById('runder-container');
-if (rCont && rCont.children.length === 0 && loyper.length > 0 &&
-document.getElementById('tab-ny').classList.contains('active')) {
-leggTilRunde();
+// Rebuild runde grid if on ny-tur tab
+if (document.getElementById('tab-ny').classList.contains('active')) {
+byggRundeGrid();
 }
 if (cfg.innstillinger) {
 const s = cfg.innstillinger;
@@ -383,7 +409,7 @@ el.innerHTML = '<div style="display:flex;align-items:center;justify-content:cent
 }
 if (id==='ny') {
 oppdaterStandHint();
-if (document.getElementById('runder-container').children.length===0 && loyper.length > 0) leggTilRunde(); else if (document.getElementById('runder-container').children.length===0) { setTimeout(()=>{ if(loyper.length>0 && document.getElementById('runder-container').children.length===0) leggTilRunde(); }, 1500); }
+byggRundeGrid();
 }
 }
 // ── FØREFORHOLD ──
@@ -410,7 +436,7 @@ if (!scriptUrl) { alert('Koble til Google Sheets først – se banneret øverst.
 const dato = document.getElementById('f-dato').value;
 const forer = document.getElementById('f-forer').value.trim();
 const runder = hentRundeData();
-if (!dato || !forer || runder.length === 0) { alert('Fyll ut dato, fører og minst én runde.'); return; }
+if (!dato || !forer || runder.length === 0) { alert('Velg dato, fører og minst én runde.'); return; }
 // Use first round as primary løype for backwards compat, combine all
 const loype = runder.map(r => r.loype).join(' + ');
 const kjorteAvstikkere = runder.flatMap(r => r.avstikkere);
@@ -501,8 +527,7 @@ const res = await apiKall({ action: 'leggTil', tur });
 if (res.feil) throw new Error(res.feil);
 setSyncStatus('ok', 'Lagret!');
 ['f-forer','f-slutt','f-km','f-timer-slutt','f-merknader'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-document.getElementById('runder-container').innerHTML='';
-rundeCounter=0;
+nullstillRunder();
 document.getElementById('f-diesel').checked=false;
 document.getElementById('f-adblue').checked=false;
 setCond(0);
@@ -787,18 +812,93 @@ const loypeMap = {};
 const diffMapLoype = beregnDiff(turer);
 filtrertStats.forEach(t => {
 if (!t.loype) return;
-if (!loypeMap[t.loype]) loypeMap[t.loype]={turer:0,snudde:0,km:0,timer:0};
+if (!loypeMap[t.loype]) loypeMap[t.loype]={turer:0,snudde:0,km:0,timer:0,snupunkter:{},avstikkere:{},forkond:[0,0,0],sisteDato:'',sisteForer:''};
 loypeMap[t.loype].turer++;
-if (t.snupunkt && t.snupunkt!=='') loypeMap[t.loype].snudde++;
+if (t.snupunkt && t.snupunkt!=='') {
+const sp = t.snupunkt==='Ja'?'Snudde':t.snupunkt;
+loypeMap[t.loype].snupunkter[sp]=(loypeMap[t.loype].snupunkter[sp]||0)+1;
+}
+if (t.avstikkere) t.avstikkere.split('|').filter(Boolean).forEach(a=>{
+loypeMap[t.loype].avstikkere[a]=(loypeMap[t.loype].avstikkere[a]||0)+1;
+});
+const fk = (parseInt(t.forkond)||1)-1;
+if (fk>=0&&fk<3) loypeMap[t.loype].forkond[fk]++;
 loypeMap[t.loype].km += diffMapLoype[t.id]?.kmKjort||0;
 loypeMap[t.loype].timer += parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
+if (!loypeMap[t.loype].sisteDato||t.dato>loypeMap[t.loype].sisteDato){loypeMap[t.loype].sisteDato=t.dato;loypeMap[t.loype].sisteForer=t.forer;}
 });
 const lKeys = Object.keys(loypeMap).sort((a,b)=>loypeMap[b].turer-loypeMap[a].turer);
 document.getElementById('stats-loype-empty').style.display = lKeys.length ? 'none' : 'block';
-document.getElementById('stats-loype').innerHTML = lKeys.map(l=>{
-const kmT = loypeMap[l].timer > 0 ? (loypeMap[l].km/loypeMap[l].timer).toFixed(1) : '–';
-return `<tr><td style="font-weight:500">${l}</td><td style="font-family:var(--mono)">${loypeMap[l].turer}</td><td>${loypeMap[l].snudde>0?`<span style="color:#D68910;font-weight:600">${loypeMap[l].snudde}x ↩</span>`:'-'}</td><td style="font-family:var(--mono)">${loypeMap[l].km.toFixed(1)} km</td><td style="font-family:var(--mono)">${loypeMap[l].timer.toFixed(1)} t</td><td style="font-family:var(--mono)">${kmT}</td></tr>`;
+const maxTurer = lKeys.length ? loypeMap[lKeys[0]].turer : 1;
+let aktivLoype = null;
+const grid = document.getElementById('stats-loype-grid');
+const panel = document.getElementById('stats-loype-panel');
+grid.innerHTML = lKeys.map(l => {
+const d = loypeMap[l];
+const kmT = d.timer>0?(d.km/d.timer).toFixed(1):'–';
+const freqPct = Math.round(d.turer/maxTurer*100);
+return `<div class="loype-stat-kort" onclick="visLoypePanel('${l.replace(/'/g,"\\'")}',this)" data-loype="${l.replace(/"/g,'&quot;')}">
+<div class="loype-stat-kort-navn">${l}</div>
+<div class="loype-stat-tall">
+<div class="loype-stat-tall-item"><div class="loype-stat-tall-val">${d.turer}</div><div class="loype-stat-tall-lbl">Turer</div></div>
+<div class="loype-stat-tall-item"><div class="loype-stat-tall-val">${d.km.toFixed(0)}</div><div class="loype-stat-tall-lbl">Km</div></div>
+<div class="loype-stat-tall-item"><div class="loype-stat-tall-val">${kmT}</div><div class="loype-stat-tall-lbl">Km/t</div></div>
+</div>
+<div class="loype-freq-bar"><div class="loype-freq-bar-inner" style="width:${freqPct}%"></div></div>
+${d.sisteDato?`<div style="font-size:10px;color:var(--text2);margin-top:6px">Sist: ${formatDato(d.sisteDato)} · ${d.sisteForer?d.sisteForer.split(' ')[0]:'–'}</div>`:''}
+<div class="loype-chevron">▼</div>
+</div>`;
 }).join('');
+
+window._loypeMapCache = loypeMap;
+
+function visLoypePanel(navn, el) {
+const allKort = grid.querySelectorAll('.loype-stat-kort');
+const erAktiv = el.classList.contains('aktiv');
+allKort.forEach(k=>k.classList.remove('aktiv'));
+if (erAktiv) { panel.style.display='none'; return; }
+el.classList.add('aktiv');
+const d = window._loypeMapCache[navn];
+if (!d) return;
+const tot = d.turer||1;
+// Avstikkere
+const avst = Object.entries(d.avstikkere).sort((a,b)=>b[1]-a[1]);
+const avHtml = avst.length ? avst.map(([navn,ant])=>{
+const pct=Math.round(ant/tot*100);
+return `<div style="margin-bottom:8px">
+<div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:500;color:var(--text)">${navn}</span><span style="font-family:var(--mono);font-size:12px;color:var(--mid);font-weight:600">${ant}× <span style="color:var(--text2);font-weight:400">(${pct}%)</span></span></div>
+<div style="display:flex;align-items:center;gap:8px"><div class="avst-bar"><div class="avst-bar-inner" style="width:${pct}%"></div></div></div>
+</div>`;
+}).join('') : '<p style="font-size:12px;color:var(--text2)">Ingen avstikkere registrert</p>';
+// Snupunkter
+const snup = Object.entries(d.snupunkter).sort((a,b)=>b[1]-a[1]);
+const snHtml = snup.length ? snup.map(([navn,ant])=>{
+const pct=Math.round(ant/tot*100);
+return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--border)">
+<span style="font-size:13px;color:#D68910;font-weight:500">↩ ${navn}</span>
+<span style="font-family:var(--mono);font-size:12px;color:var(--text2)">${ant}× (${pct}%)</span>
+</div>`;
+}).join('') : '<p style="font-size:12px;color:var(--text2)">Ingen snupunkter registrert</p>';
+// Føreforhold
+const fkTot = d.forkond[0]+d.forkond[1]+d.forkond[2]||1;
+const fkHtml = `<div style="display:flex;gap:8px;align-items:center">
+<div style="flex:1;text-align:center;padding:8px;background:#FEF2F2;border-radius:8px;border:1px solid #FECACA"><div style="font-size:16px;font-weight:700;color:#C0392B;font-family:var(--mono)">${d.forkond[0]}</div><div style="font-size:10px;color:#C0392B">Dårlig</div></div>
+<div style="flex:1;text-align:center;padding:8px;background:#FFFBF0;border-radius:8px;border:1px solid #F5CBA7"><div style="font-size:16px;font-weight:700;color:#D68910;font-family:var(--mono)">${d.forkond[1]}</div><div style="font-size:10px;color:#D68910">Middels</div></div>
+<div style="flex:1;text-align:center;padding:8px;background:#F0FBF4;border-radius:8px;border:1px solid #A9DFBF"><div style="font-size:16px;font-weight:700;color:#1E8449;font-family:var(--mono)">${d.forkond[2]}</div><div style="font-size:10px;color:#1E8449">Bra</div></div>
+</div>`;
+panel.style.display='block';
+panel.innerHTML = `
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+<div style="font-size:15px;font-weight:600;color:var(--navy)">${navn}</div>
+<button onclick="document.getElementById('stats-loype-panel').style.display='none';document.querySelectorAll('.loype-stat-kort').forEach(k=>k.classList.remove('aktiv'))" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:18px;line-height:1">×</button>
+</div>
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Avstikkere</div>
+${avHtml}
+${snup.length?`<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Snupunkter</div>${snHtml}`:''}
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Føreforhold</div>
+${fkHtml}`;
+panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 // Avstikker statistikk
 const avstMap = {};
 filtrertStats.forEach(t => {
@@ -913,105 +1013,143 @@ try { await apiKall({ action: 'lagreLoyper', loyper }); } catch(e) { console.err
 }
 let redigerLoypeIdx = -1;
 function oppdaterLoypeSelect() {
-// Also refresh all open runde selects
-const opts = '<option value="">Velg runde…</option>' +
-loyper.map((l,i) => `<option value="${i}">${l.navn}</option>`).join('');
-document.querySelectorAll('.runde-loype-select').forEach(sel => {
-const current = sel.value;
-sel.innerHTML = opts;
-if (current) sel.value = current;
-});
+byggRundeGrid();
 }
-// ── MULTI-ROUND SYSTEM ──
-let rundeCounter = 0;
-function leggTilRunde() {
-rundeCounter++;
-const id = rundeCounter;
-const cont = document.getElementById('runder-container');
-const div = document.createElement('div');
-div.className = 'runde-kort';
-div.id = 'runde-' + id;
-div.dataset.rundeId = id;
-div.innerHTML = `
-<div class="runde-kort-header"><div class="runde-nummer">${id}</div><div class="runde-tittel">Velg runde…</div><button type="button" onclick="toggleRundeKollaps(${id})" style="background:none;border:none;cursor:pointer;color:var(--text2);padding:4px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><button type="button" onclick="fjernRunde(${id})" style="background:none;border:none;cursor:pointer;color:var(--danger);padding:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="runde-kort-body"><div class="field" style="margin-bottom:10px"><select class="runde-loype-select" onchange="oppdaterRundeLoype(${id}, this.value)" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><option value="">Velg runde…</option>
-${loyper.map((l,i) => `<option value="${i}">${l.navn}</option>`).join('')}
-</select></div><div id="runde-detaljer-${id}" style="display:none"></div></div>`;
-cont.appendChild(div);
+// ── RUNDE VALG SYSTEM ──
+function byggRundeGrid() {
+const grid = document.getElementById('runder-grid');
+if (!grid) return;
+if (!loyper.length) {
+grid.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen runder definert. Legg til i Admin.</p>';
+return;
 }
-function fjernRunde(id) {
-const el = document.getElementById('runde-' + id);
-if (el) el.remove();
+grid.innerHTML = loyper.map((l, i) => `
+<div class="runde-valg-kort" id="runde-valg-${i}" onclick="toggleRundeValg(${i})">
+<div class="runde-valg-header">
+<div class="runde-valg-nr" id="runde-nr-${i}">–</div>
+<div class="runde-valg-navn">${l.navn}</div>
+<div class="runde-valg-check" id="runde-check-${i}">
+<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" style="display:none"><polyline points="20 6 9 17 4 12"/></svg>
+</div>
+</div>
+<div class="runde-valg-body" id="runde-body-${i}">
+${l.avstikkere.length ? `
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 6px">Avstikkere</div>
+${l.avstikkere.map((a,ai) => `
+<label class="avstikker-item" style="margin-bottom:6px" onclick="event.stopPropagation()">
+<input type="checkbox" id="rv${i}-avst-${ai}" onchange="toggleAvstikkerStyle(this)">
+<span class="avstikker-label">${a}</span>
+</label>`).join('')}` : ''}
+<div style="margin-top:8px" onclick="event.stopPropagation()">
+<label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 13px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0" onclick="toggleRVSnupunkt(${i}, event)">
+<input type="checkbox" id="rv${i}-snupunkt" style="width:17px;height:17px;accent-color:#E67E22;cursor:pointer;flex-shrink:0" onclick="event.stopPropagation()">
+<div style="flex:1;font-size:13px;font-weight:600;color:#D68910">Jeg snudde underveis</div>
+<svg id="rv${i}-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D68910" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+</label>
+<div id="rv${i}-snupunkt-panel" style="display:none;margin-top:5px;padding:10px 12px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0">
+${(l.snupunkter||[]).length
+? (l.snupunkter||[]).map(s => `<button type="button" class="snupunkt-btn" onclick="event.stopPropagation();velgRVSnupunkt(${i},'${s}',this)">${s}</button>`).join('')
+: '<p style="font-size:12px;color:#B7770D">Ingen snupunkter definert.</p>'}
+</div>
+</div>
+</div>
+</div>`).join('');
 oppdaterRundeNummer();
 }
-function toggleRundeKollaps(id) {
-const kort = document.getElementById('runde-' + id);
-kort.classList.toggle('collapsed');
-const svg = kort.querySelector('.runde-kort-header svg');
-if (svg) svg.style.transform = kort.classList.contains('collapsed') ? 'rotate(-90deg)' : '';
+
+function toggleRundeValg(i) {
+const kort = document.getElementById('runde-valg-'+i);
+const aktiv = kort.classList.toggle('aktiv');
+const check = kort.querySelector('.runde-valg-check svg');
+if (check) check.style.display = aktiv ? 'block' : 'none';
+if (!aktiv) {
+// Nullstill valg ved deaktivering
+document.querySelectorAll(`#runde-body-${i} input[type=checkbox]`).forEach(cb => { cb.checked=false; cb.closest('.avstikker-item')?.classList.remove('checked'); });
+const snPanel = document.getElementById('rv'+i+'-snupunkt-panel');
+if (snPanel) snPanel.style.display='none';
+const chev = document.getElementById('rv'+i+'-chevron');
+if (chev) chev.style.transform='';
 }
+oppdaterRundeNummer();
+}
+
 function oppdaterRundeNummer() {
-document.querySelectorAll('.runde-kort').forEach((k, i) => {
-const numEl = k.querySelector('.runde-nummer');
-if (numEl) numEl.textContent = i + 1;
+let nr = 1;
+loyper.forEach((l, i) => {
+const kort = document.getElementById('runde-valg-'+i);
+const nrEl = document.getElementById('runde-nr-'+i);
+if (!kort || !nrEl) return;
+if (kort.classList.contains('aktiv')) {
+nrEl.textContent = nr++;
+nrEl.style.background = 'var(--mid)';
+nrEl.style.color = 'white';
+} else {
+nrEl.textContent = '–';
+nrEl.style.background = 'var(--border)';
+nrEl.style.color = 'var(--text2)';
+}
 });
+const count = nr - 1;
+const countEl = document.getElementById('runder-valgt-count');
+if (countEl) countEl.textContent = count > 0 ? `(${count} valgt)` : '';
 }
-function oppdaterRundeLoype(id, loypeIdx) {
-const loype = loyper[parseInt(loypeIdx)];
-const kort = document.getElementById('runde-' + id);
-const tittel = kort.querySelector('.runde-tittel');
-if (tittel) tittel.textContent = loype ? loype.navn : 'Velg runde…';
-const detaljer = document.getElementById('runde-detaljer-' + id);
-if (!loype) { detaljer.style.display='none'; return; }
-detaljer.style.display='block';
-detaljer.innerHTML = `
-${loype.avstikkere.length ? `
-<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Avstikkere</div><div style="margin-bottom:10px">
-${loype.avstikkere.map((a,ai) => `
-<label class="avstikker-item" style="margin-bottom:6px"><input type="checkbox" id="r${id}-avst-${ai}" onchange="toggleAvstikkerStyle(this)"><span class="avstikker-label">${a}</span></label>`).join('')}
-</div>` : ''}
-<label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 13px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0" onclick="toggleRundeSnupunkt(${id})"><input type="radio" id="r${id}-snupunkt" name="snupunkt-radio-${id}" style="width:17px;height:17px;accent-color:#E67E22;cursor:pointer;flex-shrink:0" onclick="event.stopPropagation();toggleRundeSnupunkt(${id})"><div style="flex:1"><div style="font-size:13px;font-weight:600;color:#D68910">Jeg snudde underveis</div></div><svg id="r${id}-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D68910" stroke-width="2.5" style="transition:transform 0.2s;flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg></label><div id="r${id}-snupunkt-panel" style="display:none;margin-top:5px;padding:10px 12px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0">
-${(loype.snupunkter||[]).length
-? (loype.snupunkter||[]).map(s => `<button type="button" class="snupunkt-btn" onclick="velgRundeSnupunkt(${id},'${s}',this)">${s}</button>`).join('')
-: '<p style="font-size:12px;color:#B7770D">Ingen snupunkter definert.</p>'}
-</div>`;
+
+function toggleRVSnupunkt(i, e) {
+e.stopPropagation();
+const cb = document.getElementById('rv'+i+'-snupunkt');
+cb.checked = !cb.checked;
+const panel = document.getElementById('rv'+i+'-snupunkt-panel');
+const chev = document.getElementById('rv'+i+'-chevron');
+panel.style.display = cb.checked ? 'block' : 'none';
+chev.style.transform = cb.checked ? 'rotate(180deg)' : '';
 }
-function toggleRundeSnupunkt(id) {
-const rb = document.getElementById('r'+id+'-snupunkt');
-const panel = document.getElementById('r'+id+'-snupunkt-panel');
-const chevron = document.getElementById('r'+id+'-chevron');
-const isOpen = panel.style.display !== 'none';
-if (isOpen && rb.checked) { rb.checked=false; panel.style.display='none'; chevron.style.transform=''; return; }
-rb.checked=true; panel.style.display='block'; chevron.style.transform='rotate(180deg)';
-}
-function velgRundeSnupunkt(id, navn, btn) {
-const panel = document.getElementById('r'+id+'-snupunkt-panel');
+
+function velgRVSnupunkt(i, navn, btn) {
+const panel = document.getElementById('rv'+i+'-snupunkt-panel');
 const current = panel.querySelector('.selected');
+if (current === btn) { btn.classList.remove('selected'); return; }
 if (current) current.classList.remove('selected');
-if (current !== btn) btn.classList.add('selected');
+btn.classList.add('selected');
 }
+
 function hentRundeData() {
 const runder = [];
-document.querySelectorAll('.runde-kort').forEach(kort => {
-const rid = kort.dataset.rundeId;
-const sel = kort.querySelector('select');
-const loypeIdx = sel ? parseInt(sel.value) : NaN;
-if (isNaN(loypeIdx) || !loyper[loypeIdx]) return;
-const loype = loyper[loypeIdx];
-const kjorteAvst = loype.avstikkere.filter((_,ai) => {
-const cb = document.getElementById(`r${rid}-avst-${ai}`);
+loyper.forEach((l, i) => {
+const kort = document.getElementById('runde-valg-'+i);
+if (!kort || !kort.classList.contains('aktiv')) return;
+const kjorteAvst = l.avstikkere.filter((_,ai) => {
+const cb = document.getElementById(`rv${i}-avst-${ai}`);
 return cb && cb.checked;
 });
-const rb = document.getElementById('r'+rid+'-snupunkt');
-const snudde = rb && rb.checked;
+const snCb = document.getElementById('rv'+i+'-snupunkt');
+const snudde = snCb && snCb.checked;
 const valgtSn = snudde ? (() => {
-const btn = kort.querySelector('.snupunkt-btn.selected');
+const btn = document.querySelector(`#rv${i}-snupunkt-panel .snupunkt-btn.selected`);
 return btn ? btn.textContent : 'Ja';
 })() : '';
-runder.push({ loype: loype.navn, avstikkere: kjorteAvst, snupunkt: valgtSn });
+runder.push({ loype: l.navn, avstikkere: kjorteAvst, snupunkt: valgtSn });
 });
 return runder;
 }
-// Stub for old single-round functions (kept for compatibility)
+
+function nullstillRunder() {
+loyper.forEach((l, i) => {
+const kort = document.getElementById('runde-valg-'+i);
+if (kort) kort.classList.remove('aktiv');
+document.querySelectorAll(`#runde-body-${i} input`).forEach(cb => { cb.checked=false; });
+document.querySelectorAll(`#runde-body-${i} .avstikker-item`).forEach(el => el.classList.remove('checked'));
+document.querySelectorAll(`#runde-body-${i} .snupunkt-btn`).forEach(btn => btn.classList.remove('selected'));
+const p = document.getElementById('rv'+i+'-snupunkt-panel');
+if(p) p.style.display='none';
+const c = document.getElementById('rv'+i+'-chevron');
+if(c) c.style.transform='';
+const nrEl = document.getElementById('runde-nr-'+i);
+if(nrEl){nrEl.textContent='–';nrEl.style.background='var(--border)';nrEl.style.color='var(--text2)';}
+});
+const countEl = document.getElementById('runder-valgt-count');
+if(countEl) countEl.textContent='';
+}
+
 function oppdaterLoypeUI() {}
 function toggleSnupunktPanel() {}
 function velgSnupunkt() {}
