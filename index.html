@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 16:01</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 16:06</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -256,7 +256,57 @@ function lagreScriptUrl() {
 function sjekkSetup() {
 if (!scriptUrl) { setSyncStatus('error', 'Frakoblet'); return; }
 }
-// ── SYNC STATUS – se script 2 ──
+// ── SYNC STATUS ──
+function setSyncStatus(state, label) {
+const loader = document.getElementById('center-loader');
+const loaderWrap = document.querySelector('.logo-wrap');
+const spinner = document.getElementById('sf-spinner');
+const arc = document.getElementById('sf-spinner-arc');
+
+// Center loader visibility
+if (loader) {
+if (state === 'loading') loader.classList.add('visible');
+else loader.classList.remove('visible');
+}
+
+// Topbar spinner ring
+if (spinner) {
+if (state === 'loading' || state === 'loading-bg') {
+spinner.style.display = 'block';
+if (arc) {
+arc.setAttribute('stroke', '#4A9FD4');
+arc.style.animation = 'sf-spin 1.1s linear infinite';
+arc.setAttribute('stroke-dasharray', '80 52');
+}
+const baseCircle = spinner.querySelector('circle:first-child');
+if (baseCircle) baseCircle.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+} else if (state === 'error') {
+spinner.style.display = 'block';
+if (arc) {
+arc.setAttribute('stroke', '#E74C3C');
+arc.style.animation = 'none';
+arc.setAttribute('stroke-dasharray', '132 0');
+}
+const baseCircle = spinner.querySelector('circle:first-child');
+if (baseCircle) baseCircle.setAttribute('stroke', 'rgba(231,76,60,0.3)');
+} else {
+spinner.style.display = 'none';
+if (arc) {
+arc.setAttribute('stroke', '#4A9FD4');
+arc.style.animation = 'sf-spin 1.1s linear infinite';
+arc.setAttribute('stroke-dasharray', '80 52');
+}
+const baseCircle = spinner.querySelector('circle:first-child');
+if (baseCircle) baseCircle.setAttribute('stroke', 'rgba(255,255,255,0.12)');
+}
+}
+
+// Center loader error state
+if (loaderWrap) {
+if (state === 'error') loaderWrap.classList.add('error');
+else loaderWrap.classList.remove('error');
+}
+}
 
 // ── API ──
 async function apiKall(body) {
@@ -3297,7 +3347,7 @@ document.getElementById('f-slutt').value = _now.getHours().toString().padStart(2
 oppdaterForerSelect();
 oppdaterLoypeSelect();
 sjekkSetup();
-if (scriptUrl) { setSyncStatus('loading','Henter'); hentData().then(() => {
+if (scriptUrl) { setSyncStatus('loading', 'Sync'); hentData().then(() => {
 hentTopbarVaer(); // Hent vær i bakgrunnen etter data er lastet
 // Last feildata for badge
 if (scriptUrl) {
