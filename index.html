@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 18:55</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 19:01</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -988,16 +988,16 @@ document.getElementById('dash-metrics').innerHTML = `
 <div class="metric"><div class="metric-label">Turer – ${filterLabels[dashFilter]}</div><div class="metric-value">${filtrertDash.length}</div></div><div class="metric"><div class="metric-label">Km kjørt</div><div class="metric-value">${totalKm.toFixed(1)}</div><div class="metric-sub">kilometer</div></div><div class="metric"><div class="metric-label">Maskintimer</div><div class="metric-value">${totalTimer.toFixed(1)}</div><div class="metric-sub">timer</div></div><div class="metric"><div class="metric-label">Diesel / AdBlue</div><div class="metric-value">${dieselTurer} / ${adBlueTurer}</div><div class="metric-sub">påfyllinger</div></div>
 `;
 // Update card label
-const labelMap = {sesong:'Siste turer – sesongen',uke:'Turer denne uken','7d':'Turer siste 7 dager','30d':'Turer siste 30 dager',alle:'Alle turer'};
+const labelMap = {'5':'Siste 5 turer',sesong:'Sesongen',uke:'Denne uken',alle:'Alle turer'};
 const labelEl = document.getElementById('dash-recent-label');
-if (labelEl) labelEl.textContent = labelMap[dashFilter];
 renderLoypeStatus();
 const filtrertDashSortert = [...filtrertDash].sort((a,b) => {
 const da = (a.dato||'') + ' ' + (a.slutt||'00:00');
 const db = (b.dato||'') + ' ' + (b.slutt||'00:00');
 return db.localeCompare(da);
 });
-const recent = filtrertDashSortert.slice(0,5);
+const recent = dashFilter === '5' ? filtrertDashSortert.slice(0,5) : filtrertDashSortert;
+if (labelEl) labelEl.textContent = dashFilter === '5' ? 'Siste 5 turer' : (labelMap[dashFilter]||'Turer') + ' – ' + recent.length + ' turer';
 document.getElementById('dash-loading').style.display = 'none';
 if (!recent.length) {
 document.getElementById('dash-recent').innerHTML='<div class="empty"><div class="empty-icon">🎿</div><p>Ingen turer i valgt periode.</p></div>';
