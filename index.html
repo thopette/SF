@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 19:04</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 19:11</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -115,7 +115,7 @@ Logg
 Statistikk
 </button><button class="nav-btn" onclick="showTab('admin')" id="btn-admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="18" cy="5" r="2.5" fill="currentColor" stroke="none"/><line x1="18" y1="3" x2="18" y2="2"/><line x1="18" y1="8" x2="18" y2="7"/><line x1="16" y1="4" x2="15" y2="3.5"/><line x1="20" y1="6" x2="21" y2="6.5"/><line x1="16" y1="6" x2="15" y2="6.5"/><line x1="20" y1="4" x2="21" y2="3.5"/></svg>
 Admin
-</button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn active" id="dash-filter-5" onclick="setDashFilter('5')">Siste 5</button><button class="filter-btn" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+</button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn active" id="dash-filter-5" onclick="setDashFilter('5')">Siste 5</button><button class="filter-btn" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button><button onclick="showTab('logg')" style="margin-left:auto;display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Full logg</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Løypestatus – denne uken
 </div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section" id="tab-ny"><div class="card"><div class="card-header" id="ny-okt-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 <span id="ny-okt-tittel">Registrer ny kjøreøkt</span>
@@ -132,7 +132,7 @@ Dårlig
 Middels
 </button><button type="button" class="cond-btn" data-val="3" onclick="setCond(3)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
 Bra
-</button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Observasjoner og notater</label><textarea id="f-merknader" placeholder="Vær, snøforhold, utstyr, observasjoner… (feil registreres med knappen under)"></textarea></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-outline btn-sm" id="avbryt-edit-btn" onclick="avbrytEdit()" style="display:none">Avbryt</button><button type="button" onclick="toggleServicePanel();setServiceToggle('feil');visNyFeilSkjema()" style="display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Rapporter feil</button><button class="btn btn-primary" id="lagre-btn" onclick="lagreEllerOppdater()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg><span id="lagre-btn-tekst">Lagre økt</span></button></div></div></div></div><div class="section" id="tab-logg"><div class="filter-bar"><button class="filter-btn active" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn" id="filter-uke" onclick="setLoggFilter('uke')">Denne uken</button><button class="filter-btn" id="filter-7d" onclick="setLoggFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div>
+</button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Observasjoner og notater</label><textarea id="f-merknader" placeholder="Vær, snøforhold, utstyr, observasjoner… (feil registreres med knappen under)"></textarea></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-outline btn-sm" id="avbryt-edit-btn" onclick="avbrytEdit()" style="display:none">Avbryt</button><button type="button" onclick="toggleServicePanel();setServiceToggle('feil');visNyFeilSkjema()" style="display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Rapporter feil</button><button class="btn btn-primary" id="lagre-btn" onclick="lagreEllerOppdater()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg><span id="lagre-btn-tekst">Lagre økt</span></button></div></div></div></div><div class="section" id="tab-logg"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--white)"><div class="filter-bar" style="flex:1;min-width:200px;border:none;padding:0;margin:0"><button class="filter-btn active" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn" id="filter-uke" onclick="setLoggFilter('uke')">Denne uken</button><button class="filter-btn" id="filter-7d" onclick="setLoggFilter('7d')">7 dager</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">30 dager</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button></div><select id="logg-filter-forer" onchange="renderLogg()" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:20px;font-family:var(--sans);font-size:12px;background:var(--white);color:var(--text2);cursor:pointer"><option value="">Alle førere</option></select><select id="logg-filter-loype" onchange="renderLogg()" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:20px;font-family:var(--sans);font-size:12px;background:var(--white);color:var(--text2);cursor:pointer"><option value="">Alle løyper</option></select><button onclick="eksporterCSV()" style="display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Excel</button></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div>
 <!-- Desktop tabell -->
 <div class="table-wrap logg-desktop"><table><thead><tr>
 <th>Dato</th><th>Runde / Fører</th><th>Slutt</th><th>Km kjørt</th><th>Timer</th><th>Vær</th><th>Føre</th><th style="text-align:center">Fuel</th><th style="text-align:center">AdB</th><th style="width:80px"></th>
@@ -1058,6 +1058,20 @@ Sist: <strong>${sisteForer||'–'}</strong></div>` : '<div class="loype-meta">Ik
 }
 // ── LOGG ──
 function renderLogg() {
+// Populate fører dropdown
+const forerSel = document.getElementById('logg-filter-forer');
+const loypeSel = document.getElementById('logg-filter-loype');
+if (forerSel && forerSel.options.length <= 1) {
+const forere_uniq = [...new Set(turer.map(t=>t.forer).filter(Boolean))].sort();
+forere_uniq.forEach(f => { const o = document.createElement('option'); o.value=f; o.textContent=f; forerSel.appendChild(o); });
+}
+if (loypeSel && loypeSel.options.length <= 1) {
+const loyper_uniq = [...new Set(turer.map(t=>t.loype).filter(Boolean))].sort();
+loyper_uniq.forEach(l => { const o = document.createElement('option'); o.value=l; o.textContent=l; loypeSel.appendChild(o); });
+}
+const filterForer = forerSel ? forerSel.value : '';
+const filterLoype = loypeSel ? loypeSel.value : '';
+
 document.getElementById('logg-loading').style.display='none';
 const tbody = document.getElementById('logg-tbody');
 const empty = document.getElementById('logg-empty');
@@ -1978,11 +1992,26 @@ x:  { grid:{display:false}, ticks:{font:{size:10}, maxRotation:45} }
 }
 // ── EXPORT ──
 function eksporterCSV() {
-const header = ['Dato','Fører','Løype','Slutt','Km-stand','TimerSlutt','Maskintimer','Diesel','AdBlue','Merknader'];
-const rows = turer.map(t=>[t.dato,t.forer,t.loype,t.slutt,t.km,t.timerSlutt,t.timerBrukt!=null?t.timerBrukt.toFixed(2):'',t.diesel,t.adblue,(t.merknader||'').replace(/,/g,' ')]);
-const csv = [header,...rows].map(r=>r.join(',')).join('\n');
-const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
-const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='kjørebok.csv'; a.click();
+const forerSel = document.getElementById('logg-filter-forer');
+const loypeSel = document.getElementById('logg-filter-loype');
+const filterForer = forerSel ? forerSel.value : '';
+const filterLoype = loypeSel ? loypeSel.value : '';
+let eksport = filterTurer(turer);
+if (filterForer) eksport = eksport.filter(t => t.forer === filterForer);
+if (filterLoype) eksport = eksport.filter(t => t.loype === filterLoype);
+const headers = ['Dato','Fører','Løype','Slutt','Km','TimerSlutt','Diesel','AdBlue','Merknader','Maskin'];
+const rows = eksport.map(t => [
+t.dato, t.forer, t.loype, t.slutt,
+t.km, t.timerSlutt,
+t.diesel==='Ja'?'Ja':'', t.adblue==='Ja'?'Ja':'',
+t.merknader, t.maskin
+]);
+const csv = [headers, ...rows].map(r => r.map(v => '"'+(v||'').toString().replace(/"/g,'""')+'"').join(',')).join('\n');
+const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = 'kjørelogg_'+new Date().toISOString().split('T')[0]+'.csv';
+a.click();
 }
 // ── LØYPE DATA ──
 let loyper = [];
