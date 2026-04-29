@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 18:49</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 18:55</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -115,7 +115,7 @@ Logg
 Statistikk
 </button><button class="nav-btn" onclick="showTab('admin')" id="btn-admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="18" cy="5" r="2.5" fill="currentColor" stroke="none"/><line x1="18" y1="3" x2="18" y2="2"/><line x1="18" y1="8" x2="18" y2="7"/><line x1="16" y1="4" x2="15" y2="3.5"/><line x1="20" y1="6" x2="21" y2="6.5"/><line x1="16" y1="6" x2="15" y2="6.5"/><line x1="20" y1="4" x2="21" y2="3.5"/></svg>
 Admin
-</button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn active" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-7d" onclick="setDashFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="dash-filter-30d" onclick="setDashFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+</button></nav><div class="section active" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn active" id="dash-filter-5" onclick="setDashFilter('5')">Siste 5</button><button class="filter-btn" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Løypestatus – denne uken
 </div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section" id="tab-ny"><div class="card"><div class="card-header" id="ny-okt-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 <span id="ny-okt-tittel">Registrer ny kjøreøkt</span>
@@ -983,7 +983,7 @@ const adBlueTurer = filtrertDash.filter(t=>t.adblue==='Ja').length;
 // Km: summer diff per tur i perioden fra diffMapAlle (beregnet på alle turer)
 const totalKm = filtrertDash.reduce((s,t) => s + (diffMapAlle[t.id]?.kmKjort||0), 0);
 const diffMapDash = diffMapAlle;
-const filterLabels = {sesong:'Sesongen',uke:'Denne uken','7d':'Siste 7 dager','30d':'Siste 30 dager',alle:'Totalt'};
+const filterLabels = {'5':'Siste 5 turer',sesong:'Sesongen',uke:'Denne uken',alle:'Totalt'};
 document.getElementById('dash-metrics').innerHTML = `
 <div class="metric"><div class="metric-label">Turer – ${filterLabels[dashFilter]}</div><div class="metric-value">${filtrertDash.length}</div></div><div class="metric"><div class="metric-label">Km kjørt</div><div class="metric-value">${totalKm.toFixed(1)}</div><div class="metric-sub">kilometer</div></div><div class="metric"><div class="metric-label">Maskintimer</div><div class="metric-value">${totalTimer.toFixed(1)}</div><div class="metric-sub">timer</div></div><div class="metric"><div class="metric-label">Diesel / AdBlue</div><div class="metric-value">${dieselTurer} / ${adBlueTurer}</div><div class="metric-sub">påfyllinger</div></div>
 `;
@@ -2353,6 +2353,10 @@ msg.style.display = 'inline'; setTimeout(() => msg.style.display='none', 2000);
 }
 function filterTurer(liste) {
 const now = new Date();
+if (loggFilter === '5') {
+const sorted = [...liste].sort((a,b) => (b.dato||'').localeCompare(a.dato||''));
+return sorted.slice(0, 5);
+}
 if (loggFilter === 'uke') {
 const day = now.getDay() === 0 ? 6 : now.getDay() - 1;
 const monday = new Date(now); monday.setDate(now.getDate() - day); monday.setHours(0,0,0,0);
@@ -2387,11 +2391,12 @@ document.getElementById('stats-filter-'+id).classList.toggle('active', id === f)
 });
 renderStatistikk();
 }
-let dashFilter = 'uke';
+let dashFilter = '5';
 function setDashFilter(f) {
 dashFilter = f;
-['sesong','uke','7d','30d','alle'].forEach(id => {
-document.getElementById('dash-filter-'+id).classList.toggle('active', id === f);
+['5','uke','sesong','alle'].forEach(id => {
+const el = document.getElementById('dash-filter-'+id);
+if (el) el.classList.toggle('active', id === f);
 });
 renderDashboard();
 }
