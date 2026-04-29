@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 16:50</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 17:09</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -332,6 +332,50 @@ if (e.name === 'AbortError') throw new Error('Tidsfrist utløpt – sjekk nettfo
 throw e;
 }
 }
+// ── CONFIG CACHE (localStorage, TTL 60 min) ──
+const _CONFIG_CACHE_KEY = 'sf_config_cache';
+const _CONFIG_CACHE_TTL = 60 * 60 * 1000;
+
+async function _hentCachedConfig() {
+try {
+const raw = localStorage.getItem(_CONFIG_CACHE_KEY);
+if (raw) {
+const cached = JSON.parse(raw);
+const age = Date.now() - cached.ts;
+if (age < _CONFIG_CACHE_TTL) {
+setTimeout(_oppdaterConfigBakgrunn, 2000);
+return cached.data;
+}
+}
+} catch(e) {}
+return await _fetchOgCacheConfig();
+}
+
+async function _fetchOgCacheConfig() {
+const cfg = await apiKall({ action: 'hentConfig' });
+if (!cfg.feil) {
+try { localStorage.setItem(_CONFIG_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: cfg })); } catch(e) {}
+}
+return cfg;
+}
+
+async function _oppdaterConfigBakgrunn() {
+try {
+const cfg = await apiKall({ action: 'hentConfig' });
+if (!cfg.feil) {
+try { localStorage.setItem(_CONFIG_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: cfg })); } catch(e) {}
+if (cfg.forere && cfg.forere.length) { forere = cfg.forere; oppdaterForerSelect(); }
+if (cfg.loyper) { loyper = cfg.loyper; oppdaterLoypeSelect(); }
+if (cfg.maskiner) { maskiner = cfg.maskiner; aktivMaskin = maskiner.find(m=>m.aktiv)||maskiner[0]||null; oppdaterMaskinSelect(); }
+if (cfg.kontakter) kontakter = cfg.kontakter;
+}
+} catch(e) {}
+}
+
+function _tomConfigCache() {
+try { localStorage.removeItem(_CONFIG_CACHE_KEY); } catch(e) {}
+}
+
 async function hentData() {
 if (!scriptUrl) return;
 setSyncStatus('loading', 'Sync');
@@ -342,7 +386,10 @@ const fraDatoStr = fraDato.getFullYear() + '-' +
 String(fraDato.getMonth()+1).padStart(2,'0') + '-' +
 String(fraDato.getDate()).padStart(2,'0');
 try {
-const data = await apiKall({ action: 'hentAlle', fraDato: fraDatoStr });
+const [data, cfg] = await Promise.all([
+apiKall({ action: 'hentAlle', fraDato: fraDatoStr }),
+_hentCachedConfig()
+]);
 if (data.feil) throw new Error(data.feil);
 turer = (data.turer || []).map(t => ({
 id: t.ID, dato: t.Dato ? t.Dato.substring(0,10) : '', forer: t['Fører'], loype: t['Løype'],
@@ -359,8 +406,6 @@ kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur)||null : null,
 kmPerTime: t.KmPerTime !== '' ? parseFloat(t.KmPerTime)||null : null,
 timerBruktCalc: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null
 }));
-// Hent config (førere + løyper)
-const cfg = await apiKall({ action: 'hentConfig' });
 if (cfg.forere && cfg.forere.length) forere = cfg.forere;
 if (cfg.loyper) loyper = cfg.loyper;
 if (cfg.kontakter) kontakter = cfg.kontakter;
@@ -1943,7 +1988,7 @@ const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.downl
 let loyper = [];
 async function lagreLoyper() {
 if (!scriptUrl) return;
-try { await apiKall({ action: 'lagreLoyper', loyper }); } catch(e) { console.error('lagreLoyper feil',e); }
+try { await apiKall({ action: 'lagreLoyper', loyper }); _tomConfigCache(); } catch(e) { console.error('lagreLoyper feil',e); }
 }
 let redigerLoypeIdx = -1;
 function oppdaterLoypeSelect() {
@@ -2408,7 +2453,7 @@ let aktivMaskin = null;
 let redigerForerIdx = -1;
 async function lagreForere() {
 if (!scriptUrl) return;
-try { await apiKall({ action: 'lagreForere', forere }); } catch(e) { console.error('lagreForere feil',e); }
+try { await apiKall({ action: 'lagreForere', forere }); _tomConfigCache(); } catch(e) { console.error('lagreForere feil',e); }
 }
 function sjekkPin() {
 const val = document.getElementById('pin-input').value;
@@ -3357,6 +3402,21 @@ document.getElementById('f-slutt').value = _now.getHours().toString().padStart(2
 oppdaterForerSelect();
 oppdaterLoypeSelect();
 sjekkSetup();
+let _sistAktiv = Date.now();
+document.addEventListener('visibilitychange', () => {
+if (document.visibilityState === 'visible') {
+const passert = Date.now() - _sistAktiv;
+if (passert > 5 * 60 * 1000 && scriptUrl) {
+setSyncStatus('loading-bg', 'Sync');
+hentData().then(() => setSyncStatus('ok', 'Sync')).catch(() => setSyncStatus('error', 'Feil'));
+} else if (passert > 60 * 60 * 1000) {
+_tomConfigCache();
+}
+} else {
+_sistAktiv = Date.now();
+}
+});
+
 if (scriptUrl) { setSyncStatus('loading', 'Sync'); hentData().then(() => {
 hentTopbarVaer(); // Hent vær i bakgrunnen etter data er lastet
 // Last feildata for badge
