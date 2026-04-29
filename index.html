@@ -101,7 +101,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 15:43</span><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label" class="topbar-sync-label">Frakoblet</span></div></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 15:45</span><div class="sync-status"><svg id="topbar-snowcat" width="22" height="14" viewBox="0 0 120 72" fill="none" style="display:none;opacity:0.8"><rect x="60" y="12" width="46" height="30" rx="5" fill="#FF8080"/><rect x="14" y="30" width="92" height="22" rx="4" fill="#FF6060"/><rect x="4" y="28" width="14" height="26" rx="3" fill="#FF8080"/><rect x="10" y="50" width="100" height="14" rx="7" fill="#CC2222"/></svg><div class="sync-dot" id="sync-dot"></div><span id="sync-label" class="topbar-sync-label">Frakoblet</span></div></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -301,7 +301,7 @@ throw e;
 }
 async function hentData() {
 if (!scriptUrl) return;
-setSyncStatus('loading', 'Henter');
+setSyncStatus('loading', 'Sync');
 // Beregn fraDato = 14 dager siden
 const fraDato = new Date();
 fraDato.setDate(fraDato.getDate() - 14);
@@ -378,14 +378,14 @@ oppdaterDataLists();
 const tab = document.querySelector('.section.active').id.replace('tab-','');
 renderAktivFane(tab);
 // Start stille bakgrunnslasting av alle historiske data
-setSyncStatus('loading-bg', 'Laster historikk…');
+setSyncStatus('loading-bg', 'Sync');
 hentAlleDataBakgrunn();
 } catch (err) {
 if (err.message && err.message.includes('Tidsfrist')) {
-setSyncStatus('error', 'Tidsavbrudd – prøver igjen…');
+setSyncStatus('error', 'Feil');
 setTimeout(() => hentData(), 5000);
 } else {
-setSyncStatus('error', 'Feil ved henting');
+setSyncStatus('error', 'Feil');
 console.error(err);
 }
 }
@@ -434,7 +434,7 @@ setSyncStatus('ok', 'Sync');
 const aktivFane = document.querySelector('.section.active')?.id?.replace('tab-','');
 if (aktivFane) renderAktivFane(aktivFane);
 } catch(e) {
-setSyncStatus('error', 'Feil ved historikk');
+setSyncStatus('error', 'Feil');
 console.error(e);
 }
 }
@@ -494,7 +494,7 @@ const aktivFane = document.querySelector('.section.active')?.id?.replace('tab-',
 if (aktivFane) renderAktivFane(aktivFane);
 setSyncStatus('ok', 'Sync');
 } catch(e) {
-setSyncStatus('error', 'Feil ved henting');
+setSyncStatus('error', 'Feil');
 console.error(e);
 }
 }
@@ -641,10 +641,10 @@ kmStartMaskin: aktivMaskin ? aktivMaskin.kmStart : '',
 merknader: document.getElementById('f-merknader').value.trim()
 };
 try {
-setSyncStatus('loading', 'Lagrer');
+setSyncStatus('loading', 'Sync');
 const res = await apiKall({ action: 'leggTil', tur });
 if (res.feil) throw new Error(res.feil);
-setSyncStatus('ok', 'Lagret');
+setSyncStatus('ok', 'Sync');
 ['f-forer','f-slutt','f-km','f-timer-slutt','f-merknader'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
 nullstillRunder();
 document.getElementById('f-diesel').checked=false;
@@ -819,10 +819,10 @@ const btn = document.getElementById('lagre-btn');
 btn.disabled = true;
 showLoading('Lagrer endringer…');
 try {
-setSyncStatus('loading', 'Lagrer');
+setSyncStatus('loading', 'Sync');
 await apiKall({ action: 'slett', id: editTurId });
 await apiKall({ action: 'leggTil', tur: oppdatert });
-setSyncStatus('ok', 'Lagret');
+setSyncStatus('ok', 'Sync');
 hideLoading();
 avbrytEdit();
 await hentData();
@@ -840,7 +840,7 @@ try {
 setSyncStatus('loading', 'Sletter…');
 const res = await apiKall({ action: 'slett', id });
 if (res.feil) throw new Error(res.feil);
-setSyncStatus('ok', 'Slettet');
+setSyncStatus('ok', 'Sync');
 await hentData();
 } catch(err) {
 setSyncStatus('error', 'Feil');
