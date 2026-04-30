@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 10:33</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 10:36</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -1872,7 +1872,7 @@ const statBoks = (lbl, val, sub) => `
 </div>`;
 
 const feilPilBtn = (cls, col, bg, txt, status) => txt > 0 ? `
-<div onclick="toggleServicePanel();setServiceToggle('feil')" 
+<div onclick="toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" 
 style="flex:1;text-align:center;padding:5px 4px;border-radius:6px;
 font-size:11px;font-weight:600;background:${bg};color:${col};cursor:pointer"
 title="Åpne feil & rep">${txt} ${status}</div>` : '';
@@ -1907,12 +1907,12 @@ ${statBoks('Timer totalt', timerTotalt.toFixed(1), 'timer')}
 <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Feil & Rep</div>
 ${mFeil.length === 0 ? '<div style="font-size:11px;color:var(--text2)">Ingen feil registrert 👍</div>' : `
 <div style="display:flex;gap:6px;margin-bottom:10px">
-${feilNy > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FCEBEB;color:#A32D2D;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #F7C1C1">${feilNy} Ny</div>` : ''}
-${feilPab > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FAEEDA;color:#854F0B;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #FAC775">${feilPab} Påbegynt</div>` : ''}
-${feilFerdig > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#EAF3DE;color:#3B6D11;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #C0DD97">${feilFerdig} Løst</div>` : ''}
+${feilNy > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FCEBEB;color:#A32D2D;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #F7C1C1">${feilNy} Ny</div>` : ''}
+${feilPab > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FAEEDA;color:#854F0B;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #FAC775">${feilPab} Påbegynt</div>` : ''}
+${feilFerdig > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#EAF3DE;color:#3B6D11;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #C0DD97">${feilFerdig} Løst</div>` : ''}
 </div>
 ${mFeil.filter(f=>f.status!=='Ferdig').map(f=>`
-<div style="padding:7px 10px;border-radius:7px;background:${f.status==='Ny'?'#FEF0F0':'#FFFBF0'};border:1px solid ${f.status==='Ny'?'#F7C1C1':'#FAC775'};margin-bottom:5px;cursor:pointer" onclick="toggleServicePanel();setServiceToggle('feil')">
+<div style="padding:7px 10px;border-radius:7px;background:${f.status==='Ny'?'#FEF0F0':'#FFFBF0'};border:1px solid ${f.status==='Ny'?'#F7C1C1':'#FAC775'};margin-bottom:5px;cursor:pointer" onclick="toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')">
 <div style="font-size:12px;font-weight:600;color:var(--navy)">${f.beskrivelse||'–'}</div>
 <div style="font-size:10px;color:var(--text2);margin-top:2px">${f.forer||'–'} · ${formatDato(f.dato)}</div>
 </div>`).join('')}
