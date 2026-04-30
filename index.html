@@ -909,7 +909,9 @@ snupunkt: snupunkt,
 maskin: aktivMaskin ? aktivMaskin.navn : '',
 timerStartMaskin: aktivMaskin ? aktivMaskin.timerStart : '',
 kmStartMaskin: aktivMaskin ? aktivMaskin.kmStart : '',
-merknader: document.getElementById('f-merknader').value.trim()
+merknader: document.getElementById('f-merknader').value.trim(),
+vaer: (turer.find(t => String(t.id) === String(editTurId)) || {}).vaer || '',
+redigert: true
 };
 const btn = document.getElementById('lagre-btn');
 btn.disabled = true;
