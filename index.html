@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 09:29</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 10:04</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -145,9 +145,7 @@ Km kjørt per måned <span id="stats-km-periode" style="font-size:10px;font-weig
 Runder – statistikk <span id="stats-runder-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
 </div><div class="card-body" id="stats-loype-container"><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div><div id="stats-loype-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px"></div><div id="stats-loype-panel" style="display:none;border:1.5px solid var(--accent);border-radius:var(--radius);background:var(--ice);padding:16px;margin-top:4px"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
 Maskiner
-</div><div class="card-body" id="stats-maskiner-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-Feil &amp; Reparasjoner <span id="stats-feil-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
-</div><div class="card-body" id="stats-feil-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+</div><div class="card-body" id="stats-maskiner-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 Sjåførstatistikk – denne sesongen
 </div><div class="card-body" id="stats-sjaforer-kort"></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 Admin – logg inn
@@ -1207,7 +1205,7 @@ const _periodeLbl = {sesong:'Sesongen',uke:'Denne uken','7d':'Siste 7 dager','30
 const _pEl = (id) => { const e = document.getElementById(id); if(e) e.textContent = '– ' + _periodeLbl; };
 _pEl('stats-forer-periode');
 _pEl('stats-runder-periode');
-_pEl('stats-feil-periode');
+
 _pEl('stats-km-periode');
 if (chartInst) { chartInst.destroy(); chartInst=null; }
 chartInst = new Chart(document.getElementById('chart-km'), {
@@ -1892,15 +1890,19 @@ ${statBoks('Timer totalt', timerTotalt.toFixed(1), 'timer')}
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
 <div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px">
-<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Feil & Rep</div>
-<div style="font-size:22px;font-weight:700;color:var(--navy);font-family:var(--mono);margin-bottom:2px">${mFeil.length}</div>
-<div style="font-size:11px;color:var(--text2);margin-bottom:8px">totalt registrert</div>
-<div style="display:flex;gap:5px">
-${feilPilBtn('fp-ny','#A32D2D','#FCEBEB',feilNy,'Ny')}
-${feilPilBtn('fp-pab','#854F0B','#FAEEDA',feilPab,'Påbegynt')}
-${feilPilBtn('fp-ferdig','#3B6D11','#EAF3DE',feilFerdig,'Løst')}
-${mFeil.length===0?'<div style="font-size:11px;color:var(--text2)">Ingen feil 👍</div>':''}
+<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Feil & Rep</div>
+${mFeil.length === 0 ? '<div style="font-size:11px;color:var(--text2)">Ingen feil registrert 👍</div>' : `
+<div style="display:flex;gap:6px;margin-bottom:10px">
+${feilNy > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FCEBEB;color:#A32D2D;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #F7C1C1">${feilNy} Ny</div>` : ''}
+${feilPab > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FAEEDA;color:#854F0B;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #FAC775">${feilPab} Påbegynt</div>` : ''}
+${feilFerdig > 0 ? `<div onclick="toggleServicePanel();setServiceToggle('feil')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#EAF3DE;color:#3B6D11;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #C0DD97">${feilFerdig} Løst</div>` : ''}
 </div>
+${mFeil.filter(f=>f.status!=='Ferdig').map(f=>`
+<div style="padding:7px 10px;border-radius:7px;background:${f.status==='Ny'?'#FEF0F0':'#FFFBF0'};border:1px solid ${f.status==='Ny'?'#F7C1C1':'#FAC775'};margin-bottom:5px;cursor:pointer" onclick="toggleServicePanel();setServiceToggle('feil')">
+<div style="font-size:12px;font-weight:600;color:var(--navy)">${f.beskrivelse||'–'}</div>
+<div style="font-size:10px;color:var(--text2);margin-top:2px">${f.forer||'–'} · ${formatDato(f.dato)}</div>
+</div>`).join('')}
+`}
 </div>
 <div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px">
 <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Service</div>
@@ -2062,7 +2064,6 @@ forerStats[t.forer].km += d.kmKjort||0;
 forerStats[t.forer].turer.push(t);
 });
 renderStatsMaskiner();
-renderStatsFeil();
 const kortEl = document.getElementById('stats-sjaforer-kort');
 const forerNavn = Object.keys(forerStats);
 if (!forerNavn.length) { kortEl.innerHTML='<div class="empty"><p>Ingen data for valgt periode</p></div>'; }
