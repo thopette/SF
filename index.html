@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v29.04 20:08</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 09:29</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -143,7 +143,9 @@ Bra
 Km kjørt per måned <span id="stats-km-periode" style="font-size:10px;font-weight:400;opacity:0.7"></span>
 <span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører <span id="stats-forer-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span></div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Km kjørt</th><th>Maskintimer</th><th>Km/t</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Runder – statistikk <span id="stats-runder-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
-</div><div class="card-body" id="stats-loype-container"><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div><div id="stats-loype-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px"></div><div id="stats-loype-panel" style="display:none;border:1.5px solid var(--accent);border-radius:var(--radius);background:var(--ice);padding:16px;margin-top:4px"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+</div><div class="card-body" id="stats-loype-container"><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div><div id="stats-loype-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px"></div><div id="stats-loype-panel" style="display:none;border:1.5px solid var(--accent);border-radius:var(--radius);background:var(--ice);padding:16px;margin-top:4px"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+Maskiner
+</div><div class="card-body" id="stats-maskiner-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
 Feil &amp; Reparasjoner <span id="stats-feil-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
 </div><div class="card-body" id="stats-feil-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 Sjåførstatistikk – denne sesongen
@@ -1815,6 +1817,103 @@ panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 };
 // Avstikker-frekvens fjernet – vises under runde-kortene
 // ── Feil & Reparasjoner statistikk ──
+function renderStatsMaskiner() {
+const el = document.getElementById('stats-maskiner-innhold');
+if (!el) return;
+
+const sorted = [...maskiner].sort((a,b) => {
+if (a.aktiv && !b.aktiv) return -1;
+if (!a.aktiv && b.aktiv) return 1;
+return a.navn.localeCompare(b.navn);
+});
+
+el.innerHTML = sorted.map(m => {
+// Get stats from turer for this maskin
+const mTurer = turer.filter(t => t.maskin === m.navn);
+const kmMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.km)||0)) : parseFloat(m.kmStart)||0;
+const timerMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.timerSlutt)||0)) : parseFloat(m.timerStart)||0;
+const kmTotalt = Math.max(0, kmMax - (parseFloat(m.kmStart)||0));
+const timerTotalt = Math.max(0, timerMax - (parseFloat(m.timerStart)||0));
+
+// Feil for this maskin
+const mFeil = (feilData||[]).filter(f => f.maskin === m.navn);
+const feilNy = mFeil.filter(f=>f.status==='Ny').length;
+const feilPab = mFeil.filter(f=>f.status==='Påbegynt').length;
+const feilFerdig = mFeil.filter(f=>f.status==='Ferdig').length;
+
+// Service for this maskin
+const mService = (serviceData||[]).filter(s => s.maskin === m.navn)
+.sort((a,b)=>(b.dato||'').localeCompare(a.dato||''));
+
+// Utfaset dato = last tur dato
+const sisteTur = mTurer.sort((a,b)=>(b.dato||'').localeCompare(a.dato||''))[0];
+const utfasetDato = !m.aktiv && sisteTur ? formatDato(sisteTur.dato) : '';
+
+const dotFarge = m.aktiv ? '#639922' : 'var(--border)';
+const opacity = m.aktiv ? '1' : '0.7';
+
+const statBoks = (lbl, val, sub) => `
+<div style="background:var(--ice);border:1px solid var(--border);border-radius:7px;padding:9px 11px">
+<div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px">${lbl}</div>
+<div style="font-size:15px;font-weight:600;color:var(--navy);font-family:var(--mono)">${val}</div>
+<div style="font-size:10px;color:var(--text2);margin-top:1px">${sub}</div>
+</div>`;
+
+const feilPilBtn = (cls, col, bg, txt, status) => txt > 0 ? `
+<div onclick="toggleServicePanel();setServiceToggle('feil')" 
+style="flex:1;text-align:center;padding:5px 4px;border-radius:6px;
+font-size:11px;font-weight:600;background:${bg};color:${col};cursor:pointer"
+title="Åpne feil & rep">${txt} ${status}</div>` : '';
+
+const svcRader = mService.slice(0,3).map(s=>`
+<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)">
+<span style="font-size:11px;font-family:var(--mono);color:var(--text2);width:72px;flex-shrink:0">${formatDato(s.dato)}</span>
+<span style="font-size:11px;color:var(--text);flex:1">${s.type||'Service'}</span>
+<span style="font-size:11px;font-family:var(--mono);color:var(--text2)">${s.timerstand||'–'}t</span>
+</div>`).join('');
+
+return `<div style="border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;opacity:${opacity}">
+<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--snow)">
+<div style="width:10px;height:10px;border-radius:50%;background:${dotFarge};flex-shrink:0"></div>
+<span style="font-size:14px;font-weight:600;color:var(--navy);flex:1">${m.navn}</span>
+<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;
+background:${m.aktiv?'#EAF3DE':'var(--ice)'};color:${m.aktiv?'#3B6D11':'var(--text2)'}">
+${m.aktiv?'Aktiv':'Inaktiv'+(utfasetDato?' · utfaset '+utfasetDato:'')}</span>
+</div>
+<div style="padding:12px 14px">
+<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Bruk${!m.aktiv?' i vår periode':''}</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+${statBoks('Km-start', (parseFloat(m.kmStart)||0).toFixed(0), 'ved overtakelse')}
+${statBoks(m.aktiv?'Nåværende km':'Siste kjente km', kmMax.toFixed(0), 'siste tur')}
+${statBoks('Kjørt totalt', kmTotalt.toFixed(0), 'km')}
+${statBoks('Timer-start', (parseFloat(m.timerStart)||0).toFixed(1), 'ved overtakelse')}
+${statBoks(m.aktiv?'Nåværende timer':'Siste kjente timer', timerMax.toFixed(1), 'siste tur')}
+${statBoks('Timer totalt', timerTotalt.toFixed(1), 'timer')}
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Feil & Rep</div>
+<div style="font-size:22px;font-weight:700;color:var(--navy);font-family:var(--mono);margin-bottom:2px">${mFeil.length}</div>
+<div style="font-size:11px;color:var(--text2);margin-bottom:8px">totalt registrert</div>
+<div style="display:flex;gap:5px">
+${feilPilBtn('fp-ny','#A32D2D','#FCEBEB',feilNy,'Ny')}
+${feilPilBtn('fp-pab','#854F0B','#FAEEDA',feilPab,'Påbegynt')}
+${feilPilBtn('fp-ferdig','#3B6D11','#EAF3DE',feilFerdig,'Løst')}
+${mFeil.length===0?'<div style="font-size:11px;color:var(--text2)">Ingen feil 👍</div>':''}
+</div>
+</div>
+<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Service</div>
+<div style="font-size:22px;font-weight:700;color:var(--navy);font-family:var(--mono);margin-bottom:2px">${mService.length}</div>
+<div style="font-size:11px;color:var(--text2);margin-bottom:8px">utført totalt</div>
+${svcRader || '<div style="font-size:11px;color:var(--text2)">Ingen registrert</div>'}
+</div>
+</div>
+</div>
+</div>`;
+}).join('');
+}
+
 function renderStatsFeil() {
 const el = document.getElementById('stats-feil-innhold');
 if (!el) return;
@@ -1962,6 +2061,7 @@ const d = diffMapSesong[t.id]||{};
 forerStats[t.forer].km += d.kmKjort||0;
 forerStats[t.forer].turer.push(t);
 });
+renderStatsMaskiner();
 renderStatsFeil();
 const kortEl = document.getElementById('stats-sjaforer-kort');
 const forerNavn = Object.keys(forerStats);
