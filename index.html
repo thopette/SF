@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 13:13</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 13:18</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -398,7 +398,7 @@ timerBrukt: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null,
 diesel: t.Diesel || '', adblue: t.AdBlue || '', forkond: parseInt(t.Forkond)||0,
 merknader: t.Merknader || '',
 avstikkere: t.Avstikkere || '',
-redigert: (() => { const r = t.Registrert || t['Registrert'] || ''; const s = String(r); console.log('Registrert:', s, 'includes:', s.includes('[redigert]')); return s.includes('[redigert]'); })(),
+redigert: String(t.Registrert || '').includes('[redigert]'),
 snupunkt: t.Snupunkt || '',
 maskin: t.Maskin || '',
 vaer: t.Vaer || '',
@@ -502,6 +502,7 @@ timerBruktCalc: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null,
 diesel: t.Diesel || '', adblue: t.AdBlue || '', forkond: parseInt(t.Forkond)||0,
 merknader: t.Merknader || '', avstikkere: t.Avstikkere || '',
 snupunkt: t.Snupunkt || '', maskin: t.Maskin || '', vaer: t.Vaer || '',
+redigert: String(t.Registrert || '').includes('[redigert]'),
 kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur)||null : null,
 kmPerTime: t.KmPerTime !== '' ? parseFloat(t.KmPerTime)||null : null
 }));
@@ -547,6 +548,7 @@ timerBruktCalc: t.Maskintimer !== '' ? parseFloat(t.Maskintimer) : null,
 diesel: t.Diesel || '', adblue: t.AdBlue || '', forkond: parseInt(t.Forkond)||0,
 merknader: t.Merknader || '', avstikkere: t.Avstikkere || '',
 snupunkt: t.Snupunkt || '', maskin: t.Maskin || '', vaer: t.Vaer || '',
+redigert: String(t.Registrert || '').includes('[redigert]'),
 kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur)||null : null,
 kmPerTime: t.KmPerTime !== '' ? parseFloat(t.KmPerTime)||null : null
 }));
