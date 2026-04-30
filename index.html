@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 14:45</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 15:03</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -179,7 +179,7 @@ Sesonginnstillinger
 </div>
 <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
 Google Sheets tilkobling
-</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Vedlikehold</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Regn ut <strong>Maskintimer</strong>, <strong>Km kjørt</strong> og <strong>Km/t</strong> på nytt for alle turer i loggen. Brukes etter at en gammel registrering er rettet i sheetet, slik at avledede tall blir riktige.</div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-wrap:wrap"><span id="diff-status" style="font-size:12px;color:var(--text2);display:none"></span><button class="btn btn-primary btn-sm" id="diff-knapp" onclick="regnUtDiffPaNytt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Regn ut på nytt</button></div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
+</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Vedlikehold</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Regn ut <strong>Maskintimer</strong>, <strong>Km kjørt</strong> og <strong>Km/t</strong> på nytt for alle turer i loggen. Brukes etter at en gammel registrering er rettet i sheetet, slik at avledede tall blir riktige.</div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-wrap:wrap"><span id="diff-status" style="font-size:12px;color:var(--text2);display:none"></span><button class="btn btn-primary btn-sm" id="diff-knapp" onclick="regnUtDiffPaNytt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Regn ut på nytt</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>Læring (innsyn)</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Viser hva systemet har lært om hver løype basert på <em>rene</em> kjøringer (kun én runde per økt). Læringen brukes til å fordele km/timer på <em>kombinerte</em> økter. Krever minst 2 rene kjøringer før historikk slår inn – inntil da brukes admin-estimatet.</div><div id="admin-laering-innhold"><p style="font-size:13px;color:var(--text2)">Laster…</p></div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
 Avstikkere / tilbringere
 <button type="button" onclick="leggTilAvstikkerInput()" style="float:right;font-size:11px;color:var(--mid);background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-avstikkere"></div><div style="font-size:11px;font-weight:600;color:#B7770D;text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span>Faste snupunkter</span><button type="button" onclick="leggTilSnupunktInput()" style="font-size:11px;color:#E67E22;background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-snupunkter"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px">Estimat (brukes ved kombinerte turer)</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
@@ -2701,11 +2701,71 @@ oppdaterForerSelect();
 renderAdminLoyper();
 renderAdmin_sesong();
 renderAdminMaskiner();
+renderAdminLaering();
 // Fører liste
 const el = document.getElementById('admin-forere-list');
 el.innerHTML = forere.length ? forere.map((f,i) => `
 <div class="forer-list-item"><div class="forer-name">${f}</div><button class="btn btn-sm btn-outline" onclick="redigerForer(${i})" style="padding:5px 10px;font-size:12px">Endre</button><button class="btn btn-sm btn-danger" onclick="slettForer(${i})">Slett</button></div>`).join('') : '<p style="color:var(--text2);font-size:13px">Ingen førere registrert.</p>';
 
+}
+// Innsyn i hva systemet har lært per løype.
+// Speiler logikken i beregnBaseline / hentEstimat slik at det som vises her
+// er nøyaktig det samme som faktisk brukes ved fordeling av kombinerte turer.
+function renderAdminLaering() {
+const el = document.getElementById('admin-laering-innhold');
+if (!el) return;
+if (!loyper || loyper.length === 0) {
+el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen løyper definert ennå.</p>';
+return;
+}
+const diffMap = beregnDiff(turer);
+const rader = loyper.map(l => {
+const reneKj = turer.filter(t => t.loype === l.navn);
+const kmVerdier = reneKj.map(t => diffMap[t.id]?.kmKjort||0).filter(v => v > 0);
+const timerVerdier = reneKj.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0).filter(v => v > 0);
+const antall = Math.min(kmVerdier.length, timerVerdier.length);
+const snittKm = kmVerdier.length ? kmVerdier.reduce((s,v)=>s+v,0)/kmVerdier.length : null;
+const snittTimer = timerVerdier.length ? timerVerdier.reduce((s,v)=>s+v,0)/timerVerdier.length : null;
+const minKm = kmVerdier.length ? Math.min(...kmVerdier) : null;
+const maksKm = kmVerdier.length ? Math.max(...kmVerdier) : null;
+const minT = timerVerdier.length ? Math.min(...timerVerdier) : null;
+const maksT = timerVerdier.length ? Math.max(...timerVerdier) : null;
+const adminKm = l.kmEstimat || 1;
+const adminTimer = l.timerEstimat || 0.5;
+let kilde, brukKm, brukTimer, kildeFarge, kildeTekst;
+if (antall >= 2) {
+kilde = 'historikk'; brukKm = snittKm; brukTimer = snittTimer;
+kildeFarge = 'background:#D5F5E3;color:#1E8449;border-color:#A9DFBF';
+kildeTekst = 'Historikk';
+} else if (adminKm > 1 || adminTimer > 0.5) {
+kilde = 'estimat'; brukKm = adminKm; brukTimer = adminTimer;
+kildeFarge = 'background:#FEF9E7;color:#7D6608;border-color:#F9E79F';
+kildeTekst = 'Admin-estimat';
+} else {
+kilde = 'lik'; brukKm = adminKm; brukTimer = adminTimer;
+kildeFarge = 'background:var(--snow);color:var(--text2);border-color:var(--border)';
+kildeTekst = 'Lik fordeling (fallback)';
+}
+return { l, antall, snittKm, snittTimer, minKm, maksKm, minT, maksT, adminKm, adminTimer, kilde, brukKm, brukTimer, kildeFarge, kildeTekst };
+});
+
+el.innerHTML = rader.map(r => {
+const spredningKm = r.minKm != null && r.maksKm != null && r.maksKm > r.minKm
+? `<span style="font-size:11px;color:var(--text2)">spredning ${r.minKm.toFixed(1)}–${r.maksKm.toFixed(1)} km</span>` : '';
+const spredningT = r.minT != null && r.maksT != null && r.maksT > r.minT
+? `<span style="font-size:11px;color:var(--text2)">spredning ${r.minT.toFixed(1)}–${r.maksT.toFixed(1)} t</span>` : '';
+const historikk = r.antall > 0
+? `<div style="margin-top:6px;font-size:12px;color:var(--text2)">Snitt fra ${r.antall} ren${r.antall===1?'':'e'} kjøring${r.antall===1?'':'er'}: <strong style="color:var(--text)">${r.snittKm!=null?r.snittKm.toFixed(1):'–'} km</strong> / <strong style="color:var(--text)">${r.snittTimer!=null?r.snittTimer.toFixed(1):'–'} t</strong> ${spredningKm} ${spredningT}</div>`
+: '<div style="margin-top:6px;font-size:12px;color:var(--text2);font-style:italic">Ingen rene kjøringer registrert ennå</div>';
+const adminEst = `<div style="margin-top:4px;font-size:12px;color:var(--text2)">Admin-estimat: <strong style="color:var(--text)">${r.adminKm} km</strong> / <strong style="color:var(--text)">${r.adminTimer} t</strong></div>`;
+const aktivt = `<div style="margin-top:8px;padding:8px 10px;background:var(--ice);border-radius:6px;font-size:12px"><strong style="color:var(--navy)">Brukes nå:</strong> ${r.brukKm.toFixed(1)} km / ${r.brukTimer.toFixed(1)} t <span class="badge-km" style="margin-left:6px;${r.kildeFarge}">${r.kildeTekst}</span></div>`;
+return `<div style="border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;background:var(--white)">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-weight:600;font-size:14px;color:var(--navy);flex:1">${r.l.navn}</div></div>
+${historikk}
+${adminEst}
+${aktivt}
+</div>`;
+}).join('');
 }
 function visNyForer() { redigerForerIdx=-1; document.getElementById('forer-navn-input').value=''; document.getElementById('forer-modal-title').textContent='Legg til fører'; document.getElementById('forer-modal').classList.add('open'); }
 function redigerForer(i) { redigerForerIdx=i; document.getElementById('forer-navn-input').value=forere[i]; document.getElementById('forer-modal-title').textContent='Endre fører'; document.getElementById('forer-modal').classList.add('open'); }
