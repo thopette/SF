@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 10:36</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 11:43</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -1153,7 +1153,7 @@ return `<tr style="${idx%2===0?'background:var(--white)':'background:var(--snow)
 </button></div></td>
 </tr>
 ${(t.merknader||t.avstikkere||t.snupunkt) ? `<tr style="${idx%2===0?'background:var(--white)':'background:var(--snow)'}"><td colspan="10" style="font-size:11px;color:var(--text2);padding-top:2px;padding-bottom:10px;border-bottom:1px solid var(--border)">
-${t.snupunkt && t.snupunkt!=='' ? `<span style="color:#D68910;font-weight:600">↩ ${t.snupunkt==='Ja'?'Snudde':t.snupunkt}</span> ` : ''}
+${t.snupunkt && t.snupunkt!=='' && t.snupunkt!=='Ja' ? `<span style="color:#D68910;font-weight:600">↩ ${t.snupunkt}</span> ` : ''}
 ${t.avstikkere ? t.avstikkere.split('|').map(a=>`<span style="background:#F0FBF4;color:#1E8449;border-radius:4px;padding:1px 6px;margin-right:3px;font-weight:600">✓${a}</span>`).join('') : ''}
 ${t.merknader ? `<span style="font-style:italic">💬 ${t.merknader}</span>` : ''}
 </td></tr>` : ''}`;
@@ -1184,7 +1184,7 @@ ${t.diesel==='Ja' ? `<div class="logg-kort-stat">⛽ <span>Diesel</span></div>` 
 ${t.adblue==='Ja' ? `<div class="logg-kort-stat" style="background:#E8F5E9;border-color:#A5D6A7"><span style="color:#2E7D32">AdBlue</span></div>` : ''}
 </div>
 ${(t.merknader||t.avstikkere||t.snupunkt) ? `<div style="font-size:11px;color:var(--text2);border-top:1px solid var(--border);padding-top:6px;margin-top:4px">
-${t.snupunkt && t.snupunkt!=='' ? `<span style="color:#D68910;font-weight:600">↩ ${t.snupunkt==='Ja'?'Snudde':t.snupunkt}</span> ` : ''}
+${t.snupunkt && t.snupunkt!=='' && t.snupunkt!=='Ja' ? `<span style="color:#D68910;font-weight:600">↩ ${t.snupunkt}</span> ` : ''}
 ${t.avstikkere ? t.avstikkere.split('|').map(a=>`<span style="background:#F0FBF4;color:#1E8449;border-radius:4px;padding:1px 6px;margin-right:3px;font-weight:600">✓${a}</span>`).join('') : ''}
 ${t.merknader ? `<span style="font-style:italic">💬 ${t.merknader}</span>` : ''}
 </div>` : ''}
@@ -2310,7 +2310,7 @@ const snCb = document.getElementById('rv'+i+'-snupunkt');
 const snudde = snCb && snCb.checked;
 const valgtSn = snudde ? (() => {
 const btn = document.querySelector(`#rv${i}-snupunkt-panel .snupunkt-btn.selected`);
-return btn ? btn.textContent : 'Ja';
+return btn ? btn.textContent : ''; // Tom hvis snudde men ingen snupunkt valgt
 })() : '';
 runder.push({ loype: l.navn, avstikkere: kjorteAvst, snupunkt: valgtSn });
 });
