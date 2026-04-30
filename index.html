@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 14:18</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 14:24</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -121,7 +121,7 @@ Løypestatus – denne uken
 <span id="ny-okt-tittel">Registrer ny kjøreøkt</span>
 </div><div class="card-body">
 <div id="edit-advarsel" style="display:none;background:#FFFBF0;border:1px solid #F5CBA7;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#7D6608;line-height:1.5">
-⚠️ <strong>Merk:</strong> Km-stand og timerteller er kumulative. Endrer du disse vil km-beregningen på <em>neste registrerte økt</em> også endres automatisk.
+⚠️ <strong>Merk:</strong> Km-stand og timerteller er kumulative. Endrer du disse, blir <em>ikke</em> de avledede tallene (km kjørt, maskintimer) på etterfølgende økter oppdatert automatisk. Bruk <em>«Regn ut på nytt»</em> i Admin-fanen etter redigering hvis dette er nødvendig.
 </div>
 <div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px">
 <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Runder kjørt denne økten <span id="runder-valgt-count" style="color:var(--mid);font-weight:700"></span></label>
