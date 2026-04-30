@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 13:24</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 14:18</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -179,7 +179,7 @@ Sesonginnstillinger
 </div>
 <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
 Google Sheets tilkobling
-</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
+</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Vedlikehold</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Regn ut <strong>Maskintimer</strong>, <strong>Km kjørt</strong> og <strong>Km/t</strong> på nytt for alle turer i loggen. Brukes etter at en gammel registrering er rettet i sheetet, slik at avledede tall blir riktige.</div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-wrap:wrap"><span id="diff-status" style="font-size:12px;color:var(--text2);display:none"></span><button class="btn btn-primary btn-sm" id="diff-knapp" onclick="regnUtDiffPaNytt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Regn ut på nytt</button></div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
 Avstikkere / tilbringere
 <button type="button" onclick="leggTilAvstikkerInput()" style="float:right;font-size:11px;color:var(--mid);background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-avstikkere"></div><div style="font-size:11px;font-weight:600;color:#B7770D;text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span>Faste snupunkter</span><button type="button" onclick="leggTilSnupunktInput()" style="font-size:11px;color:#E67E22;background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-snupunkter"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px">Estimat (brukes ved kombinerte turer)</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
@@ -611,6 +611,13 @@ el.innerHTML = '<div style="display:flex;align-items:center;justify-content:cent
 }
 }
 if (id==='ny') {
+// Sett default klokkeslett til "nå" hvis vi ikke er midt i en redigering
+if (!editTurId) {
+const _n = new Date();
+const _hh = _n.getHours().toString().padStart(2,'0');
+const _mm = _n.getMinutes().toString().padStart(2,'0');
+document.getElementById('f-slutt').value = _hh + ':' + _mm;
+}
 oppdaterStandHint();
 byggRundeGrid();
 }
@@ -670,7 +677,7 @@ let referanseKilde = '';
 if (sisteT) {
 sisteKm = parseFloat(sisteT.km)||0;
 sisteTimer = parseFloat(sisteTimerT?.timerSlutt)||0;
-referanseKilde = 'nåværende maskinstand';
+referanseKilde = 'høyeste registrerte maskinstand';
 } else if (aktivMaskin && (aktivMaskin.kmStart > 0 || aktivMaskin.timerStart > 0)) {
 sisteKm = parseFloat(aktivMaskin.kmStart)||0;
 sisteTimer = parseFloat(aktivMaskin.timerStart)||0;
@@ -947,18 +954,17 @@ const hintKm = document.getElementById('hint-km');
 const hintTimer = document.getElementById('hint-timer');
 if (!hintKm || !hintTimer) return;
 const maskinNavn = aktivMaskin ? aktivMaskin.navn : '';
+// Sorter etter dato + slutt-tid (kronologisk, eldst først)
 const sorted = [...turer].sort((a,b) =>
 new Date(a.dato+' '+(a.slutt||'00:00')) - new Date(b.dato+' '+(b.slutt||'00:00'))
 );
 const relevante = maskinNavn ? sorted.filter(t => t.maskin === maskinNavn) : sorted;
-// Finn turen med høyest km-stand (= siste reelle stand)
-const sisteT = relevante.length > 0
-? relevante.reduce((best, t) => (parseFloat(t.km)||0) > (parseFloat(best.km)||0) ? t : best, relevante[0])
-: null;
+// Bruk SISTE tur kronologisk – det er det som faktisk ble sist registrert
+const sisteT = relevante.length > 0 ? relevante[relevante.length - 1] : null;
 const maskinNavn2 = aktivMaskin ? ` (${aktivMaskin.navn})` : '';
 if (sisteT) {
-hintKm.innerHTML = `Nåværende km-stand${maskinNavn2}: <strong>${sisteT.km}</strong>`;
-hintTimer.innerHTML = `Nåværende timerteller${maskinNavn2}: <strong>${sisteT.timerSlutt}</strong>`;
+hintKm.innerHTML = `Siste registrerte km-stand${maskinNavn2}: <strong>${sisteT.km}</strong>`;
+hintTimer.innerHTML = `Siste registrerte timerteller${maskinNavn2}: <strong>${sisteT.timerSlutt}</strong>`;
 } else if (aktivMaskin) {
 hintKm.innerHTML = `Km-stand ved oppstart${maskinNavn2}: <strong>${aktivMaskin.kmStart||0}</strong>`;
 hintTimer.innerHTML = `Timerteller ved oppstart${maskinNavn2}: <strong>${aktivMaskin.timerStart||0}</strong>`;
@@ -2636,6 +2642,34 @@ showTab('dashboard');
 function lagreAdminUrl() {
 // URL er hardkodet i HTML-filen
 alert('URL er hardkodet i appen. Kontakt administrator for å endre.');
+}
+async function regnUtDiffPaNytt() {
+const bekreft = confirm('Dette regner ut Maskintimer, Km kjørt og Km/t på nytt for alle turer i loggen, basert på Km- og Timer-verdiene som står der nå.\n\nKan ta noen sekunder. Fortsette?');
+if (!bekreft) return;
+const knapp = document.getElementById('diff-knapp');
+const status = document.getElementById('diff-status');
+knapp.disabled = true;
+const opprinneligTekst = knapp.innerHTML;
+knapp.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-width:2px"></div> Regner ut…';
+status.style.display = 'inline';
+status.style.color = 'var(--text2)';
+status.textContent = 'Behandler turer…';
+try {
+const res = await apiKall({ action: 'regnUtDiffPaNytt' });
+if (res.feil) throw new Error(res.feil);
+status.style.color = 'var(--success)';
+status.textContent = `✓ Ferdig – ${res.oppdatert} av ${res.total} rader oppdatert`;
+// Tving full re-henting fra sheet så loggen viser nye verdier
+await hentData();
+} catch(err) {
+status.style.color = 'var(--danger)';
+status.textContent = '✗ Feil: ' + err.message;
+} finally {
+knapp.disabled = false;
+knapp.innerHTML = opprinneligTekst;
+// La status stå synlig i 8 sek så brukeren rekker å lese
+setTimeout(() => { status.style.display = 'none'; }, 8000);
+}
 }
 function renderAdmin() {
 if (!adminLoggetInn) return;
