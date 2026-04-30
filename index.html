@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 15:03</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 15:10</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -177,7 +177,7 @@ Sesonginnstillinger
 </div>
 <div class="field"><label>Stedsnavn</label><input type="text" id="admin-vaer-navn" placeholder="Mitt sted" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div>
 </div>
-<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Læring</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Læring starter fra</label><input type="date" id="admin-laering-fra" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Turer før denne datoen telles ikke i læringen for kombinerte runder. La stå tom for å bruke alle data.</div></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
 Google Sheets tilkobling
 </div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Vedlikehold</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Regn ut <strong>Maskintimer</strong>, <strong>Km kjørt</strong> og <strong>Km/t</strong> på nytt for alle turer i loggen. Brukes etter at en gammel registrering er rettet i sheetet, slik at avledede tall blir riktige.</div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-wrap:wrap"><span id="diff-status" style="font-size:12px;color:var(--text2);display:none"></span><button class="btn btn-primary btn-sm" id="diff-knapp" onclick="regnUtDiffPaNytt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Regn ut på nytt</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>Læring (innsyn)</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Viser hva systemet har lært om hver løype basert på <em>rene</em> kjøringer (kun én runde per økt). Læringen brukes til å fordele km/timer på <em>kombinerte</em> økter. Krever minst 2 rene kjøringer før historikk slår inn – inntil da brukes admin-estimatet.</div><div id="admin-laering-innhold"><p style="font-size:13px;color:var(--text2)">Laster…</p></div></div></div><div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
 Avstikkere / tilbringere
@@ -204,6 +204,17 @@ const d = str.toString().substring(0,10);
 const parts = d.split('-');
 if (parts.length === 3) return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
 return new Date(str);
+}
+// Returnerer true hvis turen skal telle med i læringen (baseline for kombinerte runder).
+// Filtreres bort hvis dato er før innstillingen 'laeringFraDato' – f.eks. for å
+// utelukke importert historikk som ikke er representativ (gammel maskin / endret løypenett).
+function tellesILaering(t) {
+  const cutoff = (typeof innstillinger !== 'undefined' && innstillinger && innstillinger.laeringFraDato)
+    ? String(innstillinger.laeringFraDato).substring(0, 10) : '';
+  if (!cutoff) return true;
+  const dato = String(t.dato || '').substring(0, 10);
+  if (!dato) return false;
+  return dato >= cutoff;
 }
 function beregnDiff(turer) {
 // Returns a map of tur.id -> { kmKjort, timerBrukt }
@@ -1269,9 +1280,11 @@ return `<tr>
 const loypeMap = {};
 const diffMapLoype = beregnDiff(turer);
 
-// Baseline: beregn snitt km/timer fra rene kjøringer (kun én runde)
+// Baseline: beregn snitt km/timer fra rene kjøringer (kun én runde).
+// Filtrerer ut turer før innstillingen 'laeringFraDato' – disse representerer
+// f.eks. gammel maskin / endret løypenett og er ikke relevante for læringen.
 function beregnBaseline(rundeNavn) {
-const reneKjøringer = turer.filter(t => t.loype === rundeNavn);
+const reneKjøringer = turer.filter(t => t.loype === rundeNavn && tellesILaering(t));
 if (reneKjøringer.length === 0) return null;
 const kmVerdier = reneKjøringer.map(t => diffMapLoype[t.id]?.kmKjort||0).filter(v=>v>0);
 const timerVerdier = reneKjøringer.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0).filter(v=>v>0);
@@ -2374,7 +2387,7 @@ if (timerEl) timerEl.value = l.timerEstimat||0.5;
 const baselineEl = document.getElementById('loype-modal-baseline');
 if (baselineEl) {
 const diffMapModal = beregnDiff(turer);
-const reneKj = turer.filter(t => t.loype === l.navn);
+const reneKj = turer.filter(t => t.loype === l.navn && tellesILaering(t));
 const kmVerdier = reneKj.map(t => diffMapModal[t.id]?.kmKjort||0).filter(v=>v>0);
 const timerVerdier = reneKj.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0).filter(v=>v>0);
 const antall = Math.min(kmVerdier.length, timerVerdier.length);
@@ -2449,7 +2462,7 @@ if (!el) return;
 if (!loyper.length) { el.innerHTML='<p style="color:var(--text2);font-size:13px;padding:4px 0">Ingen løyper lagt inn ennå. Trykk «+ Ny runde» for å starte.</p>'; return; }
 el.innerHTML = loyper.map((l,i) => {
 // Beregn baseline for denne runden
-const reneKjøringer = turer.filter(t => t.loype === l.navn);
+const reneKjøringer = turer.filter(t => t.loype === l.navn && tellesILaering(t));
 let diffMapAdmin = {};
 try { diffMapAdmin = beregnDiff(turer); } catch(e) {}
 const kmVerdier = reneKjøringer.map(t => diffMapAdmin[t.id]?.kmKjort||0).filter(v=>v>0);
@@ -2524,15 +2537,20 @@ sesongStart = document.getElementById('admin-sesong-start').value;
 sesongSlutt = document.getElementById('admin-sesong-slutt').value;
 const maxKm = document.getElementById('admin-max-km').value || '150';
 const maxTimer = document.getElementById('admin-max-timer').value || '10';
+const laeringFraDato = document.getElementById('admin-laering-fra').value || '';
 try {
 const vaerValg2 = document.getElementById('admin-vaerstasjon')?.value || 'sorli';
 await apiKall({ action: 'lagreInnstillinger', innstillinger: {
 sesongStart, sesongSlutt, maxKm, maxTimer,
+laeringFraDato,
 vaerstasjon: vaerValg2,
 vaerLat: document.getElementById('admin-vaer-lat')?.value||'',
 vaerLon: document.getElementById('admin-vaer-lon')?.value||'',
 vaerNavn: document.getElementById('admin-vaer-navn')?.value||''
 }});
+// Oppdater lokal kopi slik at læringen reagerer umiddelbart
+if (innstillinger) innstillinger.laeringFraDato = laeringFraDato;
+renderAdminLaering();
 } catch(e) { console.error('lagreInnstillinger feil', e); }
 const msg = document.getElementById('sesong-lagret');
 msg.style.display = 'inline'; setTimeout(() => msg.style.display='none', 2000);
@@ -2601,6 +2619,12 @@ toggleVaerCustom();
 if (sesongSlutt) document.getElementById('admin-sesong-slutt').value = sesongSlutt;
 if (window._maxKm) document.getElementById('admin-max-km').value = window._maxKm;
 if (window._maxTimer) document.getElementById('admin-max-timer').value = window._maxTimer;
+const laerEl = document.getElementById('admin-laering-fra');
+if (laerEl) {
+  const v = (innstillinger && innstillinger.laeringFraDato) ? String(innstillinger.laeringFraDato) : '';
+  // Sheets kan returnere ISO-streng eller Date – ta YYYY-MM-DD-delen
+  laerEl.value = v.substring(0, 10);
+}
 }
 // ── ADMIN ──
 const PIN = '1234';
@@ -2720,7 +2744,7 @@ return;
 }
 const diffMap = beregnDiff(turer);
 const rader = loyper.map(l => {
-const reneKj = turer.filter(t => t.loype === l.navn);
+const reneKj = turer.filter(t => t.loype === l.navn && tellesILaering(t));
 const kmVerdier = reneKj.map(t => diffMap[t.id]?.kmKjort||0).filter(v => v > 0);
 const timerVerdier = reneKj.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0).filter(v => v > 0);
 const antall = Math.min(kmVerdier.length, timerVerdier.length);
@@ -2749,7 +2773,19 @@ kildeTekst = 'Lik fordeling (fallback)';
 return { l, antall, snittKm, snittTimer, minKm, maksKm, minT, maksT, adminKm, adminTimer, kilde, brukKm, brukTimer, kildeFarge, kildeTekst };
 });
 
-el.innerHTML = rader.map(r => {
+// Vis info om cutoff-dato hvis satt
+const cutoff = (innstillinger && innstillinger.laeringFraDato)
+  ? String(innstillinger.laeringFraDato).substring(0, 10) : '';
+let banner = '';
+if (cutoff) {
+  // Tell hvor mange turer som ekskluderes
+  const ekskludert = turer.filter(t => !tellesILaering(t)).length;
+  banner = `<div style="background:var(--ice);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--text2);line-height:1.5">📅 Læring teller fra <strong style="color:var(--text)">${cutoff}</strong>. ${ekskludert} eldre tur${ekskludert===1?'':'er'} ekskludert fra læringen (men telles fortsatt i statistikk og dashboards).</div>`;
+} else {
+  banner = `<div style="background:#FEF9E7;border:1px solid #F9E79F;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:#7D6608;line-height:1.5">⚠️ Ingen cutoff-dato satt – alle turer (inkludert importert historikk) brukes i læringen. Sett <strong>«Læring starter fra»</strong> i Sesong/innstillinger over for å ekskludere gamle data.</div>`;
+}
+
+el.innerHTML = banner + rader.map(r => {
 const spredningKm = r.minKm != null && r.maksKm != null && r.maksKm > r.minKm
 ? `<span style="font-size:11px;color:var(--text2)">spredning ${r.minKm.toFixed(1)}–${r.maksKm.toFixed(1)} km</span>` : '';
 const spredningT = r.minT != null && r.maksT != null && r.maksT > r.minT
