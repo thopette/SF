@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 14:24</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 14:45</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -2644,22 +2644,47 @@ function lagreAdminUrl() {
 alert('URL er hardkodet i appen. Kontakt administrator for å endre.');
 }
 async function regnUtDiffPaNytt() {
-const bekreft = confirm('Dette regner ut Maskintimer, Km kjørt og Km/t på nytt for alle turer i loggen, basert på Km- og Timer-verdiene som står der nå.\n\nKan ta noen sekunder. Fortsette?');
-if (!bekreft) return;
 const knapp = document.getElementById('diff-knapp');
 const status = document.getElementById('diff-status');
 knapp.disabled = true;
 const opprinneligTekst = knapp.innerHTML;
-knapp.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-width:2px"></div> Regner ut…';
+knapp.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-width:2px"></div> Sjekker…';
 status.style.display = 'inline';
 status.style.color = 'var(--text2)';
-status.textContent = 'Behandler turer…';
+status.textContent = 'Sjekker hva som vil endres…';
 try {
-const res = await apiKall({ action: 'regnUtDiffPaNytt' });
+// Steg 1: dryRun – ikke skriv noe, bare se hva som ville endres
+const sjekk = await apiKall({ action: 'regnUtDiffPaNytt', dryRun: true });
+if (sjekk.feil) throw new Error(sjekk.feil);
+
+if (sjekk.oppdatert === 0) {
+status.style.color = 'var(--success)';
+status.textContent = `✓ Alt stemmer allerede – 0 av ${sjekk.total} rader trenger oppdatering`;
+return;
+}
+
+// Bygg bekreftelsestekst med eksempler
+let melding = `${sjekk.oppdatert} av ${sjekk.total} rader vil bli oppdatert.\n\n`;
+if (sjekk.eksempler && sjekk.eksempler.length) {
+melding += 'Eksempler på endringer:\n';
+sjekk.eksempler.forEach(e => melding += '• ' + e + '\n');
+melding += '\n';
+}
+melding += 'Skriv "JA" og trykk OK for å gjennomføre, eller Avbryt for å stoppe.';
+
+const svar = prompt(melding, '');
+if (svar !== 'JA') {
+status.style.color = 'var(--text2)';
+status.textContent = 'Avbrutt – ingen endringer gjort';
+return;
+}
+
+// Steg 2: Faktisk kjøring
+status.textContent = 'Skriver til sheet…';
+const res = await apiKall({ action: 'regnUtDiffPaNytt', dryRun: false });
 if (res.feil) throw new Error(res.feil);
 status.style.color = 'var(--success)';
 status.textContent = `✓ Ferdig – ${res.oppdatert} av ${res.total} rader oppdatert`;
-// Tving full re-henting fra sheet så loggen viser nye verdier
 await hentData();
 } catch(err) {
 status.style.color = 'var(--danger)';
@@ -2667,8 +2692,7 @@ status.textContent = '✗ Feil: ' + err.message;
 } finally {
 knapp.disabled = false;
 knapp.innerHTML = opprinneligTekst;
-// La status stå synlig i 8 sek så brukeren rekker å lese
-setTimeout(() => { status.style.display = 'none'; }, 8000);
+setTimeout(() => { status.style.display = 'none'; }, 12000);
 }
 }
 function renderAdmin() {
