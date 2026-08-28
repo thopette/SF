@@ -96,10 +96,40 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 </style></head><body>
 
 <div class="topbar">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg>
-  <h1>SF Scooterlogg</h1>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="visTab('dashboard')" style="cursor:pointer;flex-shrink:0" title="Gå til dashboard"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg>
+  <h1 style="margin-right:8px">SF Scooterlogg</h1>
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version">v0.1 28.08 09:01</span>
+
+  <!-- Værmodul -->
+  <div id="topbar-vaer" onclick="toggleVaerPanel()" title="Klikk for værvarsel" style="display:flex;align-items:center;gap:0;cursor:pointer;background:rgba(255,255,255,0.12);border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.15);flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:4px;padding:4px 9px;border-right:1px solid rgba(255,255,255,0.15)">
+      <span id="topbar-vaer-ikon" style="font-size:15px;line-height:1">🌡️</span>
+      <div style="display:flex;flex-direction:column;line-height:1.15">
+        <span style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">Nå</span>
+        <span id="topbar-vaer-tekst" style="font-family:var(--mono);font-size:12px;font-weight:700;color:white">–°C</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:4px;padding:4px 9px">
+      <span id="topbar-vaer-6h-ikon" style="font-size:15px;line-height:1">🌡️</span>
+      <div style="display:flex;flex-direction:column;line-height:1.15">
+        <span style="font-size:8px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px">+6t</span>
+        <span id="topbar-vaer-6h" style="font-family:var(--mono);font-size:12px;font-weight:700;color:rgba(255,255,255,0.8)">–°C</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feilvarsel-ikon (blinker om åpne feil) -->
+  <button id="service-btn" onclick="toggleServicePanel()" title="Feil & service" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;position:relative;flex-shrink:0">
+    <svg id="service-ikon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    <span id="service-badge" style="display:none;position:absolute;top:0;right:0;width:8px;height:8px;background:#E74C3C;border-radius:50%;border:1.5px solid var(--navy)"></span>
+  </button>
+
+  <!-- Kontakter-ikon -->
+  <button onclick="toggleKontaktPanel()" title="Kontakter" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  </button>
+
+  <span class="topbar-version" id="topbar-version">v0.2 28.08 13:00</span>
 </div>
 
 <div class="nav">
@@ -220,6 +250,49 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
 <div id="toast" class="toast"></div>
 
+<!-- Værpanel -->
+<div id="vaer-panel" style="display:none;position:fixed;top:52px;right:8px;background:white;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:14px;z-index:150;max-width:280px;width:calc(100vw - 16px)">
+  <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Værvarsel neste 24t</div>
+  <div id="vaer-panel-innhold" style="font-size:13px;color:var(--text2)">Laster…</div>
+</div>
+
+<!-- Service/feil-panel -->
+<div id="service-panel" style="display:none;position:fixed;top:52px;right:8px;background:white;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:14px;z-index:150;max-width:340px;width:calc(100vw - 16px);max-height:70vh;overflow-y:auto">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Feil & service (scooter)</div>
+    <button onclick="visNyFeilPanel()" class="btn btn-primary btn-sm" style="padding:4px 10px;font-size:11px">+ Meld feil</button>
+  </div>
+  <div id="service-panel-innhold" style="font-size:13px;color:var(--text2)">Laster…</div>
+</div>
+
+<!-- Kontakter-panel -->
+<div id="kontakt-panel" style="display:none;position:fixed;top:52px;right:8px;background:white;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:14px;z-index:150;max-width:360px;width:calc(100vw - 16px);max-height:70vh;overflow-y:auto">
+  <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Kontakter</div>
+  <div id="kontakt-innhold"></div>
+</div>
+
+<!-- Ny feilmelding-modal -->
+<div class="modal-backdrop" id="feil-modal">
+  <div class="modal">
+    <div class="modal-header">Meld feil på scooter</div>
+    <div class="modal-body">
+      <div class="field"><label>Scooter</label><select id="feil-scooter"></select></div>
+      <div class="field"><label>Meldt av</label><select id="feil-forer"></select></div>
+      <div class="field"><label>Km-stand (valgfritt)</label><input type="number" id="feil-km" inputmode="numeric"></div>
+      <div class="field"><label>Beskrivelse av feil</label><textarea id="feil-beskrivelse" placeholder="Hva er feil?"></textarea></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+        <button class="btn btn-outline" onclick="document.getElementById('feil-modal').classList.remove('open')">Avbryt</button>
+        <button class="btn btn-primary" onclick="lagreFeilPanel()">Meld feil</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes puls { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.6} }
+@keyframes ikonfarge-rod { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.4)} }
+</style>
+
 <script>
 const scriptUrl = "https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";
 
@@ -284,6 +357,7 @@ async function lastData() {
     turer = (turData.turer || []).map(mapTur);
     sjaforer = cfg.forere || [];
     scootere = cfg.scootere || [];
+    kontakter = cfg.kontakter || [];
     renderSjaforChips();
     renderScooterCards();
     renderDashboard();
@@ -683,6 +757,316 @@ async function slettScooterModal() {
 }
 
 // ── OPPSTART ──────────────────────────────────────────
-lastData();
+// Global state for kontakter og feil
+let kontakter = [];
+let feilData = [];
+let vaerData = null;
+const VAER_LAT = 60.13; // Sørli
+const VAER_LNG = 11.06;
+
+// ── VÆRMODUL ──────────────────────────────────────────
+async function hentVaer() {
+  try {
+    const r = await fetch(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${VAER_LAT}&lon=${VAER_LNG}`, { headers: { 'User-Agent': 'SF-Scooterlogg (thopette.github.io/SF)' } });
+    const d = await r.json();
+    const serie = d?.properties?.timeseries;
+    if (!serie || !serie.length) return;
+    vaerData = serie;
+    const naa = serie[0];
+    const temp = naa.data.instant.details.air_temperature;
+    const symbol = (naa.data.next_1_hours || naa.data.next_6_hours)?.summary?.symbol_code || '';
+    const temp6h = serie[Math.min(6, serie.length-1)]?.data?.instant?.details?.air_temperature;
+
+    document.getElementById('topbar-vaer-tekst').textContent = Math.round(temp) + '°C';
+    document.getElementById('topbar-vaer-ikon').textContent = vaerSymbol(symbol);
+    if (temp6h !== undefined) {
+      document.getElementById('topbar-vaer-6h').textContent = Math.round(temp6h) + '°C';
+      const symbol6h = (serie[Math.min(6,serie.length-1)]?.data?.next_1_hours || serie[Math.min(6,serie.length-1)]?.data?.next_6_hours)?.summary?.symbol_code || '';
+      document.getElementById('topbar-vaer-6h-ikon').textContent = vaerSymbol(symbol6h);
+    }
+  } catch(e) {
+    console.warn('Værhenting feilet:', e);
+  }
+}
+function vaerSymbol(kode) {
+  if (!kode) return '🌡️';
+  if (kode.includes('clearsky')) return '☀️';
+  if (kode.includes('fair')) return '🌤️';
+  if (kode.includes('partlycloudy')) return '⛅';
+  if (kode.includes('cloudy')) return '☁️';
+  if (kode.includes('rain') && kode.includes('snow')) return '🌨️';
+  if (kode.includes('snow')) return '❄️';
+  if (kode.includes('rain') || kode.includes('shower')) return '🌧️';
+  if (kode.includes('fog')) return '🌫️';
+  if (kode.includes('thunder')) return '⛈️';
+  return '🌡️';
+}
+function toggleVaerPanel() {
+  const p = document.getElementById('vaer-panel');
+  const nyStatus = p.style.display === 'none' ? 'flex' : 'none';
+  document.getElementById('service-panel').style.display = 'none';
+  document.getElementById('kontakt-panel').style.display = 'none';
+  p.style.display = nyStatus === 'flex' ? 'block' : 'none';
+  if (nyStatus === 'flex') renderVaerPanel();
+}
+function renderVaerPanel() {
+  const el = document.getElementById('vaer-panel-innhold');
+  if (!vaerData || !vaerData.length) { el.innerHTML = 'Ikke tilgjengelig.'; return; }
+  const timer = [1, 3, 6, 12, 24];
+  el.innerHTML = timer.map(t => {
+    const p = vaerData[Math.min(t, vaerData.length-1)];
+    if (!p) return '';
+    const temp = Math.round(p.data.instant.details.air_temperature);
+    const symbol = (p.data.next_1_hours || p.data.next_6_hours)?.summary?.symbol_code || '';
+    const nedbor = p.data.next_1_hours?.details?.precipitation_amount ?? p.data.next_6_hours?.details?.precipitation_amount ?? 0;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="width:50px;font-family:var(--mono);font-size:12px">+${t}t</span><span style="font-size:16px">${vaerSymbol(symbol)}</span><span style="font-family:var(--mono);font-size:13px;font-weight:600">${temp}°C</span><span style="font-size:11px;color:var(--text2)">${nedbor > 0 ? nedbor.toFixed(1)+'mm' : '–'}</span></div>`;
+  }).join('');
+}
+
+// ── FEIL/SERVICE ─────────────────────────────────────
+async function hentFeilData() {
+  try {
+    const d = await apiKall({ action: 'hentServiceData' });
+    if (d.feil) feilData = d.feil.filter(f => (f.enhet || 'maskin') === 'scooter'); // Kun scooter-feil
+    oppdaterServiceBadge();
+  } catch(e) { console.warn('Kunne ikke hente feildata:', e); }
+}
+function oppdaterServiceBadge() {
+  const badge = document.getElementById('service-badge');
+  const ikon = document.getElementById('service-ikon');
+  if (!badge || !ikon) return;
+  const nyeFeil = feilData.filter(f => f.status === 'Ny');
+  const paabegynt = feilData.filter(f => f.status === 'Påbegynt');
+  const setFarge = (farge) => ikon.setAttribute('stroke', farge);
+  if (nyeFeil.length > 0) {
+    badge.style.display = 'block';
+    badge.style.background = '#E74C3C';
+    badge.style.animation = 'puls 1.2s infinite';
+    setFarge('#E74C3C');
+  } else if (paabegynt.length > 0) {
+    badge.style.display = 'block';
+    badge.style.background = '#F39C12';
+    badge.style.animation = '';
+    setFarge('#F39C12');
+  } else {
+    badge.style.display = 'none';
+    badge.style.animation = '';
+    setFarge('rgba(255,255,255,0.75)');
+  }
+}
+function toggleServicePanel() {
+  const p = document.getElementById('service-panel');
+  const nyStatus = p.style.display === 'none' ? 'flex' : 'none';
+  document.getElementById('vaer-panel').style.display = 'none';
+  document.getElementById('kontakt-panel').style.display = 'none';
+  p.style.display = nyStatus === 'flex' ? 'block' : 'none';
+  if (nyStatus === 'flex') renderServicePanel();
+}
+function renderServicePanel() {
+  const el = document.getElementById('service-panel-innhold');
+  const aktive = feilData.filter(f => f.status === 'Ny' || f.status === 'Påbegynt').sort((a,b) => (b.dato||'').localeCompare(a.dato||''));
+  if (!aktive.length) {
+    el.innerHTML = '<p style="color:var(--text2);font-size:13px;text-align:center;margin:12px 0">Ingen åpne feil på scootere 🎉</p>';
+    return;
+  }
+  el.innerHTML = aktive.map(f => {
+    const statusFarge = f.status === 'Ny' ? '#E74C3C' : '#F39C12';
+    return `<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;background:var(--snow)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="font-size:13px;font-weight:600;color:var(--navy)">${f.maskin}</span>
+        <span style="font-size:10px;padding:2px 6px;border-radius:8px;background:${statusFarge};color:white;font-weight:600;text-transform:uppercase">${f.status}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text);margin-bottom:4px">${(f.beskrivelse||'').replace(/</g,'&lt;')}</div>
+      <div style="font-size:11px;color:var(--text2)">${f.dato||''} · ${f.forer||''}${f.kmstand?' · km '+f.kmstand:''}</div>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        ${f.status !== 'Påbegynt' ? `<button class="btn btn-sm btn-outline" style="padding:4px 8px;font-size:11px" onclick="oppdaterFeilStatus('${f.id}','Påbegynt')">Ta ansvar</button>` : ''}
+        <button class="btn btn-sm btn-outline" style="padding:4px 8px;font-size:11px;color:var(--success);border-color:#D5F5E3" onclick="oppdaterFeilStatus('${f.id}','Ferdig')">Ferdig</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function oppdaterFeilStatus(id, status) {
+  try {
+    const res = await apiKall({ action: 'oppdaterFeilStatus', id, status });
+    if (res.feil) throw new Error(res.feil);
+    const f = feilData.find(x => String(x.id) === String(id));
+    if (f) { f.status = status; f.statusDato = new Date().toISOString().split('T')[0]; }
+    oppdaterServiceBadge();
+    renderServicePanel();
+    toast('Status oppdatert ✓', 'ok');
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
+}
+function visNyFeilPanel() {
+  const scooterSel = document.getElementById('feil-scooter');
+  const forerSel = document.getElementById('feil-forer');
+  scooterSel.innerHTML = scootere.filter(s => s.aktiv).map(s => `<option value="${s.navn}">${s.navn}</option>`).join('');
+  forerSel.innerHTML = '<option value="">–</option>' + sjaforer.map(s => `<option value="${s}">${s}</option>`).join('');
+  document.getElementById('feil-km').value = '';
+  document.getElementById('feil-beskrivelse').value = '';
+  document.getElementById('feil-modal').classList.add('open');
+}
+async function lagreFeilPanel() {
+  const feil = {
+    maskin: document.getElementById('feil-scooter').value,
+    forer: document.getElementById('feil-forer').value,
+    kmstand: document.getElementById('feil-km').value || '',
+    beskrivelse: document.getElementById('feil-beskrivelse').value.trim(),
+    enhet: 'scooter'
+  };
+  if (!feil.beskrivelse) { toast('Skriv beskrivelse', 'err'); return; }
+  try {
+    const res = await apiKall({ action: 'lagreFeil', feil });
+    if (res.feil) throw new Error(res.feil);
+    toast('Feil meldt ✓', 'ok');
+    document.getElementById('feil-modal').classList.remove('open');
+    await hentFeilData();
+    renderServicePanel();
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
+}
+
+// ── KONTAKTER ────────────────────────────────────────
+function toggleKontaktPanel() {
+  const p = document.getElementById('kontakt-panel');
+  const nyStatus = p.style.display === 'none' ? 'flex' : 'none';
+  document.getElementById('vaer-panel').style.display = 'none';
+  document.getElementById('service-panel').style.display = 'none';
+  p.style.display = nyStatus === 'flex' ? 'block' : 'none';
+  if (nyStatus === 'flex') renderKontakter();
+}
+function renderKontakter() {
+  const el = document.getElementById('kontakt-innhold');
+  if (!el) return;
+  let html = '';
+  const sortert = [...kontakter].sort((a,b) => {
+    if ((b.erSjafor?1:0) !== (a.erSjafor?1:0)) return (b.erSjafor?1:0) - (a.erSjafor?1:0);
+    return (a.navn||'').localeCompare(b.navn||'');
+  });
+  if (sortert.length) {
+    sortert.forEach(k => {
+      const sjaforBadge = k.erSjafor ? '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--ice);color:var(--mid);font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Sjåfør</span>' : '';
+      const tlfHtml = k.telefon ? `<a href="tel:${k.telefon}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px">📞 ${k.telefon}</a>` : '';
+      const epostHtml = k.epost ? `<a href="mailto:${k.epost}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px">✉️ ${k.epost}</a>` : '';
+      html += `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--snow)" id="kk-${k.id}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px">
+          <div style="font-size:14px;font-weight:600;color:var(--navy);display:flex;align-items:center">${k.navn||'–'}${sjaforBadge}</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button onclick="redigerKontakt('${k.id}')" title="Rediger" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:13px;padding:2px 4px">✏️</button>
+            <button onclick="slettKontaktEntry('${k.id}')" title="Slett" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:14px;padding:2px 4px">×</button>
+          </div>
+        </div>
+        ${tlfHtml}${epostHtml}
+        ${k.notat?`<div style="font-size:12px;color:var(--text2);margin-top:5px">${k.notat}</div>`:''}
+      </div>`;
+    });
+  } else {
+    html += '<p style="color:var(--text2);font-size:13px;text-align:center;margin:20px 0">Ingen kontakter lagt til ennå</p>';
+  }
+  html += `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+    <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">Legg til kontakt</div>
+    <div style="margin-bottom:8px"><input type="text" id="nk-navn" placeholder="Navn" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
+    <div style="margin-bottom:8px"><input type="tel" id="nk-tlf" placeholder="Telefon (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
+    <div style="margin-bottom:8px"><input type="email" id="nk-epost" placeholder="E-post (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
+    <div style="margin-bottom:10px"><input type="text" id="nk-notat" placeholder="Notat (rolle, selskap…)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="nk-erSjafor" style="width:auto"><span>Er sjåfør</span></label>
+    <button onclick="lagreKontaktEntry()" style="width:100%;padding:9px;background:var(--mid);color:white;border:none;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Legg til</button>
+  </div>`;
+  el.innerHTML = html;
+}
+function redigerKontakt(id) {
+  const k = kontakter.find(x => x.id === id);
+  if (!k) return;
+  const card = document.getElementById('kk-'+id);
+  if (!card) return;
+  const esc = (s) => String(s||'').replace(/"/g,'&quot;');
+  card.innerHTML = `
+    <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Rediger kontakt</div>
+    <div style="margin-bottom:6px"><input type="text" id="ek-navn-${id}" value="${esc(k.navn)}" placeholder="Navn" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+    <div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+    <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+    <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="ek-erSjafor-${id}" ${k.erSjafor?'checked':''} style="width:auto"><span>Er sjåfør</span></label>
+    <div style="display:flex;gap:6px">
+      <button onclick="lagreKontaktRedigert('${id}')" style="flex:1;padding:7px;background:var(--mid);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Lagre</button>
+      <button onclick="renderKontakter()" style="padding:7px 12px;border:1.5px solid var(--border);background:white;color:var(--text2);border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">Avbryt</button>
+    </div>`;
+}
+async function lagreKontaktRedigert(id) {
+  const k = kontakter.find(x => x.id === id);
+  if (!k) return;
+  const oppdatert = {
+    id,
+    navn: document.getElementById('ek-navn-'+id)?.value.trim() || k.navn,
+    telefon: document.getElementById('ek-tlf-'+id)?.value.trim() || '',
+    epost: document.getElementById('ek-epost-'+id)?.value.trim() || '',
+    notat: document.getElementById('ek-notat-'+id)?.value.trim() || '',
+    erSjafor: document.getElementById('ek-erSjafor-'+id)?.checked || false
+  };
+  try {
+    const res = await apiKall({ action: 'lagreKontakt', kontakt: oppdatert });
+    if (res.ok) {
+      const idx = kontakter.findIndex(x => x.id === id);
+      if (idx >= 0) kontakter[idx] = { ...oppdatert };
+      sjaforer = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+      renderSjaforChips();
+      renderKontakter();
+    }
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
+}
+async function lagreKontaktEntry() {
+  const kontakt = {
+    navn: document.getElementById('nk-navn')?.value.trim(),
+    telefon: document.getElementById('nk-tlf')?.value.trim(),
+    epost: document.getElementById('nk-epost')?.value.trim(),
+    notat: document.getElementById('nk-notat')?.value.trim(),
+    erSjafor: document.getElementById('nk-erSjafor')?.checked || false
+  };
+  if (!kontakt.navn) { toast('Navn er påkrevd', 'err'); return; }
+  try {
+    const res = await apiKall({ action: 'lagreKontakt', kontakt });
+    if (res.ok) {
+      kontakter.push({ ...kontakt, id: res.id });
+      sjaforer = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+      renderSjaforChips();
+      renderKontakter();
+    }
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
+}
+async function slettKontaktEntry(id) {
+  if (!confirm('Slett denne kontakten?')) return;
+  try {
+    await apiKall({ action: 'slettKontakt', id });
+    kontakter = kontakter.filter(k => k.id !== id);
+    sjaforer = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+    renderSjaforChips();
+    renderKontakter();
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
+}
+
+// Lukk paneler ved klikk utenfor
+document.addEventListener('click', (e) => {
+  const paneler = ['vaer-panel', 'service-panel', 'kontakt-panel'];
+  const triggers = ['topbar-vaer', 'service-btn', 'service-ikon'];
+  paneler.forEach(id => {
+    const p = document.getElementById(id);
+    if (!p || p.style.display === 'none') return;
+    if (p.contains(e.target)) return;
+    // Sjekk om trigger-knappen ble klikket
+    const clickedTrigger = triggers.some(t => document.getElementById(t)?.contains(e.target)) ||
+                            e.target.closest('button[onclick*="toggleKontaktPanel"]') ||
+                            e.target.closest('button[onclick*="toggleServicePanel"]') ||
+                            e.target.closest('div[onclick*="toggleVaerPanel"]');
+    if (!clickedTrigger) p.style.display = 'none';
+  });
+});
+
+// ── OPPSTART ──────────────────────────────────────────
+async function initAlt() {
+  await lastData();
+  // hentAlleKontakter fra config
+  hentVaer();
+  hentFeilData();
+  setInterval(hentVaer, 30 * 60 * 1000); // Oppdater vær hvert 30. min
+}
+initAlt();
 </script>
 </body></html>
