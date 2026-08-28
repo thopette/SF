@@ -129,7 +129,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   </button>
 
-  <span class="topbar-version" id="topbar-version">v0.4 28.08 13:46</span>
+  <span class="topbar-version" id="topbar-version">v0.5 28.08 13:52</span>
 </div>
 
 <div class="nav">
@@ -952,10 +952,7 @@ function renderKontakter() {
       html += `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--snow)" id="kk-${k.id}">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px">
           <div style="font-size:14px;font-weight:600;color:var(--navy)">${k.navn||'–'}</div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <button onclick="redigerKontakt('${k.id}')" title="Rediger" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:13px;padding:2px 4px">✏️</button>
-            <button onclick="slettKontaktEntry('${k.id}')" title="Slett" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:14px;padding:2px 4px">×</button>
-          </div>
+          <button onclick="redigerKontakt('${k.id}')" title="Rediger" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:15px;padding:2px 6px;flex-shrink:0">✏️</button>
         </div>
         ${tlfHtml}${epostHtml}
         ${k.notat?`<div style="font-size:12px;color:var(--text2);margin-top:5px">${k.notat}</div>`:''}
@@ -986,9 +983,11 @@ function redigerKontakt(id) {
     <div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-    <div style="display:flex;gap:6px">
-      <button onclick="lagreKontaktRedigert('${id}')" style="flex:1;padding:7px;background:var(--mid);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Lagre</button>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button onclick="slettKontaktEntry('${id}')" title="Slett kontakt" style="padding:7px 10px;background:white;color:var(--danger);border:1.5px solid #FECACA;border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">🗑 Slett</button>
+      <div style="flex:1"></div>
       <button onclick="renderKontakter()" style="padding:7px 12px;border:1.5px solid var(--border);background:white;color:var(--text2);border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">Avbryt</button>
+      <button onclick="lagreKontaktRedigert('${id}')" style="padding:7px 14px;background:var(--mid);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Lagre</button>
     </div>`;
 }
 async function lagreKontaktRedigert(id) {
@@ -1050,20 +1049,28 @@ async function slettKontaktEntry(id) {
 }
 
 // Lukk paneler ved klikk utenfor
+// BUG-fix: Vi må sjekke target i mousedown-fasen, siden click-fasen
+// kan komme etter at target (f.eks. blyant-knappen) er fjernet fra DOM
+// av event handler (som f.eks. redigerKontakt som erstatter innerHTML).
+let _mousedownTarget = null;
+document.addEventListener('mousedown', (e) => { _mousedownTarget = e.target; }, true);
+document.addEventListener('touchstart', (e) => { _mousedownTarget = e.target; }, true);
 document.addEventListener('click', (e) => {
   const paneler = ['vaer-panel', 'service-panel', 'kontakt-panel'];
   const triggers = ['topbar-vaer', 'service-btn', 'service-ikon'];
+  // Bruk _mousedownTarget hvis den finnes (mer robust enn e.target)
+  const target = _mousedownTarget || e.target;
   paneler.forEach(id => {
     const p = document.getElementById(id);
     if (!p || p.style.display === 'none') return;
-    if (p.contains(e.target)) return;
-    // Sjekk om trigger-knappen ble klikket
-    const clickedTrigger = triggers.some(t => document.getElementById(t)?.contains(e.target)) ||
-                            e.target.closest('button[onclick*="toggleKontaktPanel"]') ||
-                            e.target.closest('button[onclick*="toggleServicePanel"]') ||
-                            e.target.closest('div[onclick*="toggleVaerPanel"]');
+    if (p.contains(target)) return;
+    const clickedTrigger = triggers.some(t => document.getElementById(t)?.contains(target)) ||
+                            target.closest?.('button[onclick*="toggleKontaktPanel"]') ||
+                            target.closest?.('button[onclick*="toggleServicePanel"]') ||
+                            target.closest?.('div[onclick*="toggleVaerPanel"]');
     if (!clickedTrigger) p.style.display = 'none';
   });
+  _mousedownTarget = null;
 });
 
 // ── OPPSTART ──────────────────────────────────────────
