@@ -84,6 +84,8 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .big-cta-bar .btn-primary { flex:1; }
 .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.6s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
+#sf-spinner-arc { transform-origin:22px 22px; animation:sf-spin 1.1s linear infinite; }
+@keyframes sf-spin { to { transform:rotate(360deg); } }
 .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--navy); color:white; padding:12px 20px; border-radius:8px; font-size:13px; box-shadow:var(--shadow); z-index:1000; opacity:0; transition:opacity 0.2s; pointer-events:none; }
 .toast.show { opacity:1; }
 .toast.err { background:var(--danger); }
@@ -96,9 +98,14 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 </style></head><body>
 
 <div class="topbar">
-  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAACMCAYAAACuwEE+AAAJSUlEQVR42u2d221kKRCGG9RROAWnMdJIDmECdAgrWZo0NoVNw/vUq7NngLoXVQBPu2P7NM35+OtCAeWxaXt7//iW/P0/f/9Vdhy3csDQbauDVA4gB6CtgOEC8vvrU/S5P37+2hKgsjokUjAsQcoIT1kNFCwgXIWw+JxM4JQVQBm9vN4LszJJnL5kAqdkBaX3Yu4vZbZJwvYzCzglEyiYwfcGhAIQFZ6I4JSsoESGhAtPBnBKVlCyQALBkw2cEhGWlUGRgjMbmnJAOeCEBwYDyy6gYMGJAk2ZDcsBRQaONzQlmqrsDkoLnEhqUyLAclSFrjazoCnesBxVsVUba2jqgSVP+/31CS49WNcD1Rmw/Pj5KwQsr8F/9acn9fefS1e6NaAZZY0toXnOgGUWKK1BvvoHFBBaf+f1va59f/33vf9v7x/fFuap7gbL76/PP/pArW3hrEB7mCgPpamrwAKZjOusvP8cMkPQLG/9/+vvrSHyhqZkh6XlBEqVoOecY8wX9DOvCMoqeqpZYbnOXopJuf/N1URpmab7WIzULZvSlKywjMwD1nxozuye0o36ZjU2lkpTssDSe14vWpmVPYYisdHvZYBGzemdoSyjPrSiIa/IBVI86+gKMk9TFOaqLlaw3L/0aAU3csa4N+NbYFmq8vVzuCpTpbBYvLhemAv5MFEbpX+aajOK2LhOcJXCYmF/eyZmpdZTl1bq3wpcDjRFAoyFKeLkVSwjLw8H+RpRWZgnTdNUo8DiFXaOcjPeanZfE4JMsYUTTFWZyoFF22/pfZnrqrZ11DXL5I0iqoj+TJV8SQtZvgNovaTQyvTOWESEss0WobeZ0+sRQrck2nrWt54/C5pRf0a1Ot6mqUpmqOSFzixCmg0GByCt/lLrfshRkpW6jFZ+rZUFKluIsm+7tUo+O2p6zlCXkc/iGcq2BqznfEaoEtR2gDnfqXLURRrC3kPZGWZh1jqP1CSN0gEanwP5MtVTXSKe3RLZh7lHUK0+c/vP9WWqt7q0VpS91lpaafjWS4kKuiXcWJWpXurSegZ3ACSzCvJbuAXiGSMnjsoU68jIYilfGjWMCq0oNTezyyo0oktqxIQGRjI42LoWzrOsoqXI/pl2kXlP9VvA1BEsFjLKhQW7PYQ64Jgsaq+vnOo6izG1ArbFQrFUF85LoD5PYiJ79bfU6r4Zib6eKbVWmeo5IzhR0X0wNMxYa6GvNeD3YiaMw+6tNN45rWplju4LiJKch9ea1T2p2Ctwgp7pAc1o4dTSLFWoQ5LISDOS4MzolmxjXybkDEM+hKfSaJSDYIMRU5OkvajYe+Gjf4NsPFR/0jsdAXKCPRSxZz4tYXXxYbTKDLEwUaOp3ovGJra0ip4442RZND4ERjM6ajm3GmYJ84yr70TdM90DiHJat2ZeKIpZurLxtFQTqxATmvm9RCF20FtF2ZYzWPvuJstdFtXyi0dYCab2ycLv8oqoPBxvcx9GuzbXY28StgpQ+kJajrVWQGBVE101/ZdWJy0ot17ml6zVUAuztCeTdPck5Mc8LV+kR5qcs0TfmwytEBrzbOiEKspmfM9xmGqSRueieCausAo4SgRSHffWrMTmdyKMC6U9rTrpRTxncCAFoDqtrRqZUaRlldb3mKjqTq/WpivvCEqS/Bqdlwtlmq3Dde3nm51AZS272ocWYU0PZaJoRkGzAPnDJGlFSKvcGwBtZOMmAj3gl+w36j3n+n3f3j++n5qz1Asc7ef3oiLoEEPMWTbWR3lg/S6tMTMJqz0PAKICyrlPQJJrWe3krBpxxnuYnXuSSwtirFm3nFSWPtNTu5Mr+TAtf4azNjQjvWAFTX1s1rAF3NBAj9ZqoAq/zFcWbgcM1YFvzVxM9BMh03uAcVIeTBkntpZYa6PcASaA32QVfkImKbO/99xFQaiHAGiYjhWvWk6rMFEHHnKEj0kK4KBSKvupdy1RfJeRv7JKEm8bk6Tp60D1Mvcs9ArO7nF6H7i8S2vbCge2Y5IWVxFNx3Wl9aS6Gwy9ajfMzsrX747AyXaXExmY6/kf3FviMzrImIVBqrLcE3ZZYRmdFbOFwkgO3cECtpqvsmyUJN0wT30m9vTNVdtxepGAYcoaRjW1GQ6RPsAo2HGorgTj+N7rYzODcxJ3gNOHVRgrHypa+y9C0j6bd0YEpHU0GrSMgAHI8wgOrwjpKAwQel8dYMi5xjjKZy1pQViwfsnod1csazjAKCgAdj/2kksDu2R8rcxFr7IuEyyY08CXCKulVXGSHQIWfUqhMKfFADgtMDuaJYu/zzJ22Jrn/wEDXUG7OjSUvdStrSitPUvZ1WbabSZZTAhlW0jvGuUVN+GjgMlmlrRuVKPcWNL6u2ywULbgVEiCdm4QOCsn6HosVMoMXN35xYTXLaAyw0JVxAqRlQUSzWO/OHdYr6As0AWhjwdxaUDrDLWIobEEgBVqd7HtObJfr5KHDI6cVf+8DjTMoC6ssHoHX2Z1ZZGIQMV6yTtBol1Uvoq6sBQmi8pY3WKbeb+RVF1QwGRVGe65+6vvXJSoC1thsvkyknN1pZesr6Quj8elCBxqrSLxDBGURDFWy9727m3CqgtbYTI7wDNvTMs4DveGTtxd8zIt05StFHGnKAiyBJT1Q/JC4yqmaQdINE2RCjDZoNmxjWDhAEP2Ye4fcLK+ef0WTikLy+ntfdBZNljTbxEDc/9A6o0fp+XyW1SAGcndqiWd0BkwWfwWSRNtlb2H2q3bVaM6wdDZu1mXCLSdXHWFGTnBkZWGc3d0pqM6LGBRM0lZoZGYqGjfyQMWVR8mGzTcG+ujlqd6wKIKTDZoWsfGQ/c1XvcdRQHHE5bHg5HpxbSTDV4TFjNgMNBkijyi+lresJgCA0Fz1EZHVTxhUfdhKD5NtgjqwOKgMD2lOSZK3wR5wOIGDAaaY6L4quIFiyswFL/mqE1/HLxN0HRgKGqzIzhYUGbAMg0YLDQ7gUO55W0WLFOBOeDkAiUMMD1oVgeHCkoEWMIAIwEnEzzc+wwiHSMX8jw7CjjR4cH0LQMooYGBwKEMvjdA2M8fZbgjH0yZ4sTMETgQFJRrayRgSPqSAZRUwGDBoYAgXcPS/JxMR92mPJMXA04Uk7QKKKmB4cLjYZJWhGQpYLQAsmqrnay+/DHx3gCtfvT+tvcKSEHa9U6GfwHNvL+jofHLNwAAAABJRU5ErkJggg==" alt="SF" onclick="visTab('dashboard')" title="Gå til dashboard" style="width:32px;height:32px;cursor:pointer;flex-shrink:0;border-radius:6px">
-  <h1 style="margin-right:8px">SF Scooter</h1>
-  <div style="flex:1"></div>
+  <div style="position:relative;flex-shrink:0;width:36px;height:36px">
+    <img src="data:image/png;base64,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" alt="SF" onclick="visTab('dashboard')" title="Gå til dashboard" style="width:36px;height:36px;cursor:pointer;border-radius:6px">
+    <svg id="sf-spinner" viewBox="0 0 44 44" fill="none" style="position:absolute;top:-4px;left:-4px;width:44px;height:44px;pointer-events:none;display:none">
+      <circle cx="22" cy="22" r="19" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+      <circle id="sf-spinner-arc" cx="22" cy="22" r="19" stroke="#4A9FD4" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="80 52" stroke-dashoffset="0"/>
+    </svg>
+  </div>
+  <h1 style="margin-right:4px">SF Scooter</h1>
 
   <!-- Værmodul -->
   <div id="topbar-vaer" onclick="toggleVaerPanel()" title="Klikk for værvarsel" style="display:flex;align-items:center;gap:0;cursor:pointer;background:rgba(255,255,255,0.12);border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.15);flex-shrink:0">
@@ -118,7 +125,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     </div>
   </div>
 
-  <!-- Feilvarsel-ikon (blinker om åpne feil) -->
+  <!-- Feilvarsel-ikon -->
   <button id="service-btn" onclick="toggleServicePanel()" title="Feil & service" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;position:relative;flex-shrink:0">
     <svg id="service-ikon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
     <span id="service-badge" style="display:none;position:absolute;top:0;right:0;width:8px;height:8px;background:#E74C3C;border-radius:50%;border:1.5px solid var(--navy)"></span>
@@ -129,7 +136,8 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   </button>
 
-  <span class="topbar-version" id="topbar-version">v0.9 28.08 14:45</span>
+  <div style="flex:1"></div>
+  <span class="topbar-version" id="topbar-version">v1.0 28.08 15:05</span>
 </div>
 
 <div class="nav">
@@ -315,10 +323,30 @@ let scooterBildeUrl = ''; // For scooter-modal
 let redigerScooterIdx = -1;
 
 // ── UTILS ─────────────────────────────────────────────
+// Spinner rundt SF-logoen i topbaren – vises mens API-kall er aktive
+let _aktivKaller = 0;
+function startSpinner() {
+  _aktivKaller++;
+  const el = document.getElementById('sf-spinner');
+  if (el) el.style.display = 'block';
+}
+function stopSpinner() {
+  _aktivKaller = Math.max(0, _aktivKaller - 1);
+  if (_aktivKaller === 0) {
+    const el = document.getElementById('sf-spinner');
+    if (el) el.style.display = 'none';
+  }
+}
+
 async function apiKall(body) {
-  const opts = { method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) };
-  const res = await fetch(scriptUrl, opts);
-  return await res.json();
+  startSpinner();
+  try {
+    const opts = { method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) };
+    const res = await fetch(scriptUrl, opts);
+    return await res.json();
+  } finally {
+    stopSpinner();
+  }
 }
 
 function toast(melding, type) {
