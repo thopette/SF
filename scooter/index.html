@@ -137,7 +137,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version">v1.0 28.08 15:05</span>
+  <span class="topbar-version" id="topbar-version">v1.1 28.08 15:22</span>
 </div>
 
 <div class="nav">
@@ -220,8 +220,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div id="tab-logg" class="tab-content">
   <div class="card">
     <div class="card-header">Alle turer</div>
-    <div class="forer-summary" id="forer-summary"></div>
-    <div id="logg-liste" style="border-top:1px solid var(--border);margin-top:12px"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
+    <div id="logg-liste"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
   </div>
 </div>
 
@@ -265,6 +264,9 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 </div>
 
 <div id="toast" class="toast"></div>
+
+<!-- Panel-backdrop: klikkes for å lukke alle paneler -->
+<div id="panel-backdrop" style="display:none;position:fixed;inset:0;z-index:149;background:transparent" onclick="lukkAllePaneler()"></div>
 
 <!-- Værpanel -->
 <div id="vaer-panel" style="display:none;position:fixed;top:52px;right:8px;background:white;border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:14px;z-index:150;max-width:280px;width:calc(100vw - 16px)">
@@ -773,22 +775,8 @@ function renderLogg() {
   const sortert = [...turer].sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
   if (!sortert.length) {
     el.innerHTML = '<p style="padding:14px;font-size:13px;color:var(--text2)">Ingen turer registrert ennå.</p>';
-    document.getElementById('forer-summary').innerHTML = '';
     return;
   }
-
-  // Fører-summering
-  const perForer = {};
-  sortert.forEach(t => {
-    const f = t.sjafor || 'Ukjent';
-    if (!perForer[f]) perForer[f] = { turer: 0, km: 0 };
-    perForer[f].turer++;
-    perForer[f].km += t.kmPerTur || 0;
-  });
-  const sumEl = document.getElementById('forer-summary');
-  sumEl.innerHTML = Object.entries(perForer).map(([navn, d]) =>
-    `<div class="forer-summary-item"><strong>${navn}</strong> · ${d.turer} tur${d.turer===1?'':'er'} · ${d.km.toFixed(0)} km</div>`
-  ).join('');
 
   el.innerHTML = sortert.map(t => {
     const item = renderTurItem(t);
@@ -950,13 +938,30 @@ function vaerSymbol(kode) {
   if (kode.includes('thunder')) return '⛈️';
   return '🌡️';
 }
+function lukkAllePaneler() {
+  ['vaer-panel', 'service-panel', 'kontakt-panel'].forEach(id => {
+    const p = document.getElementById(id);
+    if (p) p.style.display = 'none';
+  });
+  const bd = document.getElementById('panel-backdrop');
+  if (bd) bd.style.display = 'none';
+}
+function _synligPanel(id) {
+  const p = document.getElementById(id);
+  return p && p.style.display !== 'none';
+}
+function _visPanel(id) {
+  lukkAllePaneler();
+  const p = document.getElementById(id);
+  if (p) p.style.display = 'block';
+  const bd = document.getElementById('panel-backdrop');
+  if (bd) bd.style.display = 'block';
+}
+
 function toggleVaerPanel() {
-  const p = document.getElementById('vaer-panel');
-  const nyStatus = p.style.display === 'none' ? 'flex' : 'none';
-  document.getElementById('service-panel').style.display = 'none';
-  document.getElementById('kontakt-panel').style.display = 'none';
-  p.style.display = nyStatus === 'flex' ? 'block' : 'none';
-  if (nyStatus === 'flex') renderVaerPanel();
+  if (_synligPanel('vaer-panel')) { lukkAllePaneler(); return; }
+  _visPanel('vaer-panel');
+  renderVaerPanel();
 }
 function renderVaerPanel() {
   const el = document.getElementById('vaer-panel-innhold');
@@ -1004,12 +1009,9 @@ function oppdaterServiceBadge() {
   }
 }
 function toggleServicePanel() {
-  const p = document.getElementById('service-panel');
-  const nyStatus = p.style.display === 'none' ? 'flex' : 'none';
-  document.getElementById('vaer-panel').style.display = 'none';
-  document.getElementById('kontakt-panel').style.display = 'none';
-  p.style.display = nyStatus === 'flex' ? 'block' : 'none';
-  if (nyStatus === 'flex') renderServicePanel();
+  if (_synligPanel('service-panel')) { lukkAllePaneler(); return; }
+  _visPanel('service-panel');
+  renderServicePanel();
 }
 function renderServicePanel() {
   const el = document.getElementById('service-panel-innhold');
@@ -1075,12 +1077,9 @@ async function lagreFeilPanel() {
 
 // ── KONTAKTER ────────────────────────────────────────
 function toggleKontaktPanel() {
-  const p = document.getElementById('kontakt-panel');
-  const nyStatus = p.style.display === 'none' ? 'flex' : 'none';
-  document.getElementById('vaer-panel').style.display = 'none';
-  document.getElementById('service-panel').style.display = 'none';
-  p.style.display = nyStatus === 'flex' ? 'block' : 'none';
-  if (nyStatus === 'flex') renderKontakter();
+  if (_synligPanel('kontakt-panel')) { lukkAllePaneler(); return; }
+  _visPanel('kontakt-panel');
+  renderKontakter();
 }
 function renderKontakter() {
   const el = document.getElementById('kontakt-innhold');
@@ -1197,16 +1196,13 @@ async function slettKontaktEntry(id) {
   } catch(e) { toast('Feil: ' + e.message, 'err'); }
 }
 
-// Lukk paneler kun med Escape-tast, ikke på klikk utenfor.
-// Klikk-utenfor-strategien var upålitelig fordi mange onclick-handlere
-// erstatter DOM-innhold (f.eks. redigerKontakt), noe som bryter target-sjekken.
+// Escape-tast lukker alle paneler.
+// Klikk utenfor lukker via panel-backdrop (usynlig element bak panelet).
+// Denne strategien er robust — panelet selv har høyere z-index enn backdrop,
+// så klikk på blyant/knapper i panelet blokkeres av panelets stacking, ikke
+// av target-sjekk (som ble ustabilt når onclick fjerner elementer fra DOM).
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    ['vaer-panel', 'service-panel', 'kontakt-panel'].forEach(id => {
-      const p = document.getElementById(id);
-      if (p) p.style.display = 'none';
-    });
-  }
+  if (e.key === 'Escape') lukkAllePaneler();
 });
 
 // ── OPPSTART ──────────────────────────────────────────
