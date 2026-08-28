@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v30.04 15:15</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v28.08 12:45</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -151,7 +151,7 @@ Sjåførstatistikk – denne sesongen
 Admin – logg inn
 </div><div class="card-body"><div class="admin-pin-overlay"><p style="font-size:14px;color:var(--text2);text-align:center">Skriv inn PIN-kode for å få tilgang til adminpanelet.</p><div class="pin-dots" id="pin-dots"><div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div></div><input class="field input pin-input" id="pin-input" type="password" maxlength="4" inputmode="numeric" placeholder="••••" oninput="sjekkPin()"><p id="pin-feil" style="font-size:12px;color:var(--danger);display:none">Feil PIN. Prøv igjen.</p></div></div></div></div><div id="admin-panel" style="display:none"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
 Førere
-<button class="btn btn-sm" style="margin-left:auto;background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3)" onclick="visNyForer()">+ Legg til</button></div><div class="card-body" id="admin-forere-list"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+<button class="btn btn-sm" style="margin-left:auto;background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3)" onclick="toggleKontaktPanel(); setTimeout(()=>{const el=document.querySelector('#nk-navn'); if(el) el.focus();},300)">+ Legg til</button></div><div class="card-body" id="admin-forere-list"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Løyper og avstikkere
 <button class="btn btn-sm" style="margin-left:auto;background:rgba(255,255,255,0.15);color:white;border-color:rgba(255,255,255,0.3)" onclick="visNyLoype()">+ Ny runde</button></div><div class="card-body" id="admin-loype-liste"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
 Maskiner
@@ -2706,10 +2706,18 @@ oppdaterForerSelect();
 renderAdminLoyper();
 renderAdmin_sesong();
 renderAdminMaskiner();
-// Fører liste
+// Fører liste – vises fra kontakter med ErSjåfør=true
 const el = document.getElementById('admin-forere-list');
-el.innerHTML = forere.length ? forere.map((f,i) => `
-<div class="forer-list-item"><div class="forer-name">${f}</div><button class="btn btn-sm btn-outline" onclick="redigerForer(${i})" style="padding:5px 10px;font-size:12px">Endre</button><button class="btn btn-sm btn-danger" onclick="slettForer(${i})">Slett</button></div>`).join('') : '<p style="color:var(--text2);font-size:13px">Ingen førere registrert.</p>';
+const sjaforKontakter = (kontakter || []).filter(k => k.erSjafor);
+if (sjaforKontakter.length) {
+el.innerHTML = sjaforKontakter.map(k => {
+const tlfHtml = k.telefon ? `<a href="tel:${k.telefon}" style="color:var(--mid);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.69 3.38 2 2 0 0 1 3.66 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.16 6.16l1.15-1.15a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${k.telefon}</a>` : '';
+const epostHtml = k.epost ? `<a href="mailto:${k.epost}" style="color:var(--mid);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${k.epost}</a>` : '';
+return `<div class="forer-list-item"><div style="flex:1"><div class="forer-name">${k.navn}</div>${(tlfHtml||epostHtml)?`<div style="display:flex;gap:12px;margin-top:3px">${tlfHtml}${epostHtml}</div>`:''}</div><button class="btn btn-sm btn-outline" onclick="toggleKontaktPanel(); setTimeout(()=>redigerKontakt('${k.id}'),300)" style="padding:5px 10px;font-size:12px">Endre</button></div>`;
+}).join('');
+} else {
+el.innerHTML = '<p style="color:var(--text2);font-size:13px">Ingen sjåfører registrert.<br><span style="font-size:12px">Legg til under Kontakter og hak av «Sjåfør».</span></p>';
+}
 
 }
 // Innsyn i hva systemet har lært per løype.
@@ -3483,17 +3491,26 @@ function renderKontakter() {
 const el = document.getElementById('kontakt-innhold');
 if (!el) return;
 let html = '';
-if (kontakter.length) {
-kontakter.forEach(k => {
+// Sortér: sjåfører først, deretter alfabetisk
+const sortert = [...kontakter].sort((a,b) => {
+if ((b.erSjafor?1:0) !== (a.erSjafor?1:0)) return (b.erSjafor?1:0) - (a.erSjafor?1:0);
+return (a.navn||'').localeCompare(b.navn||'');
+});
+if (sortert.length) {
+sortert.forEach(k => {
+const sjaforBadge = k.erSjafor ? '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--ice);color:var(--mid);font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Sjåfør</span>' : '';
+const tlfHtml = k.telefon ? `<a href="tel:${k.telefon}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.69 3.38 2 2 0 0 1 3.66 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.16 6.16l1.15-1.15a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${k.telefon}</a>` : '';
+const epostHtml = k.epost ? `<a href="mailto:${k.epost}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${k.epost}</a>` : '';
 html += `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--snow)" id="kk-${k.id}">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px">
-<div style="font-size:14px;font-weight:600;color:var(--navy)">${k.navn||'–'}</div>
+<div style="font-size:14px;font-weight:600;color:var(--navy);display:flex;align-items:center">${k.navn||'–'}${sjaforBadge}</div>
 <div style="display:flex;gap:6px;align-items:center">
 <button onclick="redigerKontakt('${k.id}')" title="Rediger" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:13px;padding:2px 4px">✏️</button>
 <button onclick="slettKontaktEntry('${k.id}')" title="Slett" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:14px;padding:2px 4px">×</button>
 </div>
 </div>
-${k.telefon?`<a href="tel:${k.telefon}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.69 3.38 2 2 0 0 1 3.66 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.16 6.16l1.15-1.15a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${k.telefon}</a>`:''}
+${tlfHtml}
+${epostHtml}
 ${k.notat?`<div style="font-size:12px;color:var(--text2);margin-top:5px">${k.notat}</div>`:''}
 </div>`;
 });
@@ -3503,8 +3520,10 @@ html += '<p style="color:var(--text2);font-size:13px;text-align:center;margin:20
 html += `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
 <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">Legg til kontakt</div>
 <div class="field" style="margin-bottom:8px"><input type="text" id="nk-navn" placeholder="Navn" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
-<div class="field" style="margin-bottom:8px"><input type="tel" id="nk-tlf" placeholder="Telefon" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
+<div class="field" style="margin-bottom:8px"><input type="tel" id="nk-tlf" placeholder="Telefon (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
+<div class="field" style="margin-bottom:8px"><input type="email" id="nk-epost" placeholder="E-post (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
 <div class="field" style="margin-bottom:10px"><input type="text" id="nk-notat" placeholder="Notat (rolle, selskap…)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="nk-erSjafor" style="width:auto"><span>Er sjåfør (vises i sjåførvelgere)</span></label>
 <button onclick="lagreKontaktEntry()" style="width:100%;padding:9px;background:var(--mid);color:white;border:none;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Legg til</button>
 </div>`;
 el.innerHTML = html;
@@ -3515,14 +3534,18 @@ const k = kontakter.find(x => x.id === id);
 if (!k) return;
 const card = document.getElementById('kk-'+id);
 if (!card) return;
+const esc = (s) => String(s||'').replace(/"/g,'&quot;');
 card.innerHTML = `
 <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Rediger kontakt</div>
-<div style="margin-bottom:6px"><input type="text" id="ek-navn-${id}" value="${k.navn||''}" placeholder="Navn"
+<div style="margin-bottom:6px"><input type="text" id="ek-navn-${id}" value="${esc(k.navn)}" placeholder="Navn"
 style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-<div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${k.telefon||''}" placeholder="Telefon"
+<div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon"
 style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-<div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${k.notat||''}" placeholder="Notat"
+<div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post"
 style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+<div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat"
+style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="ek-erSjafor-${id}" ${k.erSjafor?'checked':''} style="width:auto"><span>Er sjåfør</span></label>
 <div style="display:flex;gap:6px">
 <button onclick="lagreKontaktRedigert('${id}')" style="flex:1;padding:7px;background:var(--mid);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Lagre</button>
 <button onclick="renderKontakter()" style="padding:7px 12px;border:1.5px solid var(--border);background:white;color:var(--text2);border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">Avbryt</button>
@@ -3536,15 +3559,21 @@ const oppdatert = {
 id,
 navn: document.getElementById('ek-navn-'+id)?.value.trim() || k.navn,
 telefon: document.getElementById('ek-tlf-'+id)?.value.trim() || '',
-notat: document.getElementById('ek-notat-'+id)?.value.trim() || ''
+epost: document.getElementById('ek-epost-'+id)?.value.trim() || '',
+notat: document.getElementById('ek-notat-'+id)?.value.trim() || '',
+erSjafor: document.getElementById('ek-erSjafor-'+id)?.checked || false
 };
 try {
-await apiKall({ action: 'slettKontakt', id });
 const res = await apiKall({ action: 'lagreKontakt', kontakt: oppdatert });
 if (res.ok) {
 const idx = kontakter.findIndex(x => x.id === id);
-if (idx >= 0) kontakter[idx] = { ...oppdatert, id: res.id };
+if (idx >= 0) kontakter[idx] = { ...oppdatert };
+// Sjåfør-listen kan ha endret seg – oppdater alt som avhenger av forere
+forere = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+if (typeof oppdaterForerSelect === 'function') oppdaterForerSelect();
+if (typeof _tomConfigCache === 'function') _tomConfigCache();
 renderKontakter();
+if (typeof renderAdmin === 'function' && adminLoggetInn) renderAdmin();
 }
 } catch(e) { alert('Feil: ' + e.message); }
 }
@@ -3553,14 +3582,20 @@ async function lagreKontaktEntry() {
 const kontakt = {
 navn: document.getElementById('nk-navn')?.value.trim(),
 telefon: document.getElementById('nk-tlf')?.value.trim(),
-notat: document.getElementById('nk-notat')?.value.trim()
+epost: document.getElementById('nk-epost')?.value.trim(),
+notat: document.getElementById('nk-notat')?.value.trim(),
+erSjafor: document.getElementById('nk-erSjafor')?.checked || false
 };
 if (!kontakt.navn) { alert('Navn er påkrevd.'); return; }
 try {
 const res = await apiKall({ action: 'lagreKontakt', kontakt });
 if (res.ok) {
 kontakter.push({ ...kontakt, id: res.id });
+forere = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+if (typeof oppdaterForerSelect === 'function') oppdaterForerSelect();
+if (typeof _tomConfigCache === 'function') _tomConfigCache();
 renderKontakter();
+if (typeof renderAdmin === 'function' && adminLoggetInn) renderAdmin();
 }
 } catch(e) { alert('Feil: ' + e.message); }
 }
@@ -3570,7 +3605,11 @@ if (!confirm('Slett denne kontakten?')) return;
 try {
 await apiKall({ action: 'slettKontakt', id });
 kontakter = kontakter.filter(k => k.id !== id);
+forere = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+if (typeof oppdaterForerSelect === 'function') oppdaterForerSelect();
+if (typeof _tomConfigCache === 'function') _tomConfigCache();
 renderKontakter();
+if (typeof renderAdmin === 'function' && adminLoggetInn) renderAdmin();
 } catch(e) { alert('Feil: ' + e.message); }
 }
 
