@@ -129,7 +129,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   </button>
 
-  <span class="topbar-version" id="topbar-version">v0.3 28.08 13:32</span>
+  <span class="topbar-version" id="topbar-version">v0.4 28.08 13:46</span>
 </div>
 
 <div class="nav">
@@ -970,8 +970,6 @@ function renderKontakter() {
     <div style="margin-bottom:8px"><input type="tel" id="nk-tlf" placeholder="Telefon (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
     <div style="margin-bottom:8px"><input type="email" id="nk-epost" placeholder="E-post (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
     <div style="margin-bottom:10px"><input type="text" id="nk-notat" placeholder="Notat (rolle, selskap…)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="nk-sjaforMaskin" style="width:auto"><span>Sjåfør for maskin</span></label>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="nk-sjaforScooter" style="width:auto"><span>Sjåfør for scooter</span></label>
     <button onclick="lagreKontaktEntry()" style="width:100%;padding:9px;background:var(--mid);color:white;border:none;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Legg til</button>
   </div>`;
   el.innerHTML = html;
@@ -988,8 +986,6 @@ function redigerKontakt(id) {
     <div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="ek-sjaforMaskin-${id}" ${k.sjaforMaskin?'checked':''} style="width:auto"><span>Sjåfør for maskin</span></label>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="ek-sjaforScooter-${id}" ${k.sjaforScooter?'checked':''} style="width:auto"><span>Sjåfør for scooter</span></label>
     <div style="display:flex;gap:6px">
       <button onclick="lagreKontaktRedigert('${id}')" style="flex:1;padding:7px;background:var(--mid);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Lagre</button>
       <button onclick="renderKontakter()" style="padding:7px 12px;border:1.5px solid var(--border);background:white;color:var(--text2);border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">Avbryt</button>
@@ -1004,8 +1000,9 @@ async function lagreKontaktRedigert(id) {
     telefon: document.getElementById('ek-tlf-'+id)?.value.trim() || '',
     epost: document.getElementById('ek-epost-'+id)?.value.trim() || '',
     notat: document.getElementById('ek-notat-'+id)?.value.trim() || '',
-    sjaforMaskin: document.getElementById('ek-sjaforMaskin-'+id)?.checked || false,
-    sjaforScooter: document.getElementById('ek-sjaforScooter-'+id)?.checked || false
+    // Scooter-appen kan IKKE endre sjåfør-type. Behold eksisterende verdier.
+    sjaforMaskin: k.sjaforMaskin || false,
+    sjaforScooter: k.sjaforScooter || false
   };
   try {
     const res = await apiKall({ action: 'lagreKontakt', kontakt: oppdatert });
@@ -1025,8 +1022,10 @@ async function lagreKontaktEntry() {
     telefon: document.getElementById('nk-tlf')?.value.trim(),
     epost: document.getElementById('nk-epost')?.value.trim(),
     notat: document.getElementById('nk-notat')?.value.trim(),
-    sjaforMaskin: document.getElementById('nk-sjaforMaskin')?.checked || false,
-    sjaforScooter: document.getElementById('nk-sjaforScooter')?.checked || false
+    // Nye kontakter opprettet fra scooter-appen får ingen sjåfør-status.
+    // Admin må hake av dette i maskin-appen.
+    sjaforMaskin: false,
+    sjaforScooter: false
   };
   if (!kontakt.navn) { toast('Navn er påkrevd', 'err'); return; }
   try {
