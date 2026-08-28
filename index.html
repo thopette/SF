@@ -105,7 +105,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v28.08 12:45</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v28.08 13:32</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -2708,7 +2708,7 @@ renderAdmin_sesong();
 renderAdminMaskiner();
 // Fører liste – vises fra kontakter med ErSjåfør=true
 const el = document.getElementById('admin-forere-list');
-const sjaforKontakter = (kontakter || []).filter(k => k.erSjafor);
+const sjaforKontakter = (kontakter || []).filter(k => k.sjaforMaskin);
 if (sjaforKontakter.length) {
 el.innerHTML = sjaforKontakter.map(k => {
 const tlfHtml = k.telefon ? `<a href="tel:${k.telefon}" style="color:var(--mid);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.69 3.38 2 2 0 0 1 3.66 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.16 6.16l1.15-1.15a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${k.telefon}</a>` : '';
@@ -3491,20 +3491,25 @@ function renderKontakter() {
 const el = document.getElementById('kontakt-innhold');
 if (!el) return;
 let html = '';
-// Sortér: sjåfører først, deretter alfabetisk
+// Sortér: sjåfører først (uansett kategori), deretter alfabetisk
 const sortert = [...kontakter].sort((a,b) => {
-if ((b.erSjafor?1:0) !== (a.erSjafor?1:0)) return (b.erSjafor?1:0) - (a.erSjafor?1:0);
+const aErSjafor = (a.sjaforMaskin || a.sjaforScooter) ? 1 : 0;
+const bErSjafor = (b.sjaforMaskin || b.sjaforScooter) ? 1 : 0;
+if (bErSjafor !== aErSjafor) return bErSjafor - aErSjafor;
 return (a.navn||'').localeCompare(b.navn||'');
 });
 if (sortert.length) {
 sortert.forEach(k => {
-const sjaforBadge = k.erSjafor ? '<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--ice);color:var(--mid);font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Sjåfør</span>' : '';
+const badges = [];
+if (k.sjaforMaskin) badges.push('<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--ice);color:var(--mid);font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Maskin</span>');
+if (k.sjaforScooter) badges.push('<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:#EAF6FE;color:#2E7BB8;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Scooter</span>');
+const sjaforBadges = badges.join('');
 const tlfHtml = k.telefon ? `<a href="tel:${k.telefon}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.69 3.38 2 2 0 0 1 3.66 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.16 6.16l1.15-1.15a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${k.telefon}</a>` : '';
 const epostHtml = k.epost ? `<a href="mailto:${k.epost}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${k.epost}</a>` : '';
 html += `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--snow)" id="kk-${k.id}">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px">
-<div style="font-size:14px;font-weight:600;color:var(--navy);display:flex;align-items:center">${k.navn||'–'}${sjaforBadge}</div>
-<div style="display:flex;gap:6px;align-items:center">
+<div style="font-size:14px;font-weight:600;color:var(--navy);display:flex;align-items:center;flex-wrap:wrap">${k.navn||'–'}${sjaforBadges}</div>
+<div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
 <button onclick="redigerKontakt('${k.id}')" title="Rediger" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:13px;padding:2px 4px">✏️</button>
 <button onclick="slettKontaktEntry('${k.id}')" title="Slett" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:14px;padding:2px 4px">×</button>
 </div>
@@ -3523,7 +3528,8 @@ html += `<div style="margin-top:16px;border-top:1px solid var(--border);padding-
 <div class="field" style="margin-bottom:8px"><input type="tel" id="nk-tlf" placeholder="Telefon (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
 <div class="field" style="margin-bottom:8px"><input type="email" id="nk-epost" placeholder="E-post (valgfritt)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
 <div class="field" style="margin-bottom:10px"><input type="text" id="nk-notat" placeholder="Notat (rolle, selskap…)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
-<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="nk-erSjafor" style="width:auto"><span>Er sjåfør (vises i sjåførvelgere)</span></label>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="nk-sjaforMaskin" style="width:auto"><span>Sjåfør for maskin</span></label>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="nk-sjaforScooter" style="width:auto"><span>Sjåfør for scooter</span></label>
 <button onclick="lagreKontaktEntry()" style="width:100%;padding:9px;background:var(--mid);color:white;border:none;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Legg til</button>
 </div>`;
 el.innerHTML = html;
@@ -3545,7 +3551,8 @@ style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radiu
 style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
 <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat"
 style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="ek-erSjafor-${id}" ${k.erSjafor?'checked':''} style="width:auto"><span>Er sjåfør</span></label>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="ek-sjaforMaskin-${id}" ${k.sjaforMaskin?'checked':''} style="width:auto"><span>Sjåfør for maskin</span></label>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="ek-sjaforScooter-${id}" ${k.sjaforScooter?'checked':''} style="width:auto"><span>Sjåfør for scooter</span></label>
 <div style="display:flex;gap:6px">
 <button onclick="lagreKontaktRedigert('${id}')" style="flex:1;padding:7px;background:var(--mid);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Lagre</button>
 <button onclick="renderKontakter()" style="padding:7px 12px;border:1.5px solid var(--border);background:white;color:var(--text2);border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">Avbryt</button>
@@ -3561,15 +3568,16 @@ navn: document.getElementById('ek-navn-'+id)?.value.trim() || k.navn,
 telefon: document.getElementById('ek-tlf-'+id)?.value.trim() || '',
 epost: document.getElementById('ek-epost-'+id)?.value.trim() || '',
 notat: document.getElementById('ek-notat-'+id)?.value.trim() || '',
-erSjafor: document.getElementById('ek-erSjafor-'+id)?.checked || false
+sjaforMaskin: document.getElementById('ek-sjaforMaskin-'+id)?.checked || false,
+sjaforScooter: document.getElementById('ek-sjaforScooter-'+id)?.checked || false
 };
 try {
 const res = await apiKall({ action: 'lagreKontakt', kontakt: oppdatert });
 if (res.ok) {
 const idx = kontakter.findIndex(x => x.id === id);
 if (idx >= 0) kontakter[idx] = { ...oppdatert };
-// Sjåfør-listen kan ha endret seg – oppdater alt som avhenger av forere
-forere = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+// I maskin-appen viser vi kun de som er SjåførMaskin
+forere = kontakter.filter(x => x.sjaforMaskin).map(x => x.navn).filter(Boolean);
 if (typeof oppdaterForerSelect === 'function') oppdaterForerSelect();
 if (typeof _tomConfigCache === 'function') _tomConfigCache();
 renderKontakter();
@@ -3584,14 +3592,15 @@ navn: document.getElementById('nk-navn')?.value.trim(),
 telefon: document.getElementById('nk-tlf')?.value.trim(),
 epost: document.getElementById('nk-epost')?.value.trim(),
 notat: document.getElementById('nk-notat')?.value.trim(),
-erSjafor: document.getElementById('nk-erSjafor')?.checked || false
+sjaforMaskin: document.getElementById('nk-sjaforMaskin')?.checked || false,
+sjaforScooter: document.getElementById('nk-sjaforScooter')?.checked || false
 };
 if (!kontakt.navn) { alert('Navn er påkrevd.'); return; }
 try {
 const res = await apiKall({ action: 'lagreKontakt', kontakt });
 if (res.ok) {
 kontakter.push({ ...kontakt, id: res.id });
-forere = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+forere = kontakter.filter(x => x.sjaforMaskin).map(x => x.navn).filter(Boolean);
 if (typeof oppdaterForerSelect === 'function') oppdaterForerSelect();
 if (typeof _tomConfigCache === 'function') _tomConfigCache();
 renderKontakter();
@@ -3605,7 +3614,7 @@ if (!confirm('Slett denne kontakten?')) return;
 try {
 await apiKall({ action: 'slettKontakt', id });
 kontakter = kontakter.filter(k => k.id !== id);
-forere = kontakter.filter(x => x.erSjafor).map(x => x.navn).filter(Boolean);
+forere = kontakter.filter(x => x.sjaforMaskin).map(x => x.navn).filter(Boolean);
 if (typeof oppdaterForerSelect === 'function') oppdaterForerSelect();
 if (typeof _tomConfigCache === 'function') _tomConfigCache();
 renderKontakter();
