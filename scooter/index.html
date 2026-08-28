@@ -1,1 +1,688 @@
+<!DOCTYPE html><html lang="no"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><meta name="apple-mobile-web-app-capable" content="yes"><title>SF Scooterlogg</title><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>
+:root { --navy:#0F3A5F; --mid:#2E7BB8; --accent:#4FB3E8; --ice:#EAF6FE; --snow:#F7FBFF; --white:#FFFFFF; --text:#0F3A5F; --text2:#4A6B8A; --border:#C8DDF0; --success:#27AE60; --warn:#E67E22; --danger:#E74C3C; --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif; --radius:10px; --shadow:0 2px 12px rgba(15,58,95,0.10); }
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body { font-family:var(--sans); background:var(--snow); color:var(--text); min-height:100vh; padding-bottom:40px; }
+.topbar { background:var(--navy); padding:10px 14px; display:flex; align-items:center; gap:8px; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.25); }
+.topbar h1 { color:var(--white); font-size:15px; font-weight:500; letter-spacing:0.3px; }
+.topbar-version { font-size:10px; color:rgba(255,255,255,0.45); font-family:var(--mono); white-space:nowrap; }
+.nav { background:var(--white); border-bottom:1px solid var(--border); display:flex; overflow-x:auto; padding:0 4px; position:sticky; top:45px; z-index:90; }
+.nav-btn { background:none; border:none; padding:12px 12px 10px; color:var(--text2); font-family:var(--sans); font-size:12px; font-weight:500; cursor:pointer; border-bottom:2px solid transparent; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:68px; }
+.nav-btn.active { color:var(--mid); border-bottom-color:var(--mid); }
+.nav-btn svg { width:20px; height:20px; }
+.content { padding:14px; max-width:640px; margin:0 auto; }
+.card { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:12px; overflow:hidden; }
+.card-header { background:var(--navy); color:var(--white); padding:10px 14px; font-size:13px; font-weight:500; display:flex; align-items:center; gap:8px; }
+.card-body { padding:14px; }
+.field { margin-bottom:12px; }
+.field label { display:block; font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:5px; }
+.field input, .field select, .field textarea { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:7px; font-family:var(--sans); font-size:14px; color:var(--text); background:var(--snow); }
+.field input:focus, .field select:focus, .field textarea:focus { outline:none; border-color:var(--mid); background:var(--white); }
+.field textarea { min-height:60px; resize:vertical; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.btn { padding:10px 18px; border-radius:8px; border:1.5px solid var(--border); background:var(--white); color:var(--text); font-family:var(--sans); font-size:14px; font-weight:500; cursor:pointer; display:inline-flex; align-items:center; gap:6px; justify-content:center; }
+.btn-primary { background:var(--mid); color:var(--white); border-color:var(--mid); }
+.btn-primary:disabled { opacity:0.4; cursor:not-allowed; }
+.btn-sm { padding:6px 12px; font-size:12px; }
+.btn-outline { background:var(--white); }
+.btn-big { padding:14px 20px; font-size:15px; font-weight:600; }
+.btn-danger { color:var(--danger); border-color:#FECACA; background:var(--white); }
+.pick-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; }
+.pick-card { border:2px solid var(--border); border-radius:10px; padding:14px 10px; background:var(--white); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:8px; user-select:none; transition:all 0.15s; }
+.pick-card.selected { border-color:var(--mid); background:var(--ice); box-shadow:0 0 0 2px rgba(46,123,184,0.2); }
+.pick-card .pick-img { width:46px; height:46px; border-radius:8px; background:linear-gradient(135deg,var(--ice),var(--border)); flex-shrink:0; overflow:hidden; }
+.pick-card .pick-img img { width:100%; height:100%; object-fit:cover; }
+.pick-card .pick-name { font-weight:600; font-size:13px; color:var(--navy); text-align:center; }
+.pick-card .pick-meta { font-size:11px; color:var(--text2); font-family:var(--mono); }
+.chip-row { display:flex; flex-wrap:wrap; gap:6px; }
+.chip { padding:8px 16px; border-radius:20px; border:2px solid var(--border); background:var(--white); font-size:14px; font-weight:500; color:var(--text); cursor:pointer; user-select:none; }
+.chip.selected { background:var(--mid); color:var(--white); border-color:var(--mid); }
+.rating-row { display:flex; gap:8px; }
+.rating-btn { flex:1; padding:16px 0; border-radius:8px; border:2px solid var(--border); background:var(--white); font-size:18px; font-weight:600; cursor:pointer; color:var(--text); }
+.rating-btn.selected { background:var(--mid); color:var(--white); border-color:var(--mid); }
+.photo-drop { border:2px dashed var(--border); border-radius:10px; padding:18px; text-align:center; color:var(--text2); background:var(--snow); cursor:pointer; position:relative; }
+.photo-drop:hover { border-color:var(--mid); }
+.photo-preview { margin-top:8px; position:relative; }
+.photo-preview img { max-width:100%; max-height:220px; border-radius:8px; display:block; }
+.photo-preview .fjern { position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:14px; }
+.hint { font-size:12px; color:var(--text2); margin-top:4px; line-height:1.4; }
+.hint strong { color:var(--text); }
+.optional-section { background:linear-gradient(180deg,var(--snow) 0%,transparent 100%); border-top:1px solid var(--border); margin:18px -14px 0; padding:16px 14px 0; }
+.optional-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; cursor:pointer; }
+.optional-header .section-title { margin:0; font-size:12px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:6px; }
+.optional-header .chevron { transition:transform 0.2s; color:var(--text2); }
+.optional-header.expanded .chevron { transform:rotate(90deg); }
+.optional-content { display:none; }
+.optional-content.expanded { display:block; }
+.optional-badge { font-size:10px; padding:2px 8px; border-radius:10px; background:var(--ice); color:var(--mid); font-weight:600; letter-spacing:0.3px; text-transform:uppercase; }
+.section-title { font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.5px; margin:14px 0 8px; }
+.log-item { padding:12px 14px; border-bottom:1px solid var(--border); }
+.log-item:last-child { border-bottom:none; }
+.log-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:8px; }
+.log-date { font-size:13px; font-weight:600; color:var(--navy); }
+.log-driver { font-size:12px; color:var(--text2); }
+.log-body { font-size:12px; color:var(--text2); line-height:1.4; margin-top:2px; }
+.log-stats { display:flex; gap:10px; margin-top:6px; font-size:11px; color:var(--text2); flex-wrap:wrap; align-items:center; }
+.log-stats strong { color:var(--text); font-weight:500; }
+.log-thumb { width:42px; height:42px; border-radius:6px; background:linear-gradient(135deg,var(--ice),var(--border)); display:inline-block; overflow:hidden; }
+.log-thumb img { width:100%; height:100%; object-fit:cover; }
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.stat-box { background:var(--white); border-radius:8px; padding:12px 14px; border:1px solid var(--border); }
+.stat-value { font-size:22px; font-weight:600; color:var(--navy); }
+.stat-label { font-size:11px; color:var(--text2); margin-top:2px; text-transform:uppercase; letter-spacing:0.5px; }
+.forer-summary { display:flex; gap:8px; padding:12px 14px 0; overflow-x:auto; }
+.forer-summary-item { flex-shrink:0; padding:8px 14px; background:var(--ice); border-radius:20px; font-size:12px; color:var(--text); font-weight:500; white-space:nowrap; }
+.forer-summary-item strong { color:var(--navy); font-weight:700; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+.time-with-now { position:relative; }
+.time-with-now .now-btn { position:absolute; right:4px; top:50%; transform:translateY(-50%); background:var(--mid); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; }
+.input-with-unit { position:relative; }
+.input-with-unit .unit { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text2); font-size:13px; pointer-events:none; }
+.input-with-unit input { padding-right:36px; }
+.big-cta-bar { display:flex; gap:8px; margin-top:20px; }
+.big-cta-bar .btn-outline { flex:0 0 auto; }
+.big-cta-bar .btn-primary { flex:1; }
+.spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.6s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--navy); color:white; padding:12px 20px; border-radius:8px; font-size:13px; box-shadow:var(--shadow); z-index:1000; opacity:0; transition:opacity 0.2s; pointer-events:none; }
+.toast.show { opacity:1; }
+.toast.err { background:var(--danger); }
+.toast.ok { background:var(--success); }
+.modal-backdrop { position:fixed; inset:0; background:rgba(15,58,95,0.55); display:none; align-items:center; justify-content:center; z-index:200; padding:16px; }
+.modal-backdrop.open { display:flex; }
+.modal { background:var(--white); border-radius:12px; max-width:520px; width:100%; max-height:90vh; overflow-y:auto; }
+.modal-header { background:var(--navy); color:white; padding:12px 16px; font-size:14px; font-weight:600; border-radius:12px 12px 0 0; }
+.modal-body { padding:16px; }
+</style></head><body>
 
+<div class="topbar">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg>
+  <h1>SF Scooterlogg</h1>
+  <div style="flex:1"></div>
+  <span class="topbar-version" id="topbar-version">v0.1 28.08 09:01</span>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="visTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
+  <button class="nav-btn" onclick="visTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ny økt</button>
+  <button class="nav-btn" onclick="visTab('logg')" id="btn-logg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Logg</button>
+  <button class="nav-btn" onclick="visTab('admin')" id="btn-admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Admin</button>
+</div>
+
+<div class="content">
+
+<div id="tab-dashboard" class="tab-content active">
+  <div class="stat-grid" id="stat-grid">
+    <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Turer denne sesongen</div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Totalt kjørt</div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-fore">–</div><div class="stat-label">Snitt føreforhold</div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-sno">–</div><div class="stat-label">Snø høyere strøk (sist)</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">Siste turer</div>
+    <div id="siste-turer"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+</div>
+
+<div id="tab-ny" class="tab-content">
+  <div class="card">
+    <div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ny scooter-tur</div>
+    <div class="card-body">
+      <div class="field"><label>Sjåfør</label><div class="chip-row" id="sjafor-chips"></div></div>
+      <div class="field"><label>Scooter</label><div class="pick-row" id="scooter-cards"></div></div>
+      <div class="form-grid">
+        <div class="field"><label>Km ved parkering</label><input type="number" id="f-km" inputmode="numeric" placeholder="km"><div class="hint" id="hint-km"></div></div>
+        <div class="field"><label>Tid brukt (min)</label><input type="number" id="f-tid" inputmode="numeric" placeholder="min"><div class="hint" id="hint-tid"></div></div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Sluttidspunkt</label><div class="time-with-now"><input type="time" id="f-slutt" style="padding-right:56px"><button class="now-btn" onclick="event.preventDefault(); document.getElementById('f-slutt').value = new Date().toTimeString().slice(0,5)">Nå</button></div></div>
+        <div class="field"><label>Dato</label><input type="date" id="f-dato"></div>
+      </div>
+
+      <div class="optional-section">
+        <div class="optional-header" onclick="toggleOptional()">
+          <div class="section-title"><svg width="14" height="14" class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>Turbeskrivelse<span class="optional-badge">Kun én sjåfør</span></div>
+        </div>
+        <div class="optional-content" id="optional-content">
+          <div class="field"><label>Rute og oppdrag</label><textarea id="f-beskrivelse" placeholder="Kort om hvor du kjørte og hva som ble gjort"></textarea></div>
+          <div class="form-grid">
+            <div class="field"><label>Snø lav</label><div class="input-with-unit"><input type="number" id="f-sno-lav" inputmode="numeric" placeholder="0"><span class="unit">cm</span></div></div>
+            <div class="field"><label>Snø høy</label><div class="input-with-unit"><input type="number" id="f-sno-hoy" inputmode="numeric" placeholder="0"><span class="unit">cm</span></div></div>
+          </div>
+          <div class="field"><label>Føreforhold for ski</label><div class="rating-row" id="fore-rating"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button><button class="rating-btn" data-val="5">5</button></div></div>
+          <div class="field"><label>Merknader til skiløpere</label><textarea id="f-merknader-ski" placeholder="Overvann, trefall, isete partier..."></textarea></div>
+          <div class="field"><label>Bilde</label>
+            <div class="photo-drop" id="photo-drop" onclick="document.getElementById('photo-input').click()">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <div style="margin-top:4px;font-size:12px">Trykk for å ta bilde eller velg fra galleri</div>
+            </div>
+            <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none">
+            <div id="photo-preview" class="photo-preview" style="display:none"><img id="photo-img"><button class="fjern" onclick="fjernBilde()" type="button">×</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="big-cta-bar">
+        <button class="btn btn-outline" onclick="resetSkjema()">Nullstill</button>
+        <button class="btn btn-primary btn-big" id="lagre-btn" onclick="lagreTur()">Lagre tur</button>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;font-size:11px;color:var(--text2);margin-top:8px;line-height:1.5">💡 Rask lagring: Fyll ut kun sjåfør, scooter, km og tid.<br>Turbeskrivelse er valgfri – én sjåfør per tur trenger å fylle den ut.</div>
+</div>
+
+<div id="tab-logg" class="tab-content">
+  <div class="card">
+    <div class="card-header">Alle turer</div>
+    <div class="forer-summary" id="forer-summary"></div>
+    <div id="logg-liste" style="border-top:1px solid var(--border);margin-top:12px"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+</div>
+
+<div id="tab-admin" class="tab-content">
+  <div class="card">
+    <div class="card-header">Sjåfører</div>
+    <div class="card-body" id="admin-sjaforer"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+  <div class="card">
+    <div class="card-header">Scootere</div>
+    <div class="card-body" id="admin-scootere"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+</div>
+
+</div>
+
+<!-- Modal for redigering av scooter -->
+<div class="modal-backdrop" id="scooter-modal">
+  <div class="modal">
+    <div class="modal-header" id="scooter-modal-title">Ny scooter</div>
+    <div class="modal-body">
+      <div class="field"><label>Navn</label><input type="text" id="scooter-navn"></div>
+      <div class="field"><label>Km ved oppstart</label><input type="number" id="scooter-km-start" inputmode="numeric"></div>
+      <div class="field"><label>Bilde</label>
+        <div class="photo-drop" onclick="document.getElementById('scooter-bilde-input').click()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <div style="margin-top:4px;font-size:12px">Trykk for å velge bilde</div>
+        </div>
+        <input type="file" id="scooter-bilde-input" accept="image/*" style="display:none">
+        <div id="scooter-bilde-preview" class="photo-preview" style="display:none"><img id="scooter-bilde-img"></div>
+      </div>
+      <div class="field"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="scooter-aktiv" style="width:auto" checked><span style="text-transform:none;letter-spacing:normal">Aktiv (vises i valg)</span></label></div>
+      <div style="display:flex;justify-content:space-between;gap:8px;margin-top:16px">
+        <button class="btn btn-danger" id="scooter-slett-btn" onclick="slettScooterModal()" style="display:none">Slett</button>
+        <div style="flex:1"></div>
+        <button class="btn btn-outline" onclick="lukkScooterModal()">Avbryt</button>
+        <button class="btn btn-primary" onclick="lagreScooterModal()">Lagre</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const scriptUrl = "https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec";
+
+// Global state
+let turer = [];
+let sjaforer = [];
+let scootere = [];
+let valgtSjafor = '';
+let valgtScooter = null;
+let valgtBildeUrl = '';   // Etter opplasting
+let scooterBildeUrl = ''; // For scooter-modal
+let redigerScooterIdx = -1;
+
+// ── UTILS ─────────────────────────────────────────────
+async function apiKall(body) {
+  const opts = { method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) };
+  const res = await fetch(scriptUrl, opts);
+  return await res.json();
+}
+
+function toast(melding, type) {
+  const el = document.getElementById('toast');
+  el.textContent = melding;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function visTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'instant'});
+  if (id === 'ny') {
+    // Sett klokkeslett til nå ved åpning av Ny økt
+    const n = new Date();
+    document.getElementById('f-slutt').value = n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
+    if (!document.getElementById('f-dato').value) {
+      document.getElementById('f-dato').value = n.toISOString().substring(0,10);
+    }
+    oppdaterKmHint();
+  }
+  if (id === 'logg') renderLogg();
+  if (id === 'admin') renderAdmin();
+  if (id === 'dashboard') renderDashboard();
+}
+
+function toggleOptional() {
+  document.querySelector('.optional-header').classList.toggle('expanded');
+  document.getElementById('optional-content').classList.toggle('expanded');
+}
+
+// ── DATA-LAST ─────────────────────────────────────────
+async function lastData() {
+  try {
+    const [turData, cfg] = await Promise.all([
+      apiKall({ action: 'hentAlleScooter' }),
+      apiKall({ action: 'hentConfigScooter' })
+    ]);
+    if (turData.feil) throw new Error(turData.feil);
+    if (cfg.feil) throw new Error(cfg.feil);
+    turer = (turData.turer || []).map(mapTur);
+    sjaforer = cfg.forere || [];
+    scootere = cfg.scootere || [];
+    renderSjaforChips();
+    renderScooterCards();
+    renderDashboard();
+    oppdaterKmHint();
+  } catch(e) {
+    toast('Kunne ikke laste data: ' + e.message, 'err');
+    console.error(e);
+  }
+}
+
+function mapTur(t) {
+  return {
+    id: t.ID,
+    dato: t.Dato ? String(t.Dato).substring(0,10) : '',
+    sjafor: t['Sjåfør'] || t.Sjafor,
+    scooter: t.Scooter,
+    slutt: t.Slutt,
+    km: parseFloat(t.Km) || 0,
+    tidBrukt: parseFloat(t.TidBrukt) || 0,
+    beskrivelse: t.Beskrivelse || '',
+    snoLav: t['SnøLav'] || t.SnoLav,
+    snoHoy: t['SnøHøy'] || t.SnoHoy,
+    foreforhold: parseInt(t['Føreforhold'] || t.Foreforhold) || 0,
+    merknaderSki: t.MerknaderSki || '',
+    bildeUrl: t.BildeUrl || '',
+    vaer: t.Vaer || '',
+    redigert: String(t.Registrert || '').includes('[redigert]'),
+    kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur) || null : null
+  };
+}
+
+// ── SJÅFØR & SCOOTER VELGERE ──────────────────────────
+function renderSjaforChips() {
+  const el = document.getElementById('sjafor-chips');
+  el.innerHTML = sjaforer.map(s => `<div class="chip${valgtSjafor===s?' selected':''}" onclick="velgSjafor('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('');
+}
+function velgSjafor(navn) {
+  valgtSjafor = navn;
+  renderSjaforChips();
+}
+
+function renderScooterCards() {
+  const el = document.getElementById('scooter-cards');
+  const aktive = scootere.filter(s => s.aktiv);
+  if (!aktive.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2);grid-column:1/-1">Ingen aktive scootere. Legg til i Admin.</p>';
+    return;
+  }
+  el.innerHTML = aktive.map((s,i) => {
+    const sisteKm = sisteKmForScooter(s.navn);
+    const meta = sisteKm > 0 ? sisteKm + ' km' : (s.kmStart||0) + ' km';
+    const bildeHtml = s.bildeUrl ? `<img src="${s.bildeUrl}" alt="">` : '';
+    return `<div class="pick-card${valgtScooter && valgtScooter.navn===s.navn?' selected':''}" onclick="velgScooter(${i})"><div class="pick-img">${bildeHtml}</div><div class="pick-name">${s.navn}</div><div class="pick-meta">${meta}</div></div>`;
+  }).join('');
+}
+function velgScooter(idx) {
+  const aktive = scootere.filter(s => s.aktiv);
+  valgtScooter = aktive[idx];
+  renderScooterCards();
+  oppdaterKmHint();
+}
+function sisteKmForScooter(navn) {
+  const sortert = [...turer].filter(t => t.scooter === navn).sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
+  return sortert.length ? sortert[0].km : 0;
+}
+function oppdaterKmHint() {
+  const el = document.getElementById('hint-km');
+  if (!el) return;
+  if (!valgtScooter) { el.innerHTML = ''; return; }
+  const siste = sisteKmForScooter(valgtScooter.navn);
+  const startKm = valgtScooter.kmStart || 0;
+  const kmNy = parseFloat(document.getElementById('f-km').value) || 0;
+  const ref = siste > 0 ? siste : startKm;
+  if (ref > 0) {
+    const diff = kmNy - ref;
+    if (kmNy > 0 && diff > 0) {
+      el.innerHTML = `Sist: <strong>${ref}</strong> · +${diff.toFixed(1)} km`;
+    } else {
+      el.innerHTML = `Sist: <strong>${ref}</strong>`;
+    }
+  } else {
+    el.innerHTML = '';
+  }
+
+  // Tid brukt
+  const tidEl = document.getElementById('hint-tid');
+  const min = parseInt(document.getElementById('f-tid').value) || 0;
+  if (min > 0) {
+    const t = Math.floor(min / 60);
+    const m = min % 60;
+    tidEl.innerHTML = `≈ ${t > 0 ? t + 't ' : ''}${m}m`;
+  } else {
+    tidEl.innerHTML = '';
+  }
+}
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'f-km' || e.target.id === 'f-tid') oppdaterKmHint();
+});
+
+// ── FØREFORHOLD RATING ────────────────────────────────
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('rating-btn')) {
+    document.querySelectorAll('#fore-rating .rating-btn').forEach(b => b.classList.remove('selected'));
+    e.target.classList.add('selected');
+  }
+});
+
+// ── BILDE-OPPLASTING ──────────────────────────────────
+document.getElementById('photo-input').addEventListener('change', async (e) => {
+  const fil = e.target.files[0];
+  if (!fil) return;
+  await lastOppBilde(fil, 'tur');
+});
+document.getElementById('scooter-bilde-input').addEventListener('change', async (e) => {
+  const fil = e.target.files[0];
+  if (!fil) return;
+  await lastOppBilde(fil, 'scooter');
+});
+
+async function lastOppBilde(fil, kontekst) {
+  // Vis lokal preview umiddelbart
+  const reader = new FileReader();
+  reader.onload = async (ev) => {
+    const dataUrl = ev.target.result;
+    if (kontekst === 'tur') {
+      document.getElementById('photo-img').src = dataUrl;
+      document.getElementById('photo-preview').style.display = 'block';
+    } else {
+      document.getElementById('scooter-bilde-img').src = dataUrl;
+      document.getElementById('scooter-bilde-preview').style.display = 'block';
+    }
+    toast('Laster opp bilde…', '');
+    try {
+      const res = await apiKall({
+        action: 'lastOppBilde',
+        filnavn: fil.name || (kontekst + '-' + Date.now() + '.jpg'),
+        base64: dataUrl,
+        mimeType: fil.type || 'image/jpeg'
+      });
+      if (res.feil) throw new Error(res.feil);
+      if (kontekst === 'tur') {
+        valgtBildeUrl = res.url;
+        document.getElementById('photo-img').src = res.url;
+      } else {
+        scooterBildeUrl = res.url;
+        document.getElementById('scooter-bilde-img').src = res.url;
+      }
+      toast('Bilde lastet opp ✓', 'ok');
+    } catch(err) {
+      toast('Bildeopplasting feilet: ' + err.message, 'err');
+    }
+  };
+  reader.readAsDataURL(fil);
+}
+function fjernBilde() {
+  valgtBildeUrl = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-input').value = '';
+}
+
+// ── LAGRE TUR ─────────────────────────────────────────
+async function lagreTur() {
+  if (!valgtSjafor) { toast('Velg sjåfør', 'err'); return; }
+  if (!valgtScooter) { toast('Velg scooter', 'err'); return; }
+  const km = parseFloat(document.getElementById('f-km').value) || 0;
+  const tid = parseInt(document.getElementById('f-tid').value) || 0;
+  if (km <= 0) { toast('Skriv inn km ved parkering', 'err'); return; }
+  if (tid <= 0) { toast('Skriv inn tid brukt (min)', 'err'); return; }
+
+  const foreBtn = document.querySelector('#fore-rating .rating-btn.selected');
+  const tur = {
+    dato: document.getElementById('f-dato').value,
+    slutt: document.getElementById('f-slutt').value,
+    sjafor: valgtSjafor,
+    scooter: valgtScooter.navn,
+    kmStartScooter: valgtScooter.kmStart || 0,
+    km: km,
+    tidBrukt: tid,
+    beskrivelse: document.getElementById('f-beskrivelse').value.trim(),
+    snoLav: document.getElementById('f-sno-lav').value || '',
+    snoHoy: document.getElementById('f-sno-hoy').value || '',
+    foreforhold: foreBtn ? foreBtn.dataset.val : '',
+    merknaderSki: document.getElementById('f-merknader-ski').value.trim(),
+    bildeUrl: valgtBildeUrl
+  };
+  const btn = document.getElementById('lagre-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Lagrer…';
+  try {
+    const res = await apiKall({ action: 'leggTilScooter', tur });
+    if (res.feil) throw new Error(res.feil);
+    toast('Tur lagret ✓', 'ok');
+    resetSkjema();
+    await lastData();
+    visTab('logg');
+  } catch(e) {
+    toast('Lagring feilet: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Lagre tur';
+  }
+}
+
+function resetSkjema() {
+  document.getElementById('f-km').value = '';
+  document.getElementById('f-tid').value = '';
+  document.getElementById('f-beskrivelse').value = '';
+  document.getElementById('f-sno-lav').value = '';
+  document.getElementById('f-sno-hoy').value = '';
+  document.getElementById('f-merknader-ski').value = '';
+  document.querySelectorAll('#fore-rating .rating-btn').forEach(b => b.classList.remove('selected'));
+  fjernBilde();
+  oppdaterKmHint();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────
+function renderDashboard() {
+  document.getElementById('stat-turer').textContent = turer.length;
+  const totKm = turer.reduce((s,t) => s + (t.kmPerTur || 0), 0);
+  document.getElementById('stat-km').textContent = totKm.toFixed(0) + ' km';
+  const foreVerdier = turer.map(t => t.foreforhold).filter(v => v > 0);
+  const snittFore = foreVerdier.length ? (foreVerdier.reduce((s,v)=>s+v,0)/foreVerdier.length).toFixed(1) : '–';
+  document.getElementById('stat-fore').textContent = snittFore;
+  const sortert = [...turer].sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
+  const sisteSnoHoy = sortert.find(t => t.snoHoy);
+  document.getElementById('stat-sno').textContent = sisteSnoHoy ? sisteSnoHoy.snoHoy + ' cm' : '–';
+
+  // Siste 5 turer
+  const el = document.getElementById('siste-turer');
+  if (!turer.length) {
+    el.innerHTML = '<p style="padding:14px;font-size:13px;color:var(--text2)">Ingen turer registrert ennå. Trykk «Ny økt» for å registrere.</p>';
+    return;
+  }
+  el.innerHTML = sortert.slice(0, 5).map(renderTurItem).join('');
+}
+
+function renderTurItem(t) {
+  const datoKort = formaterDatoKort(t.dato);
+  const tidStr = t.tidBrukt > 0 ? formaterTid(t.tidBrukt) : '';
+  const kmStr = t.kmPerTur ? `<strong>${t.kmPerTur.toFixed(0)} km</strong>` : '';
+  const stats = [];
+  if (kmStr || tidStr) stats.push(`<span>${kmStr}${kmStr&&tidStr?' · ':''}${tidStr}</span>`);
+  if (t.foreforhold) stats.push(`<span>Føre <strong>${t.foreforhold}/5</strong></span>`);
+  if (t.snoLav || t.snoHoy) stats.push(`<span>Snø ${t.snoLav||'–'}/${t.snoHoy||'–'} cm</span>`);
+  if (t.bildeUrl) stats.push(`<span class="log-thumb"><img src="${t.bildeUrl}" alt=""></span>`);
+  return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${stats.join('')}</div></div>`;
+}
+
+function formaterDatoKort(dato) {
+  if (!dato) return '';
+  const d = new Date(dato);
+  const maaneder = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+  return d.getDate() + '. ' + maaneder[d.getMonth()];
+}
+function formaterTid(min) {
+  const t = Math.floor(min / 60);
+  const m = min % 60;
+  return (t > 0 ? t + 't ' : '') + m + 'm';
+}
+
+// ── LOGG ──────────────────────────────────────────────
+function renderLogg() {
+  const el = document.getElementById('logg-liste');
+  const sortert = [...turer].sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
+  if (!sortert.length) {
+    el.innerHTML = '<p style="padding:14px;font-size:13px;color:var(--text2)">Ingen turer registrert ennå.</p>';
+    document.getElementById('forer-summary').innerHTML = '';
+    return;
+  }
+
+  // Fører-summering
+  const perForer = {};
+  sortert.forEach(t => {
+    const f = t.sjafor || 'Ukjent';
+    if (!perForer[f]) perForer[f] = { turer: 0, km: 0 };
+    perForer[f].turer++;
+    perForer[f].km += t.kmPerTur || 0;
+  });
+  const sumEl = document.getElementById('forer-summary');
+  sumEl.innerHTML = Object.entries(perForer).map(([navn, d]) =>
+    `<div class="forer-summary-item"><strong>${navn}</strong> · ${d.turer} tur${d.turer===1?'':'er'} · ${d.km.toFixed(0)} km</div>`
+  ).join('');
+
+  el.innerHTML = sortert.map(t => {
+    const item = renderTurItem(t);
+    return item.replace('</div></div>', `</div><div style="margin-top:6px"><button class="btn btn-sm btn-danger" onclick="slettTur('${t.id}')">Slett</button></div></div>`);
+  }).join('');
+}
+
+async function slettTur(id) {
+  if (!confirm('Slette denne turen?')) return;
+  try {
+    const res = await apiKall({ action: 'slettScooter', id: id });
+    if (res.feil) throw new Error(res.feil);
+    toast('Slettet ✓', 'ok');
+    await lastData();
+    renderLogg();
+  } catch(e) {
+    toast('Feil: ' + e.message, 'err');
+  }
+}
+
+// ── ADMIN ─────────────────────────────────────────────
+function renderAdmin() {
+  // Sjåfører (les-visning, siden de deles med maskin-appen)
+  const sjaEl = document.getElementById('admin-sjaforer');
+  if (!sjaforer.length) {
+    sjaEl.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen sjåfører registrert. Legg til i maskin-appen (deles).</p>';
+  } else {
+    sjaEl.innerHTML = sjaforer.map(s => `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:14px">${s}</div>`).join('') +
+      '<p style="font-size:12px;color:var(--text2);margin-top:10px;font-style:italic">Sjåfører deles med maskin-appen. Legg til/endre der.</p>';
+  }
+
+  // Scootere
+  const scEl = document.getElementById('admin-scootere');
+  const scootereHtml = scootere.map((s,i) => {
+    const bildeHtml = s.bildeUrl
+      ? `<img src="${s.bildeUrl}" alt="" style="width:100%;height:100%;object-fit:cover">`
+      : '';
+    return `<div style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center">
+      <div style="width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--ice),var(--border));flex-shrink:0;overflow:hidden">${bildeHtml}</div>
+      <div style="flex:1"><div style="font-weight:600">${s.navn}</div><div style="font-size:12px;color:var(--text2)">Km ved oppstart: ${s.kmStart||0} · ${s.aktiv?'Aktiv':'Inaktiv'}</div></div>
+      <button class="btn btn-sm btn-outline" onclick="visScooterModal(${i})">Endre</button>
+    </div>`;
+  }).join('');
+  scEl.innerHTML = scootereHtml + '<div style="text-align:right"><button class="btn btn-primary btn-sm" onclick="visScooterModal(-1)">+ Ny scooter</button></div>';
+}
+
+function visScooterModal(idx) {
+  redigerScooterIdx = idx;
+  if (idx === -1) {
+    document.getElementById('scooter-modal-title').textContent = 'Ny scooter';
+    document.getElementById('scooter-navn').value = '';
+    document.getElementById('scooter-km-start').value = '';
+    document.getElementById('scooter-aktiv').checked = true;
+    document.getElementById('scooter-bilde-preview').style.display = 'none';
+    document.getElementById('scooter-slett-btn').style.display = 'none';
+    scooterBildeUrl = '';
+  } else {
+    const s = scootere[idx];
+    document.getElementById('scooter-modal-title').textContent = 'Endre scooter';
+    document.getElementById('scooter-navn').value = s.navn;
+    document.getElementById('scooter-km-start').value = s.kmStart || 0;
+    document.getElementById('scooter-aktiv').checked = !!s.aktiv;
+    scooterBildeUrl = s.bildeUrl || '';
+    if (s.bildeUrl) {
+      document.getElementById('scooter-bilde-img').src = s.bildeUrl;
+      document.getElementById('scooter-bilde-preview').style.display = 'block';
+    } else {
+      document.getElementById('scooter-bilde-preview').style.display = 'none';
+    }
+    document.getElementById('scooter-slett-btn').style.display = 'inline-flex';
+  }
+  document.getElementById('scooter-bilde-input').value = '';
+  document.getElementById('scooter-modal').classList.add('open');
+}
+function lukkScooterModal() {
+  document.getElementById('scooter-modal').classList.remove('open');
+}
+async function lagreScooterModal() {
+  const navn = document.getElementById('scooter-navn').value.trim();
+  if (!navn) { toast('Skriv inn navn', 'err'); return; }
+  const km = parseFloat(document.getElementById('scooter-km-start').value) || 0;
+  const aktiv = document.getElementById('scooter-aktiv').checked;
+  const bildeUrl = scooterBildeUrl;
+
+  if (redigerScooterIdx === -1) {
+    scootere.push({ navn, kmStart: km, aktiv, bildeUrl });
+  } else {
+    scootere[redigerScooterIdx] = { navn, kmStart: km, aktiv, bildeUrl };
+  }
+  try {
+    const res = await apiKall({ action: 'lagreScootere', scootere: scootere });
+    if (res.feil) throw new Error(res.feil);
+    toast('Lagret ✓', 'ok');
+    lukkScooterModal();
+    renderAdmin();
+    renderScooterCards();
+  } catch(e) {
+    toast('Feil: ' + e.message, 'err');
+  }
+}
+async function slettScooterModal() {
+  if (redigerScooterIdx === -1) return;
+  if (!confirm('Slette ' + scootere[redigerScooterIdx].navn + '?')) return;
+  scootere.splice(redigerScooterIdx, 1);
+  try {
+    const res = await apiKall({ action: 'lagreScootere', scootere: scootere });
+    if (res.feil) throw new Error(res.feil);
+    toast('Slettet ✓', 'ok');
+    lukkScooterModal();
+    renderAdmin();
+    renderScooterCards();
+  } catch(e) {
+    toast('Feil: ' + e.message, 'err');
+  }
+}
+
+// ── OPPSTART ──────────────────────────────────────────
+lastData();
+</script>
+</body></html>
