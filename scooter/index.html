@@ -129,7 +129,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   </button>
 
-  <span class="topbar-version" id="topbar-version">v0.5 28.08 13:52</span>
+  <span class="topbar-version" id="topbar-version">v0.6 28.08 14:05</span>
 </div>
 
 <div class="nav">
@@ -1048,29 +1048,16 @@ async function slettKontaktEntry(id) {
   } catch(e) { toast('Feil: ' + e.message, 'err'); }
 }
 
-// Lukk paneler ved klikk utenfor
-// BUG-fix: Vi må sjekke target i mousedown-fasen, siden click-fasen
-// kan komme etter at target (f.eks. blyant-knappen) er fjernet fra DOM
-// av event handler (som f.eks. redigerKontakt som erstatter innerHTML).
-let _mousedownTarget = null;
-document.addEventListener('mousedown', (e) => { _mousedownTarget = e.target; }, true);
-document.addEventListener('touchstart', (e) => { _mousedownTarget = e.target; }, true);
-document.addEventListener('click', (e) => {
-  const paneler = ['vaer-panel', 'service-panel', 'kontakt-panel'];
-  const triggers = ['topbar-vaer', 'service-btn', 'service-ikon'];
-  // Bruk _mousedownTarget hvis den finnes (mer robust enn e.target)
-  const target = _mousedownTarget || e.target;
-  paneler.forEach(id => {
-    const p = document.getElementById(id);
-    if (!p || p.style.display === 'none') return;
-    if (p.contains(target)) return;
-    const clickedTrigger = triggers.some(t => document.getElementById(t)?.contains(target)) ||
-                            target.closest?.('button[onclick*="toggleKontaktPanel"]') ||
-                            target.closest?.('button[onclick*="toggleServicePanel"]') ||
-                            target.closest?.('div[onclick*="toggleVaerPanel"]');
-    if (!clickedTrigger) p.style.display = 'none';
-  });
-  _mousedownTarget = null;
+// Lukk paneler kun med Escape-tast, ikke på klikk utenfor.
+// Klikk-utenfor-strategien var upålitelig fordi mange onclick-handlere
+// erstatter DOM-innhold (f.eks. redigerKontakt), noe som bryter target-sjekken.
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    ['vaer-panel', 'service-panel', 'kontakt-panel'].forEach(id => {
+      const p = document.getElementById(id);
+      if (p) p.style.display = 'none';
+    });
+  }
 });
 
 // ── OPPSTART ──────────────────────────────────────────
