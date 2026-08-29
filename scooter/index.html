@@ -169,13 +169,14 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version">v29.08 19:31</span>
+  <span class="topbar-version" id="topbar-version">v29.08 20:14</span>
 </div>
 
 <div class="nav">
   <button class="nav-btn active" onclick="visTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
   <button class="nav-btn" onclick="visTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ny økt</button>
   <button class="nav-btn" onclick="visTab('logg')" id="btn-logg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Logg</button>
+  <button class="nav-btn" onclick="visTab('stats')" id="btn-stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Statistikk</button>
   <button class="nav-btn" onclick="visTab('admin')" id="btn-admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Admin</button>
 </div>
 
@@ -253,6 +254,60 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <div class="card">
     <div class="card-header">Alle turer</div>
     <div id="logg-liste"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+</div>
+
+<div id="tab-stats" class="tab-content">
+  <div class="card">
+    <div style="padding:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px">Statistikk</div>
+        <div id="stats-periode" style="font-size:12px;color:var(--text2);margin-top:2px">–</div>
+      </div>
+      <select id="stats-sesong-velger" onchange="renderStats()" style="padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow);color:var(--text);cursor:pointer"></select>
+    </div>
+  </div>
+
+  <!-- Totaler -->
+  <div class="card">
+    <div class="card-header">Totaler</div>
+    <div id="stats-totaler" class="stat-grid" style="padding:14px"></div>
+  </div>
+
+  <!-- Per sjåfør -->
+  <div class="card">
+    <div class="card-header">Per sjåfør</div>
+    <div id="stats-sjafor" style="padding:0 14px 14px"></div>
+  </div>
+
+  <!-- Per scooter -->
+  <div class="card">
+    <div class="card-header">Per scooter</div>
+    <div id="stats-scooter" style="padding:0 14px 14px"></div>
+  </div>
+
+  <!-- Aktivitet over tid -->
+  <div class="card">
+    <div class="card-header">Aktivitet gjennom sesongen</div>
+    <div id="stats-aktivitet" style="padding:14px"></div>
+  </div>
+
+  <!-- Vær -->
+  <div class="card">
+    <div class="card-header">Vær ved turer</div>
+    <div id="stats-vaer" style="padding:14px"></div>
+  </div>
+
+  <!-- Føreforhold-fordeling -->
+  <div class="card">
+    <div class="card-header">Føreforhold-fordeling</div>
+    <div id="stats-fore" style="padding:14px"></div>
+  </div>
+
+  <!-- Highlights -->
+  <div class="card">
+    <div class="card-header">Høydepunkter</div>
+    <div id="stats-highlights" style="padding:14px"></div>
   </div>
 </div>
 
@@ -355,6 +410,9 @@ let valgtScooter = null;
 let valgtBildeUrl = '';   // Etter opplasting
 let scooterBildeUrl = ''; // For scooter-modal
 let redigerScooterIdx = -1;
+let sesongStart = '';  // DD.MM (fra Innstillinger, delt med maskinlogg)
+let sesongSlutt = '';  // DD.MM
+let innstillinger = {};
 
 // ── UTILS ─────────────────────────────────────────────
 // Spinner rundt SF-logoen i topbaren – vises mens API-kall er aktive
@@ -406,6 +464,7 @@ function visTab(id) {
     oppdaterKmHint();
   }
   if (id === 'logg') renderLogg();
+  if (id === 'stats') renderStats();
   if (id === 'admin') renderAdmin();
   if (id === 'dashboard') renderDashboard();
 }
@@ -413,6 +472,64 @@ function visTab(id) {
 function toggleOptional() {
   document.querySelector('.optional-header').classList.toggle('expanded');
   document.getElementById('optional-content').classList.toggle('expanded');
+}
+
+// ── SESONG-UTILS ─────────────────────────────────────
+// Normaliser en verdi fra Innstillinger til 'DD.MM'. Kan komme som Date, ISO-string, 'DD.MM', 'DD.MM.YYYY' etc.
+function parseSesongDato(raw) {
+  if (!raw) return '';
+  const s = String(raw);
+  // Ren DD.MM?
+  const kort = s.match(/^(\d{1,2})\.(\d{1,2})/);
+  if (kort) return String(kort[1]).padStart(2,'0') + '.' + String(kort[2]).padStart(2,'0');
+  // ISO-dato eller lignende
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) {
+    return String(d.getDate()).padStart(2,'0') + '.' + String(d.getMonth()+1).padStart(2,'0');
+  }
+  return s.substring(0,5);
+}
+
+// Returner sesong-etikett for en tur-dato ('YYYY-MM-DD'), f.eks. '2025/26'.
+// Sesong regnes fra sesongStart (høst) til sesongSlutt (vår) året etter.
+function sesongForDato(datoStr) {
+  if (!datoStr) return '';
+  const d = new Date(datoStr);
+  if (isNaN(d.getTime())) return '';
+  if (!sesongStart || !sesongSlutt) return String(d.getFullYear());
+  const startMnd = parseInt(sesongStart.split('.')[1]);
+  const sluttMnd = parseInt(sesongSlutt.split('.')[1]);
+  const overNyttar = startMnd > sluttMnd;
+  const mnd = d.getMonth() + 1;
+  const yr = d.getFullYear();
+  if (overNyttar) {
+    // Sesong 2025/26 = 01.11.2025 til 30.04.2026
+    if (mnd >= startMnd) return yr + '/' + String(yr+1).slice(-2);
+    else return (yr-1) + '/' + String(yr).slice(-2);
+  }
+  return String(yr);
+}
+
+// Alle sesonger som finnes i data, nyeste først
+function alleSesonger() {
+  const set = new Set(turer.map(t => sesongForDato(t.dato)).filter(Boolean));
+  return [...set].sort().reverse();
+}
+
+// Filtrer turer på sesong ('' eller 'alle' = alle turer)
+function turerISesong(sesong) {
+  if (!sesong || sesong === 'alle') return turer;
+  return turer.filter(t => sesongForDato(t.dato) === sesong);
+}
+
+function sesongPeriodeTekst(sesong) {
+  if (!sesong || sesong === 'alle') return 'Alle tider';
+  if (sesongStart && sesongSlutt && sesong.includes('/')) {
+    const [y1, y2short] = sesong.split('/');
+    const y2 = y1.slice(0,2) + y2short;
+    return `${sesongStart}.${y1} – ${sesongSlutt}.${y2}`;
+  }
+  return sesong;
 }
 
 // ── DATA-LAST ─────────────────────────────────────────
@@ -428,6 +545,10 @@ async function lastData() {
     sjaforer = cfg.forere || [];
     scootere = cfg.scootere || [];
     kontakter = cfg.kontakter || [];
+    innstillinger = cfg.innstillinger || {};
+    // Sesong-datoer deles med maskinloggen (samme Innstillinger-ark)
+    sesongStart = parseSesongDato(innstillinger.sesongStart);
+    sesongSlutt = parseSesongDato(innstillinger.sesongSlutt);
     renderSjaforChips();
     renderScooterCards();
     renderDashboard();
@@ -559,13 +680,15 @@ async function lastOppBilde(fil, kontekst) {
       document.getElementById('scooter-bilde-img').src = dataUrl;
       document.getElementById('scooter-bilde-preview').style.display = 'block';
     }
-    toast('Laster opp bilde…', '');
+    toast('Komprimerer og laster opp…', '');
     try {
+      // Komprimér før opplasting (unngår Apps Script sin 6 MB requestgrense)
+      const komprimertDataUrl = await komprimerBilde(dataUrl, 1600, 0.82);
       const res = await apiKall({
         action: 'lastOppBilde',
-        filnavn: fil.name || (kontekst + '-' + Date.now() + '.jpg'),
-        base64: dataUrl,
-        mimeType: fil.type || 'image/jpeg'
+        filnavn: (fil.name || (kontekst + '-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
+        base64: komprimertDataUrl,
+        mimeType: 'image/jpeg'
       });
       if (res.feil) throw new Error(res.feil);
       if (kontekst === 'tur') {
@@ -578,9 +701,40 @@ async function lastOppBilde(fil, kontekst) {
       toast('Bilde lastet opp ✓', 'ok');
     } catch(err) {
       toast('Bildeopplasting feilet: ' + err.message, 'err');
+      console.error('Bildeopplasting feilet:', err);
     }
   };
   reader.readAsDataURL(fil);
+}
+
+// Komprimér bilde til JPEG. maxDim=største tillatte bredde/høyde i px, kvalitet 0-1
+async function komprimerBilde(dataUrl, maxDim, kvalitet) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round(height * (maxDim / width));
+          width = maxDim;
+        } else {
+          width = Math.round(width * (maxDim / height));
+          height = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      // Hvit bakgrunn for bilder med gjennomsiktighet (unngår sort JPEG)
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', kvalitet));
+    };
+    img.onerror = () => reject(new Error('Kunne ikke lese bildet'));
+    img.src = dataUrl;
+  });
 }
 function fjernBilde() {
   valgtBildeUrl = '';
@@ -598,6 +752,16 @@ async function lagreTur() {
   if (tid <= 0) { toast('Skriv inn tid brukt (min)', 'err'); return; }
 
   const foreBtn = document.querySelector('#fore-rating .rating-btn.selected');
+  // Bygg vær-streng fra dagens data i topbaren, hvis tilgjengelig
+  let vaerStreng = '';
+  if (vaerData && vaerData.length > 0) {
+    const naa = vaerData[0];
+    const temp = naa?.data?.instant?.details?.air_temperature;
+    const symbol = (naa?.data?.next_1_hours || naa?.data?.next_6_hours)?.summary?.symbol_code || '';
+    if (temp !== undefined) {
+      vaerStreng = Math.round(temp) + '°C' + (symbol ? ' ' + symbol : '');
+    }
+  }
   const tur = {
     dato: document.getElementById('f-dato').value,
     slutt: document.getElementById('f-slutt').value,
@@ -611,7 +775,8 @@ async function lagreTur() {
     snoHoy: document.getElementById('f-sno-hoy').value || '',
     foreforhold: foreBtn ? foreBtn.dataset.val : '',
     merknaderSki: document.getElementById('f-merknader-ski').value.trim(),
-    bildeUrl: valgtBildeUrl
+    bildeUrl: valgtBildeUrl,
+    vaer: vaerStreng
   };
   const btn = document.getElementById('lagre-btn');
   btn.disabled = true;
@@ -1238,6 +1403,259 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ── OPPSTART ──────────────────────────────────────────
+// ── STATISTIKK-MODUL ──────────────────────────────────
+function renderStats() {
+  // Populate sesong-velger første gang
+  const velger = document.getElementById('stats-sesong-velger');
+  if (velger.options.length === 0) {
+    const sesonger = alleSesonger();
+    const opts = ['<option value="denne">Denne sesongen</option>'];
+    sesonger.forEach(s => opts.push(`<option value="${s}">${s}</option>`));
+    opts.push('<option value="alle">Alle tider</option>');
+    velger.innerHTML = opts.join('');
+  }
+
+  let valg = velger.value || 'denne';
+  let filter;
+  if (valg === 'denne') {
+    const s = alleSesonger()[0];
+    filter = s || 'alle';
+    document.getElementById('stats-periode').textContent = filter === 'alle' ? 'Alle tider' : `Sesong ${filter}: ${sesongPeriodeTekst(filter)}`;
+  } else if (valg === 'alle') {
+    filter = 'alle';
+    document.getElementById('stats-periode').textContent = 'Alle tider';
+  } else {
+    filter = valg;
+    document.getElementById('stats-periode').textContent = `Sesong ${filter}: ${sesongPeriodeTekst(filter)}`;
+  }
+
+  const t = turerISesong(filter);
+  renderStatsTotaler(t);
+  renderStatsSjafor(t);
+  renderStatsScooter(t);
+  renderStatsAktivitet(t, filter);
+  renderStatsVaer(t);
+  renderStatsFore(t);
+  renderStatsHighlights(t);
+}
+
+function renderStatsTotaler(t) {
+  const totKm = t.reduce((s,x) => s + (x.kmPerTur || 0), 0);
+  const totTid = t.reduce((s,x) => s + (x.tidBrukt || 0), 0);
+  const dager = new Set(t.map(x => x.dato).filter(Boolean)).size;
+  const el = document.getElementById('stats-totaler');
+  el.innerHTML = `
+    <div class="stat-box"><div class="stat-value">${t.length}</div><div class="stat-label">Turer</div></div>
+    <div class="stat-box"><div class="stat-value">${totKm.toFixed(0)}</div><div class="stat-label">Km totalt</div></div>
+    <div class="stat-box"><div class="stat-value">${(totTid/60).toFixed(1)}</div><div class="stat-label">Timer i bruk</div></div>
+    <div class="stat-box"><div class="stat-value">${dager}</div><div class="stat-label">Aktive dager</div></div>`;
+}
+
+function renderStatsSjafor(t) {
+  const el = document.getElementById('stats-sjafor');
+  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center;padding:12px 0">Ingen data</p>'; return; }
+  const per = {};
+  t.forEach(x => {
+    const n = x.sjafor || 'Ukjent';
+    if (!per[n]) per[n] = { turer: 0, km: 0, tid: 0, siste: '' };
+    per[n].turer++;
+    per[n].km += x.kmPerTur || 0;
+    per[n].tid += x.tidBrukt || 0;
+    if (!per[n].siste || x.dato > per[n].siste) per[n].siste = x.dato;
+  });
+  const rader = Object.entries(per).sort((a,b) => b[1].turer - a[1].turer);
+  el.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="text-align:left;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">
+        <th style="padding:8px 6px;font-weight:600">Sjåfør</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Turer</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Km</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Timer</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Snitt km/tur</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste tur</th>
+      </tr></thead>
+      <tbody>${rader.map(([n,d]) => `
+        <tr style="border-top:1px solid var(--border)">
+          <td style="padding:8px 6px;font-weight:500;color:var(--navy)">${n}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.turer}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.km.toFixed(0)}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${(d.tid/60).toFixed(1)}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.turer > 0 ? (d.km/d.turer).toFixed(1) : '–'}</td>
+          <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function renderStatsScooter(t) {
+  const el = document.getElementById('stats-scooter');
+  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center;padding:12px 0">Ingen data</p>'; return; }
+  const per = {};
+  t.forEach(x => {
+    const n = x.scooter || 'Ukjent';
+    if (!per[n]) per[n] = { turer: 0, km: 0, siste: '', sisteKm: 0 };
+    per[n].turer++;
+    per[n].km += x.kmPerTur || 0;
+    if (!per[n].siste || x.dato > per[n].siste) {
+      per[n].siste = x.dato;
+      per[n].sisteKm = x.km || 0;
+    }
+  });
+  const rader = Object.entries(per).sort((a,b) => b[1].km - a[1].km);
+  el.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="text-align:left;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">
+        <th style="padding:8px 6px;font-weight:600">Scooter</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Turer</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Km kjørt</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste km-stand</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste tur</th>
+      </tr></thead>
+      <tbody>${rader.map(([n,d]) => `
+        <tr style="border-top:1px solid var(--border)">
+          <td style="padding:8px 6px;font-weight:500;color:var(--navy)">${n}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.turer}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.km.toFixed(0)}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.sisteKm.toFixed(0)}</td>
+          <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+function renderStatsAktivitet(t, sesong) {
+  const el = document.getElementById('stats-aktivitet');
+  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
+  // Grupper etter måned
+  const perMnd = {};
+  t.forEach(x => {
+    const d = new Date(x.dato);
+    if (isNaN(d.getTime())) return;
+    const k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    perMnd[k] = (perMnd[k] || 0) + 1;
+  });
+  const mnder = Object.keys(perMnd).sort();
+  if (!mnder.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
+  const maks = Math.max(...Object.values(perMnd));
+  const mndNavn = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+  const W = 340, H = 160, pad = { l: 30, r: 12, t: 12, b: 30 };
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const barW = iw / mnder.length * 0.7;
+  const gap = iw / mnder.length * 0.3;
+
+  const barer = mnder.map((k, i) => {
+    const n = perMnd[k];
+    const h = (n / maks) * ih;
+    const x = pad.l + i * (barW + gap) + gap/2;
+    const y = pad.t + ih - h;
+    const [yr, mnd] = k.split('-');
+    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="#4A9FD4" rx="2"><title>${mndNavn[parseInt(mnd)-1]} ${yr}: ${n} tur${n===1?'':'er'}</title></rect><text x="${(x+barW/2).toFixed(1)}" y="${H-15}" text-anchor="middle" font-size="10" fill="#6b7280">${mndNavn[parseInt(mnd)-1]}</text><text x="${(x+barW/2).toFixed(1)}" y="${H-4}" text-anchor="middle" font-size="8" fill="#9ca3af">${yr.slice(-2)}</text><text x="${(x+barW/2).toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" font-size="10" fill="#0F3A5F" font-weight="600" font-family="ui-monospace,monospace">${n}</text></g>`;
+  }).join('');
+
+  el.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-height:200px" xmlns="http://www.w3.org/2000/svg">
+      <line x1="${pad.l}" y1="${pad.t+ih}" x2="${W-pad.r}" y2="${pad.t+ih}" stroke="#e5e7eb"/>
+      ${barer}
+    </svg>
+    <div style="text-align:center;font-size:11px;color:var(--text2);margin-top:4px">Antall turer per måned</div>`;
+}
+
+function renderStatsVaer(t) {
+  const el = document.getElementById('stats-vaer');
+  const medVaer = t.filter(x => x.vaer && /-?\d+/.test(x.vaer));
+  if (!medVaer.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen vær-data ennå. Nye turer får automatisk værstempel.</p>';
+    return;
+  }
+  // Trekk ut temperatur fra vær-strengen (f.eks. '-3°C partlycloudy_day')
+  const temps = medVaer.map(x => {
+    const m = String(x.vaer).match(/(-?\d+)°?/);
+    return m ? parseInt(m[1]) : null;
+  }).filter(v => v !== null);
+  if (!temps.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Kunne ikke lese temperatur</p>'; return; }
+
+  const snitt = (temps.reduce((s,v)=>s+v,0) / temps.length).toFixed(1);
+  const minus = temps.filter(v => v < 0).length;
+  const plus = temps.filter(v => v >= 0).length;
+  const kalde = temps.filter(v => v < -10).length;
+  const mildeste = Math.max(...temps);
+  const kaldeste = Math.min(...temps);
+
+  el.innerHTML = `
+    <div class="stat-grid" style="margin-bottom:12px">
+      <div class="stat-box"><div class="stat-value">${snitt}°C</div><div class="stat-label">Snitt-temperatur</div></div>
+      <div class="stat-box"><div class="stat-value">${kaldeste}°C</div><div class="stat-label">Kaldeste tur</div></div>
+      <div class="stat-box"><div class="stat-value">${mildeste}°C</div><div class="stat-label">Mildeste tur</div></div>
+      <div class="stat-box"><div class="stat-value">${kalde}</div><div class="stat-label">Turer under −10°C</div></div>
+    </div>
+    <div style="display:flex;gap:8px;font-size:12px;color:var(--text2);justify-content:center">
+      <span style="padding:4px 10px;border-radius:8px;background:#EAF6FE;color:#2E7BB8;font-weight:600">❄ ${minus} turer i minusgrader</span>
+      <span style="padding:4px 10px;border-radius:8px;background:#FEF5E7;color:#B45309;font-weight:600">☀ ${plus} turer over 0°C</span>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text2);margin-top:8px">Basert på ${medVaer.length} tur${medVaer.length===1?'':'er'} med vær-data (av ${t.length} totalt)</div>`;
+}
+
+function renderStatsFore(t) {
+  const el = document.getElementById('stats-fore');
+  const medFore = t.filter(x => x.foreforhold > 0);
+  if (!medFore.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen føreforhold-data</p>'; return; }
+  const per = [1,2,3,4,5].map(v => ({ verdi: v, antall: medFore.filter(x => x.foreforhold === v).length }));
+  const maks = Math.max(...per.map(p => p.antall));
+  const snitt = (medFore.reduce((s,x)=>s+x.foreforhold,0) / medFore.length).toFixed(1);
+  const farger = ['#E74C3C', '#F39C12', '#F1C40F', '#5EBAA0', '#27AE60'];
+
+  el.innerHTML = `
+    <div style="font-size:13px;color:var(--text2);text-align:center;margin-bottom:12px">Snitt: <strong style="color:var(--navy);font-family:var(--mono)">${snitt}/5</strong> · ${medFore.length} registrering${medFore.length===1?'':'er'}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${per.map((p,i) => {
+        const pct = maks > 0 ? (p.antall / maks) * 100 : 0;
+        return `<div style="display:flex;align-items:center;gap:10px">
+          <div style="width:18px;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--text2)">${p.verdi}</div>
+          <div style="flex:1;height:22px;background:var(--snow);border-radius:4px;overflow:hidden;position:relative">
+            <div style="width:${pct}%;height:100%;background:${farger[i]};border-radius:4px"></div>
+          </div>
+          <div style="width:40px;text-align:right;font-family:var(--mono);font-size:12px;color:var(--text2)">${p.antall}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderStatsHighlights(t) {
+  const el = document.getElementById('stats-highlights');
+  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
+  // Lengste enkelttur
+  const lengste = [...t].sort((a,b) => (b.kmPerTur || 0) - (a.kmPerTur || 0))[0];
+  // Mest aktive dag
+  const perDag = {};
+  t.forEach(x => { perDag[x.dato] = (perDag[x.dato] || 0) + 1; });
+  const bestDag = Object.entries(perDag).sort((a,b) => b[1] - a[1])[0];
+  // Mest aktive sjåfør
+  const perSjafor = {};
+  t.forEach(x => { perSjafor[x.sjafor] = (perSjafor[x.sjafor] || 0) + 1; });
+  const bestSjafor = Object.entries(perSjafor).sort((a,b) => b[1] - a[1])[0];
+  // Mest brukte scooter
+  const perScooter = {};
+  t.forEach(x => { perScooter[x.scooter] = (perScooter[x.scooter] || 0) + 1; });
+  const bestScooter = Object.entries(perScooter).sort((a,b) => b[1] - a[1])[0];
+  // Lengste tid brukt
+  const lengstTid = [...t].sort((a,b) => (b.tidBrukt || 0) - (a.tidBrukt || 0))[0];
+
+  const H = (icon, tittel, verdi, undertekst) => `
+    <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--snow);margin-bottom:8px">
+      <div style="font-size:24px;flex-shrink:0">${icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px;font-weight:600">${tittel}</div>
+        <div style="font-size:14px;color:var(--navy);font-weight:600;margin-top:2px">${verdi}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">${undertekst}</div>
+      </div>
+    </div>`;
+
+  el.innerHTML =
+    H('🏁', 'Lengste enkelttur', `${(lengste.kmPerTur || 0).toFixed(1)} km`, `${lengste.sjafor} · ${formaterDatoKort(lengste.dato)} · ${lengste.scooter}`) +
+    H('⏱️', 'Lengste tur i tid', `${Math.floor((lengstTid.tidBrukt || 0)/60)}t ${(lengstTid.tidBrukt || 0)%60}m`, `${lengstTid.sjafor} · ${formaterDatoKort(lengstTid.dato)}`) +
+    H('📅', 'Mest aktive dag', `${bestDag[1]} tur${bestDag[1]===1?'':'er'}`, `${formaterDatoKort(bestDag[0])}`) +
+    H('👑', 'Mest aktive sjåfør', bestSjafor[0], `${bestSjafor[1]} tur${bestSjafor[1]===1?'':'er'}`) +
+    H('🛷', 'Mest brukte scooter', bestScooter[0], `${bestScooter[1]} tur${bestScooter[1]===1?'':'er'}`);
+}
+
 async function initAlt() {
   try {
     await lastData();
