@@ -4,7 +4,8 @@
 body { font-family:var(--sans); background:var(--snow); color:var(--text); min-height:100vh; padding-bottom:40px; }
 .topbar { background:var(--navy); padding:10px 14px; display:flex; align-items:center; gap:8px; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.25); }
 .topbar h1 { color:var(--white); font-size:15px; font-weight:500; letter-spacing:0.3px; }
-.topbar-version { font-size:10px; color:rgba(255,255,255,0.45); font-family:var(--mono); white-space:nowrap; }
+.topbar-version { font-size:10px; color:rgba(255,255,255,0.45); font-family:var(--mono); white-space:nowrap; cursor:pointer; user-select:none; }
+.topbar-version:hover { color:rgba(255,255,255,0.7); }
 .nav { background:var(--white); border-bottom:1px solid var(--border); display:flex; overflow-x:auto; padding:0 4px; position:sticky; top:45px; z-index:90; }
 .nav-btn { background:none; border:none; padding:12px 12px 10px; color:var(--text2); font-family:var(--sans); font-size:12px; font-weight:500; cursor:pointer; border-bottom:2px solid transparent; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:68px; }
 .nav-btn.active { color:var(--mid); border-bottom-color:var(--mid); }
@@ -184,7 +185,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version">v29.08 21:10</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="29.08" data-tid="21:13">21:13</span>
 </div>
 
 <div class="nav">
@@ -1410,6 +1411,18 @@ function _visPanel(id) {
   if (p) p.style.display = 'block';
   const bd = document.getElementById('panel-backdrop');
   if (bd) bd.style.display = 'block';
+}
+
+function toggleVersjonVisning() {
+  const el = document.getElementById('topbar-version');
+  if (!el) return;
+  const dato = el.dataset.dato || '';
+  const tid = el.dataset.tid || '';
+  // Tre modi: tid → dato → tid+dato → tid
+  const naa = el.textContent.trim();
+  if (naa === tid) el.textContent = dato;
+  else if (naa === dato) el.textContent = 'v' + dato + ' ' + tid;
+  else el.textContent = tid;
 }
 
 function toggleVaerPanel() {
