@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="29.08" data-tid="21:41">21:41</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="29.08" data-tid="21:53">21:53</span>
 </div>
 
 <div class="nav">
@@ -1623,12 +1623,24 @@ function redigerKontakt(id) {
   const card = document.getElementById('kk-'+id);
   if (!card) return;
   const esc = (s) => String(s||'').replace(/"/g,'&quot;');
+  // Varsler-seksjon: kun synlig hvis kontakten har e-post.
+  // VarslerFeilMaskin er disablet hvis kontakten ikke er maskin-sjåfør.
+  const feilMaskinDisabled = !k.sjaforMaskin;
+  const varslerHtml = k.epost ? `
+    <div style="margin-bottom:8px;padding:10px;background:var(--ice);border-radius:6px">
+      <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">📧 E-post-varsler</div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vTM-${id}" ${k.varslerTurMaskin?'checked':''} style="width:auto;margin:0"> Nye maskin-turer</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vTS-${id}" ${k.varslerTurScooter?'checked':''} style="width:auto;margin:0"> Nye scooter-turer</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:${feilMaskinDisabled?'var(--text2)':'var(--text)'}" title="${feilMaskinDisabled?'Kun tilgjengelig for maskin-sjåfører':''}"><input type="checkbox" id="ek-vFM-${id}" ${k.varslerFeilMaskin?'checked':''} ${feilMaskinDisabled?'disabled':''} style="width:auto;margin:0"> Nye maskin-feil${feilMaskinDisabled?' <span style="font-size:10px;color:var(--text2);font-style:italic">(krever maskin-sjåfør)</span>':''}</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vFS-${id}" ${k.varslerFeilScooter?'checked':''} style="width:auto;margin:0"> Nye scooter-feil</label>
+    </div>` : `<div style="margin-bottom:8px;padding:8px 10px;background:var(--snow);border-radius:6px;font-size:11px;color:var(--text2);font-style:italic">Fyll inn e-post for å motta varsler</div>`;
   card.innerHTML = `
     <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Rediger kontakt</div>
     <div style="margin-bottom:6px"><input type="text" id="ek-navn-${id}" value="${esc(k.navn)}" placeholder="Navn" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+    ${varslerHtml}
     <div style="display:flex;gap:6px;align-items:center">
       <button onclick="slettKontaktEntry('${id}')" title="Slett kontakt" style="padding:7px 10px;background:white;color:var(--danger);border:1.5px solid #FECACA;border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">🗑 Slett</button>
       <div style="flex:1"></div>
@@ -1639,6 +1651,7 @@ function redigerKontakt(id) {
 async function lagreKontaktRedigert(id) {
   const k = kontakter.find(x => x.id === id);
   if (!k) return;
+  const chk = (elId) => document.getElementById(elId)?.checked || false;
   const oppdatert = {
     id,
     navn: document.getElementById('ek-navn-'+id)?.value.trim() || k.navn,
@@ -1647,7 +1660,12 @@ async function lagreKontaktRedigert(id) {
     notat: document.getElementById('ek-notat-'+id)?.value.trim() || '',
     // Scooter-appen kan IKKE endre sjåfør-type. Behold eksisterende verdier.
     sjaforMaskin: k.sjaforMaskin || false,
-    sjaforScooter: k.sjaforScooter || false
+    sjaforScooter: k.sjaforScooter || false,
+    // Varsler-preferanser (kun hvis e-post finnes)
+    varslerTurMaskin: chk('ek-vTM-'+id),
+    varslerTurScooter: chk('ek-vTS-'+id),
+    varslerFeilMaskin: chk('ek-vFM-'+id),
+    varslerFeilScooter: chk('ek-vFS-'+id)
   };
   try {
     const res = await apiKall({ action: 'lagreKontakt', kontakt: oppdatert });
