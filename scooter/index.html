@@ -44,6 +44,21 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .photo-preview { margin-top:8px; position:relative; }
 .photo-preview img { max-width:100%; max-height:220px; border-radius:8px; display:block; }
 .photo-preview .fjern { position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:50%; width:26px; height:26px; cursor:pointer; font-size:14px; }
+/* Thumbnails i bilde-grid ved ny/rediger tur */
+.photo-thumb-wrap { position:relative; width:80px; height:80px; border-radius:8px; overflow:hidden; background:var(--ice); }
+.photo-thumb-wrap img { width:100%; height:100%; object-fit:cover; display:block; cursor:pointer; }
+.photo-thumb-wrap .fjern-btn { position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.65); color:white; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; }
+/* Lightbox for forstørret bildevisning */
+.lightbox { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.92); align-items:center; justify-content:center; }
+.lightbox.visible { display:flex; }
+.lightbox img { max-width:95vw; max-height:88vh; object-fit:contain; display:block; }
+.lightbox-close { position:fixed; top:14px; right:14px; background:rgba(255,255,255,0.15); color:white; border:none; border-radius:50%; width:40px; height:40px; font-size:22px; cursor:pointer; z-index:301; display:flex; align-items:center; justify-content:center; }
+.lightbox-nav { position:fixed; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); color:white; border:none; border-radius:50%; width:44px; height:44px; font-size:24px; cursor:pointer; z-index:301; display:flex; align-items:center; justify-content:center; }
+.lightbox-nav.prev { left:14px; }
+.lightbox-nav.next { right:14px; }
+.lightbox-teller { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); color:white; font-size:13px; font-family:var(--mono); background:rgba(0,0,0,0.5); padding:4px 12px; border-radius:12px; z-index:301; }
+/* Thumbnails i logg (nå klikkbare) */
+.log-thumbs { display:inline-flex; gap:4px; align-items:center; }
 .hint { font-size:12px; color:var(--text2); margin-top:4px; line-height:1.4; }
 .hint strong { color:var(--text); }
 .optional-section { background:linear-gradient(180deg,var(--snow) 0%,transparent 100%); border-top:1px solid var(--border); margin:18px -14px 0; padding:16px 14px 0; }
@@ -169,7 +184,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version">v29.08 20:05</span>
+  <span class="topbar-version" id="topbar-version">v29.08 20:32</span>
 </div>
 
 <div class="nav">
@@ -238,13 +253,13 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
           </div>
           <div class="field"><label>Føreforhold for ski</label><div class="rating-row" id="fore-rating"><button class="rating-btn" data-val="1">1</button><button class="rating-btn" data-val="2">2</button><button class="rating-btn" data-val="3">3</button><button class="rating-btn" data-val="4">4</button><button class="rating-btn" data-val="5">5</button></div></div>
           <div class="field"><label>Merknader til skiløpere</label><textarea id="f-merknader-ski" placeholder="Overvann, trefall, isete partier..."></textarea></div>
-          <div class="field"><label>Bilde</label>
+          <div class="field"><label>Bilder</label>
             <div class="photo-drop" id="photo-drop" onclick="document.getElementById('photo-input').click()">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <div style="margin-top:4px;font-size:12px">Trykk for å ta bilde eller velg fra galleri</div>
+              <div style="margin-top:4px;font-size:12px">Trykk for å ta bilde eller velg fra galleri (kan velge flere)</div>
             </div>
-            <input type="file" id="photo-input" accept="image/*" style="display:none">
-            <div id="photo-preview" class="photo-preview" style="display:none"><img id="photo-img"><button class="fjern" onclick="fjernBilde()" type="button">×</button></div>
+            <input type="file" id="photo-input" accept="image/*" multiple style="display:none">
+            <div id="photo-preview-grid" style="margin-top:8px;display:none;flex-wrap:wrap;gap:8px"></div>
           </div>
         </div>
       </div>
@@ -427,8 +442,8 @@ let sjaforer = [];
 let scootere = [];
 let valgtSjafor = '';
 let valgtScooter = null;
-let valgtBildeUrl = '';   // Etter opplasting
-let scooterBildeUrl = ''; // For scooter-modal
+let valgtBildeUrls = []; // Array av URL-er (etter opplasting)
+let scooterBildeUrl = ''; // For scooter-modal (kun ett bilde)
 let redigerScooterIdx = -1;
 let redigererTurId = null;  // ID på turen som redigeres (null = ny økt)
 let sesongStart = '';  // DD.MM (fra Innstillinger, delt med maskinlogg)
@@ -689,54 +704,103 @@ document.addEventListener('click', (e) => {
 });
 
 // ── BILDE-OPPLASTING ──────────────────────────────────
+// Tur-bilder: tillater flere valg om gangen
 document.getElementById('photo-input').addEventListener('change', async (e) => {
-  const fil = e.target.files[0];
-  if (!fil) return;
-  await lastOppBilde(fil, 'tur');
+  const filer = Array.from(e.target.files || []);
+  if (!filer.length) return;
+  toast(`Komprimerer og laster opp ${filer.length} bilde${filer.length===1?'':'r'}…`, '');
+  // Last opp sekvensielt (unngår rate-limit på Apps Script)
+  for (const fil of filer) {
+    await lastOppEttTurBilde(fil);
+  }
+  // Nullstill input så samme fil kan velges igjen etterpå om ønskelig
+  e.target.value = '';
 });
+// Scooter-bilde: kun ett bilde
 document.getElementById('scooter-bilde-input').addEventListener('change', async (e) => {
   const fil = e.target.files[0];
   if (!fil) return;
-  await lastOppBilde(fil, 'scooter');
+  await lastOppScooterBilde(fil);
+  e.target.value = '';
 });
 
-async function lastOppBilde(fil, kontekst) {
-  // Vis lokal preview umiddelbart
-  const reader = new FileReader();
-  reader.onload = async (ev) => {
-    const dataUrl = ev.target.result;
-    if (kontekst === 'tur') {
-      document.getElementById('photo-img').src = dataUrl;
-      document.getElementById('photo-preview').style.display = 'block';
-    } else {
+async function lastOppEttTurBilde(fil) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const komprimert = await komprimerBilde(ev.target.result, 1600, 0.82);
+        const res = await apiKall({
+          action: 'lastOppBilde',
+          filnavn: (fil.name || ('bilde-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
+          base64: komprimert,
+          mimeType: 'image/jpeg'
+        });
+        if (res.feil) throw new Error(res.feil);
+        valgtBildeUrls.push(res.url);
+        renderPhotoGrid();
+        toast('Bilde lastet opp ✓', 'ok');
+      } catch(err) {
+        toast('Bildeopplasting feilet: ' + err.message, 'err');
+        console.error('Bildeopplasting feilet:', err);
+      }
+      resolve();
+    };
+    reader.readAsDataURL(fil);
+  });
+}
+
+async function lastOppScooterBilde(fil) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const dataUrl = ev.target.result;
       document.getElementById('scooter-bilde-img').src = dataUrl;
       document.getElementById('scooter-bilde-preview').style.display = 'block';
-    }
-    toast('Komprimerer og laster opp…', '');
-    try {
-      // Komprimér før opplasting (unngår Apps Script sin 6 MB requestgrense)
-      const komprimertDataUrl = await komprimerBilde(dataUrl, 1600, 0.82);
-      const res = await apiKall({
-        action: 'lastOppBilde',
-        filnavn: (fil.name || (kontekst + '-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
-        base64: komprimertDataUrl,
-        mimeType: 'image/jpeg'
-      });
-      if (res.feil) throw new Error(res.feil);
-      if (kontekst === 'tur') {
-        valgtBildeUrl = res.url;
-        document.getElementById('photo-img').src = res.url;
-      } else {
+      toast('Komprimerer og laster opp…', '');
+      try {
+        const komprimert = await komprimerBilde(dataUrl, 1600, 0.82);
+        const res = await apiKall({
+          action: 'lastOppBilde',
+          filnavn: (fil.name || ('scooter-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
+          base64: komprimert,
+          mimeType: 'image/jpeg'
+        });
+        if (res.feil) throw new Error(res.feil);
         scooterBildeUrl = res.url;
         document.getElementById('scooter-bilde-img').src = res.url;
+        toast('Bilde lastet opp ✓', 'ok');
+      } catch(err) {
+        toast('Bildeopplasting feilet: ' + err.message, 'err');
+        console.error('Bildeopplasting feilet:', err);
       }
-      toast('Bilde lastet opp ✓', 'ok');
-    } catch(err) {
-      toast('Bildeopplasting feilet: ' + err.message, 'err');
-      console.error('Bildeopplasting feilet:', err);
-    }
-  };
-  reader.readAsDataURL(fil);
+      resolve();
+    };
+    reader.readAsDataURL(fil);
+  });
+}
+
+// Render thumbnail-grid for tur-bilder
+function renderPhotoGrid() {
+  const el = document.getElementById('photo-preview-grid');
+  if (!el) return;
+  if (!valgtBildeUrls.length) {
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.style.display = 'flex';
+  el.innerHTML = valgtBildeUrls.map((url, i) => `
+    <div class="photo-thumb-wrap">
+      <img src="${url}" alt="Bilde ${i+1}" onclick="apneLightbox(${JSON.stringify(valgtBildeUrls).replace(/"/g,'&quot;')}, ${i})">
+      <button class="fjern-btn" onclick="fjernBildeIdx(${i})" type="button" aria-label="Fjern bilde">×</button>
+    </div>
+  `).join('');
+}
+
+function fjernBildeIdx(i) {
+  valgtBildeUrls.splice(i, 1);
+  renderPhotoGrid();
 }
 
 // Komprimér bilde til JPEG. maxDim=største tillatte bredde/høyde i px, kvalitet 0-1
@@ -768,9 +832,9 @@ async function komprimerBilde(dataUrl, maxDim, kvalitet) {
     img.src = dataUrl;
   });
 }
-function fjernBilde() {
-  valgtBildeUrl = '';
-  document.getElementById('photo-preview').style.display = 'none';
+function fjernAlleBilder() {
+  valgtBildeUrls = [];
+  renderPhotoGrid();
   document.getElementById('photo-input').value = '';
 }
 
@@ -817,7 +881,8 @@ async function lagreTur() {
     snoHoy: document.getElementById('f-sno-hoy').value || '',
     foreforhold: foreBtn ? foreBtn.dataset.val : '',
     merknaderSki: document.getElementById('f-merknader-ski').value.trim(),
-    bildeUrl: valgtBildeUrl,
+    // Komma-separert liste av URL-er – bakoverkompatibel med gammel "én URL"-modell
+    bildeUrl: valgtBildeUrls.join(','),
     vaer: vaerStreng
   };
 
@@ -871,14 +936,9 @@ function startRedigerTur(id) {
   document.querySelectorAll('#fore-rating .rating-btn').forEach(b => {
     b.classList.toggle('selected', parseInt(b.dataset.val) === t.foreforhold);
   });
-  // Bilde
-  valgtBildeUrl = t.bildeUrl || '';
-  if (valgtBildeUrl) {
-    document.getElementById('photo-img').src = valgtBildeUrl;
-    document.getElementById('photo-preview').style.display = 'block';
-  } else {
-    document.getElementById('photo-preview').style.display = 'none';
-  }
+  // Bilder – bakoverkompatibelt: gammel enkelt-URL og ny komma-separert liste
+  valgtBildeUrls = (t.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
+  renderPhotoGrid();
   // UI-endringer
   document.getElementById('ny-tittel').textContent = 'Rediger tur';
   document.getElementById('rediger-banner').style.display = 'flex';
@@ -903,7 +963,7 @@ function resetSkjema() {
   document.getElementById('f-sno-hoy').value = '';
   document.getElementById('f-merknader-ski').value = '';
   document.querySelectorAll('#fore-rating .rating-btn').forEach(b => b.classList.remove('selected'));
-  fjernBilde();
+  fjernAlleBilder();
   oppdaterKmHint();
 }
 
@@ -1064,7 +1124,15 @@ function renderTurItem(t) {
   if (kmStr || tidStr) stats.push(`<span>${kmStr}${kmStr&&tidStr?' · ':''}${tidStr}</span>`);
   if (t.foreforhold) stats.push(`<span>Føre <strong>${t.foreforhold}/5</strong></span>`);
   if (t.snoLav || t.snoHoy) stats.push(`<span>Snø ${t.snoLav||'–'}/${t.snoHoy||'–'} cm</span>`);
-  if (t.bildeUrl) stats.push(`<span class="log-thumb"><img src="${t.bildeUrl}" alt=""></span>`);
+  // Thumbnails – klikkbare, åpner lightbox med hele lista
+  const bildeUrls = (t.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (bildeUrls.length) {
+    const urlsJson = JSON.stringify(bildeUrls).replace(/"/g,'&quot;');
+    const thumbs = bildeUrls.map((u, i) =>
+      `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${urlsJson}, ${i})"><img src="${u}" alt=""></span>`
+    ).join('');
+    stats.push(`<span class="log-thumbs">${thumbs}</span>`);
+  }
   return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${stats.join('')}</div></div>`;
 }
 
@@ -1091,8 +1159,8 @@ function renderLogg() {
 
   el.innerHTML = sortert.map(t => {
     const item = renderTurItem(t);
-    const knapper = `<div style="margin-top:6px;display:flex;gap:6px">
-      <button class="btn btn-sm btn-outline" onclick="startRedigerTur('${t.id}')" style="flex:1">✏️ Rediger</button>
+    const knapper = `<div style="margin-top:6px;display:flex;gap:6px;justify-content:flex-end">
+      <button class="btn btn-sm btn-outline" onclick="startRedigerTur('${t.id}')">✏️ Rediger</button>
       <button class="btn btn-sm btn-danger" onclick="slettTur('${t.id}')">🗑 Slett</button>
     </div>`;
     return item.replace('</div></div>', `</div>${knapper}</div>`);
@@ -1892,6 +1960,60 @@ function renderStatsHighlights(t) {
     H('🛷', 'Mest brukte scooter', bestScooter[0], `${bestScooter[1]} tur${bestScooter[1]===1?'':'er'}`);
 }
 
+// ── LIGHTBOX ─────────────────────────────────────────
+let _lightboxUrls = [];
+let _lightboxIdx = 0;
+
+function apneLightbox(urls, startIdx) {
+  _lightboxUrls = Array.isArray(urls) ? urls : [urls];
+  _lightboxIdx = Math.max(0, Math.min(startIdx || 0, _lightboxUrls.length - 1));
+  const lb = document.getElementById('lightbox');
+  if (!lb) return;
+  oppdaterLightbox();
+  lb.classList.add('visible');
+}
+
+function lukkLightbox(event) {
+  // Kun lukk ved klikk på bakgrunn (ikke bilde eller knapper)
+  if (event && event.target && event.target.id !== 'lightbox' && !event.target.classList.contains('lightbox-close')) return;
+  const lb = document.getElementById('lightbox');
+  if (lb) lb.classList.remove('visible');
+}
+
+function navigerLightbox(diff) {
+  if (!_lightboxUrls.length) return;
+  _lightboxIdx = (_lightboxIdx + diff + _lightboxUrls.length) % _lightboxUrls.length;
+  oppdaterLightbox();
+}
+
+function oppdaterLightbox() {
+  const img = document.getElementById('lightbox-img');
+  const teller = document.getElementById('lightbox-teller');
+  const prev = document.getElementById('lightbox-prev');
+  const next = document.getElementById('lightbox-next');
+  if (img) img.src = _lightboxUrls[_lightboxIdx] || '';
+  if (teller) {
+    if (_lightboxUrls.length > 1) {
+      teller.textContent = `${_lightboxIdx + 1} / ${_lightboxUrls.length}`;
+      teller.style.display = 'block';
+    } else {
+      teller.style.display = 'none';
+    }
+  }
+  const visNav = _lightboxUrls.length > 1;
+  if (prev) prev.style.display = visNav ? 'flex' : 'none';
+  if (next) next.style.display = visNav ? 'flex' : 'none';
+}
+
+// Escape og piltaster
+document.addEventListener('keydown', (e) => {
+  const lb = document.getElementById('lightbox');
+  if (!lb || !lb.classList.contains('visible')) return;
+  if (e.key === 'Escape') { lb.classList.remove('visible'); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { navigerLightbox(-1); e.preventDefault(); }
+  else if (e.key === 'ArrowRight') { navigerLightbox(1); e.preventDefault(); }
+});
+
 async function initAlt() {
   try {
     await lastData();
@@ -1909,4 +2031,14 @@ async function initAlt() {
 }
 initAlt();
 </script>
+
+<!-- Lightbox for forstørret bildevisning -->
+<div id="lightbox" class="lightbox" onclick="lukkLightbox(event)">
+  <button class="lightbox-close" onclick="lukkLightbox()" aria-label="Lukk">×</button>
+  <button class="lightbox-nav prev" id="lightbox-prev" onclick="event.stopPropagation();navigerLightbox(-1)" aria-label="Forrige">‹</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+  <button class="lightbox-nav next" id="lightbox-next" onclick="event.stopPropagation();navigerLightbox(1)" aria-label="Neste">›</button>
+  <div id="lightbox-teller" class="lightbox-teller"></div>
+</div>
+
 </body></html>
