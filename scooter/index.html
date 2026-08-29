@@ -169,7 +169,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version">v29.08 20:32</span>
+  <span class="topbar-version" id="topbar-version">v29.08 20:05</span>
 </div>
 
 <div class="nav">
@@ -183,6 +183,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div class="content">
 
 <div id="tab-dashboard" class="tab-content active">
+  <div id="dashboard-feilbanner" style="display:none;background:#FEF2F2;border:1px solid #F5C6C6;border-left:4px solid #E74C3C;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#7B241C;cursor:pointer;align-items:center;justify-content:space-between;gap:10px" onclick="toggleServicePanel()">
+    <span id="dashboard-feilbanner-tekst">–</span>
+    <span style="font-size:11px;opacity:0.7;white-space:nowrap">Vis detaljer →</span>
+  </div>
   <div class="stat-grid" id="stat-grid">
     <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Turer denne sesongen</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Totalt kjørt</div></div>
@@ -205,7 +209,11 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
 <div id="tab-ny" class="tab-content">
   <div class="card">
-    <div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ny scooter-tur</div>
+    <div class="card-header" id="ny-card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="ny-tittel">Ny scooter-tur</span></div>
+    <div id="rediger-banner" style="display:none;padding:10px 14px;background:#FEF5E7;border-bottom:1px solid #F5CBA7;color:#7E5109;font-size:12px;display:none;align-items:center;justify-content:space-between;gap:8px">
+      <span>✏️ <strong>Redigerer tur</strong> – lagre for å oppdatere</span>
+      <button onclick="avbrytRediger()" class="btn btn-sm btn-outline" style="padding:4px 10px;font-size:11px">Avbryt</button>
+    </div>
     <div class="card-body">
       <div class="field"><label>Sjåfør</label><div class="chip-row" id="sjafor-chips"></div></div>
       <div class="field"><label>Scooter</label><div class="pick-row" id="scooter-cards"></div></div>
@@ -284,6 +292,18 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <div class="card">
     <div class="card-header">Per scooter</div>
     <div id="stats-scooter" style="padding:0 14px 14px"></div>
+  </div>
+
+  <!-- Km-utvikling pr scooter -->
+  <div class="card">
+    <div class="card-header">Km-utvikling pr scooter</div>
+    <div id="stats-km-utvikling" style="padding:14px"></div>
+  </div>
+
+  <!-- Feil pr scooter -->
+  <div class="card">
+    <div class="card-header">Feil registrert pr scooter</div>
+    <div id="stats-feil-scooter" style="padding:14px"></div>
   </div>
 
   <!-- Aktivitet over tid -->
@@ -410,6 +430,7 @@ let valgtScooter = null;
 let valgtBildeUrl = '';   // Etter opplasting
 let scooterBildeUrl = ''; // For scooter-modal
 let redigerScooterIdx = -1;
+let redigererTurId = null;  // ID på turen som redigeres (null = ny økt)
 let sesongStart = '';  // DD.MM (fra Innstillinger, delt med maskinlogg)
 let sesongSlutt = '';  // DD.MM
 let innstillinger = {};
@@ -617,20 +638,31 @@ function sisteKmForScooter(navn) {
 function oppdaterKmHint() {
   const el = document.getElementById('hint-km');
   if (!el) return;
-  if (!valgtScooter) { el.innerHTML = ''; return; }
+  if (!valgtScooter) { el.innerHTML = ''; el.style.color = ''; return; }
   const siste = sisteKmForScooter(valgtScooter.navn);
   const startKm = valgtScooter.kmStart || 0;
   const kmNy = parseFloat(document.getElementById('f-km').value) || 0;
   const ref = siste > 0 ? siste : startKm;
   if (ref > 0) {
     const diff = kmNy - ref;
-    if (kmNy > 0 && diff > 0) {
+    if (kmNy > 0 && diff < 0) {
+      // Rødt varsel: ny km-stand er lavere enn forrige
+      el.style.color = '#C0392B';
+      el.style.fontWeight = '600';
+      el.innerHTML = `⚠️ Lavere enn forrige (${ref}) – differanse ${diff.toFixed(1)} km`;
+    } else if (kmNy > 0 && diff > 0) {
+      el.style.color = '';
+      el.style.fontWeight = '';
       el.innerHTML = `Sist: <strong>${ref}</strong> · +${diff.toFixed(1)} km`;
     } else {
+      el.style.color = '';
+      el.style.fontWeight = '';
       el.innerHTML = `Sist: <strong>${ref}</strong>`;
     }
   } else {
     el.innerHTML = '';
+    el.style.color = '';
+    el.style.fontWeight = '';
   }
 
   // Tid brukt
@@ -751,6 +783,16 @@ async function lagreTur() {
   if (km <= 0) { toast('Skriv inn km ved parkering', 'err'); return; }
   if (tid <= 0) { toast('Skriv inn tid brukt (min)', 'err'); return; }
 
+  // Ekstra sjekk: advar hvis km er lavere enn siste registrering (kun for ny tur;
+  // ved rediger antar vi at brukeren bevisst korrigerer)
+  if (!redigererTurId) {
+    const siste = sisteKmForScooter(valgtScooter.navn);
+    if (siste > 0 && km < siste) {
+      const fortsatt = confirm(`⚠️ Km-stand ${km} er lavere enn forrige registrering (${siste}) for ${valgtScooter.navn}.\n\nEr du sikker på at dette er riktig? Trykk OK for å lagre likevel, eller Avbryt for å rette opp.`);
+      if (!fortsatt) return;
+    }
+  }
+
   const foreBtn = document.querySelector('#fore-rating .rating-btn.selected');
   // Bygg vær-streng fra dagens data i topbaren, hvis tilgjengelig
   let vaerStreng = '';
@@ -778,22 +820,79 @@ async function lagreTur() {
     bildeUrl: valgtBildeUrl,
     vaer: vaerStreng
   };
+
+  // Ved rediger: send ID for oppdatering (behold opprinnelig vær hvis samme dato som opprinnelig)
+  if (redigererTurId) {
+    tur.id = redigererTurId;
+    // Ikke overskriv vær med dagens vær ved redigering – behold opprinnelig
+    const opprinnelig = turer.find(t => t.id === redigererTurId);
+    if (opprinnelig) tur.vaer = opprinnelig.vaer || vaerStreng;
+  }
+
   const btn = document.getElementById('lagre-btn');
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Lagrer…';
   try {
-    const res = await apiKall({ action: 'leggTilScooter', tur });
+    const action = redigererTurId ? 'oppdaterScooterTur' : 'leggTilScooter';
+    const res = await apiKall({ action, tur });
     if (res.feil) throw new Error(res.feil);
-    toast('Tur lagret ✓', 'ok');
-    resetSkjema();
+    toast(redigererTurId ? 'Tur oppdatert ✓' : 'Tur lagret ✓', 'ok');
+    avbrytRediger();  // Nullstiller state og form
     await lastData();
     visTab('logg');
   } catch(e) {
     toast('Lagring feilet: ' + e.message, 'err');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = 'Lagre tur';
+    btn.innerHTML = redigererTurId ? 'Lagre endringer' : 'Lagre tur';
   }
+}
+
+// Start redigering av en eksisterende tur: fyll form og bytt til Ny økt-fanen
+function startRedigerTur(id) {
+  const t = turer.find(x => x.id === id);
+  if (!t) { toast('Fant ikke turen', 'err'); return; }
+  redigererTurId = id;
+  visTab('ny');
+  // Sett sjåfør og scooter
+  valgtSjafor = t.sjafor;
+  valgtScooter = scootere.find(s => s.navn === t.scooter) || { navn: t.scooter, kmStart: 0 };
+  renderSjaforChips();
+  renderScooterCards();
+  // Fyll form-feltene
+  document.getElementById('f-dato').value = t.dato || '';
+  document.getElementById('f-slutt').value = t.slutt || '';
+  document.getElementById('f-km').value = t.km || '';
+  document.getElementById('f-tid').value = t.tidBrukt || '';
+  document.getElementById('f-beskrivelse').value = t.beskrivelse || '';
+  document.getElementById('f-sno-lav').value = t.snoLav || '';
+  document.getElementById('f-sno-hoy').value = t.snoHoy || '';
+  document.getElementById('f-merknader-ski').value = t.merknaderSki || '';
+  document.querySelectorAll('#fore-rating .rating-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.val) === t.foreforhold);
+  });
+  // Bilde
+  valgtBildeUrl = t.bildeUrl || '';
+  if (valgtBildeUrl) {
+    document.getElementById('photo-img').src = valgtBildeUrl;
+    document.getElementById('photo-preview').style.display = 'block';
+  } else {
+    document.getElementById('photo-preview').style.display = 'none';
+  }
+  // UI-endringer
+  document.getElementById('ny-tittel').textContent = 'Rediger tur';
+  document.getElementById('rediger-banner').style.display = 'flex';
+  document.getElementById('lagre-btn').innerHTML = 'Lagre endringer';
+  oppdaterKmHint();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function avbrytRediger() {
+  redigererTurId = null;
+  document.getElementById('ny-tittel').textContent = 'Ny scooter-tur';
+  document.getElementById('rediger-banner').style.display = 'none';
+  document.getElementById('lagre-btn').innerHTML = 'Lagre tur';
+  resetSkjema();
 }
 
 function resetSkjema() {
@@ -810,6 +909,21 @@ function resetSkjema() {
 
 // ── DASHBOARD ─────────────────────────────────────────
 function renderDashboard() {
+  // Feilbanner: vis kun om åpne scooter-feil finnes
+  const aktiveFeil = (typeof feilData !== 'undefined' && feilData)
+    ? feilData.filter(f => (f.enhet === 'scooter' || !f.enhet) && (f.status === 'Ny' || f.status === 'Påbegynt'))
+    : [];
+  const banner = document.getElementById('dashboard-feilbanner');
+  if (aktiveFeil.length > 0) {
+    const scooterNavn = [...new Set(aktiveFeil.map(f => f.maskin).filter(Boolean))];
+    const antTekst = aktiveFeil.length === 1 ? '1 åpen feil' : `${aktiveFeil.length} åpne feil`;
+    const detaljTekst = scooterNavn.length > 0 ? ` på ${scooterNavn.join(', ')}` : '';
+    document.getElementById('dashboard-feilbanner-tekst').innerHTML = `⚠️ <strong>${antTekst}</strong>${detaljTekst}`;
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+
   document.getElementById('stat-turer').textContent = turer.length;
   const totKm = turer.reduce((s,t) => s + (t.kmPerTur || 0), 0);
   document.getElementById('stat-km').textContent = totKm.toFixed(0) + ' km';
@@ -977,7 +1091,11 @@ function renderLogg() {
 
   el.innerHTML = sortert.map(t => {
     const item = renderTurItem(t);
-    return item.replace('</div></div>', `</div><div style="margin-top:6px"><button class="btn btn-sm btn-danger" onclick="slettTur('${t.id}')">Slett</button></div></div>`);
+    const knapper = `<div style="margin-top:6px;display:flex;gap:6px">
+      <button class="btn btn-sm btn-outline" onclick="startRedigerTur('${t.id}')" style="flex:1">✏️ Rediger</button>
+      <button class="btn btn-sm btn-danger" onclick="slettTur('${t.id}')">🗑 Slett</button>
+    </div>`;
+    return item.replace('</div></div>', `</div>${knapper}</div>`);
   }).join('');
 }
 
@@ -1180,6 +1298,8 @@ async function hentFeilData() {
     const d = await apiKall({ action: 'hentServiceData' });
     if (d.feil) feilData = d.feil.filter(f => (f.enhet || 'maskin') === 'scooter'); // Kun scooter-feil
     oppdaterServiceBadge();
+    // Oppdater dashboard-banner hvis dashboard er synlig
+    if (document.getElementById('tab-dashboard').classList.contains('active')) renderDashboard();
   } catch(e) { console.warn('Kunne ikke hente feildata:', e); }
 }
 function oppdaterServiceBadge() {
@@ -1433,6 +1553,8 @@ function renderStats() {
   renderStatsTotaler(t);
   renderStatsSjafor(t);
   renderStatsScooter(t);
+  renderStatsKmUtvikling(t);
+  renderStatsFeilScooter(t, filter);
   renderStatsAktivitet(t, filter);
   renderStatsVaer(t);
   renderStatsFore(t);
@@ -1516,6 +1638,120 @@ function renderStatsScooter(t) {
           <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.turer}</td>
           <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.km.toFixed(0)}</td>
           <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.sisteKm.toFixed(0)}</td>
+          <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
+        </tr>`).join('')}</tbody>
+    </table>`;
+}
+
+// Km-utvikling: liten linjegraf per scooter som viser km-stand over tid.
+// Bygger på selve km-avlesningene (ikke kmPerTur).
+function renderStatsKmUtvikling(t) {
+  const el = document.getElementById('stats-km-utvikling');
+  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
+
+  // Grupper turer pr scooter, sorter kronologisk
+  const perScooter = {};
+  t.forEach(x => {
+    if (!x.scooter || !x.dato || !x.km) return;
+    if (!perScooter[x.scooter]) perScooter[x.scooter] = [];
+    perScooter[x.scooter].push({ dato: x.dato, km: x.km });
+  });
+
+  const scooterNavn = Object.keys(perScooter).sort();
+  if (!scooterNavn.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen km-data</p>'; return; }
+
+  const html = scooterNavn.map(navn => {
+    const punkter = perScooter[navn].sort((a,b) => a.dato.localeCompare(b.dato));
+    if (punkter.length < 2) {
+      return `<div style="margin-bottom:14px">
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px">${navn}</div>
+        <div style="font-size:12px;color:var(--text2)">Kun ${punkter.length} registrering – trenger minst 2 for graf</div>
+      </div>`;
+    }
+    const kmVerdier = punkter.map(p => p.km);
+    const minKm = Math.min(...kmVerdier);
+    const maksKm = Math.max(...kmVerdier);
+    const spenn = maksKm - minKm || 1;
+    const totKjort = maksKm - minKm;
+
+    const W = 340, H = 90, pad = { l: 6, r: 6, t: 10, b: 22 };
+    const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+
+    const punktStr = punkter.map((p, i) => {
+      const x = pad.l + (i / (punkter.length - 1)) * iw;
+      const y = pad.t + ih - ((p.km - minKm) / spenn) * ih;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+
+    const firstDato = formaterDatoKort(punkter[0].dato);
+    const lastDato = formaterDatoKort(punkter[punkter.length-1].dato);
+
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+        <div style="font-size:13px;font-weight:600;color:var(--navy)">${navn}</div>
+        <div style="font-size:11px;color:var(--text2)">${totKjort.toFixed(0)} km i perioden</div>
+      </div>
+      <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-height:100px" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="${punktStr}" fill="none" stroke="#4A9FD4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        ${punkter.map((p, i) => {
+          const x = pad.l + (i / (punkter.length - 1)) * iw;
+          const y = pad.t + ih - ((p.km - minKm) / spenn) * ih;
+          return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="#4A9FD4"><title>${formaterDatoKort(p.dato)}: ${p.km} km</title></circle>`;
+        }).join('')}
+        <text x="${pad.l}" y="${H-6}" font-size="9" fill="#9ca3af">${firstDato} (${minKm} km)</text>
+        <text x="${W-pad.r}" y="${H-6}" font-size="9" fill="#9ca3af" text-anchor="end">${lastDato} (${maksKm} km)</text>
+      </svg>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = html;
+}
+
+// Feil registrert pr scooter (bruker feilData som er lastet inn separat)
+function renderStatsFeilScooter(t, filter) {
+  const el = document.getElementById('stats-feil-scooter');
+  if (!feilData || feilData.length === 0) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen feil registrert – 🎉</p>';
+    return;
+  }
+
+  // Filtrer feilData på sesong-perioden (bruk feilens dato)
+  let feilIPeriode = feilData;
+  if (filter && filter !== 'alle') {
+    feilIPeriode = feilData.filter(f => sesongForDato(f.dato) === filter);
+  }
+
+  if (feilIPeriode.length === 0) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen feil registrert i denne perioden</p>';
+    return;
+  }
+
+  const perScooter = {};
+  feilIPeriode.forEach(f => {
+    const navn = f.maskin || 'Ukjent';
+    if (!perScooter[navn]) perScooter[navn] = { total: 0, aapen: 0, lukket: 0, siste: '' };
+    perScooter[navn].total++;
+    if (f.status === 'Ny' || f.status === 'Påbegynt') perScooter[navn].aapen++;
+    else perScooter[navn].lukket++;
+    if (!perScooter[navn].siste || f.dato > perScooter[navn].siste) perScooter[navn].siste = f.dato;
+  });
+
+  const rader = Object.entries(perScooter).sort((a,b) => b[1].total - a[1].total);
+  el.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead><tr style="text-align:left;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">
+        <th style="padding:8px 6px;font-weight:600">Scooter</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Totalt</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Åpne</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Lukket</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste</th>
+      </tr></thead>
+      <tbody>${rader.map(([n,d]) => `
+        <tr style="border-top:1px solid var(--border)">
+          <td style="padding:8px 6px;font-weight:500;color:var(--navy)">${n}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.total}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono);color:${d.aapen > 0 ? '#C0392B' : 'var(--text2)'};font-weight:${d.aapen > 0 ? '600' : '400'}">${d.aapen}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono);color:var(--text2)">${d.lukket}</td>
           <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
         </tr>`).join('')}</tbody>
     </table>`;
