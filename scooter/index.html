@@ -184,7 +184,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version">v29.08 20:32</span>
+  <span class="topbar-version" id="topbar-version">v29.08 21:10</span>
 </div>
 
 <div class="nav">
@@ -354,6 +354,13 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <div class="card">
     <div class="card-header">Scootere</div>
     <div class="card-body" id="admin-scootere"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+  <div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Bilde-galleri</span>
+      <button onclick="lastBildeGalleri()" class="btn btn-sm btn-outline" style="padding:4px 10px;font-size:11px">⟳ Oppdater</button>
+    </div>
+    <div id="admin-galleri" style="padding:14px"><p style="font-size:13px;color:var(--text2)">Trykk «Oppdater» for å laste bilder.</p></div>
   </div>
 </div>
 
@@ -597,7 +604,7 @@ async function lastData() {
 
 function mapTur(t) {
   return {
-    id: t.ID,
+    id: String(t.ID || ''),  // Alltid streng – unngår mismatch ved streng-fra-HTML vs. tall-fra-sheet
     dato: t.Dato ? String(t.Dato).substring(0,10) : '',
     sjafor: t['Sjåfør'] || t.Sjafor,
     scooter: t.Scooter,
@@ -1181,6 +1188,70 @@ async function slettTur(id) {
 }
 
 // ── ADMIN ─────────────────────────────────────────────
+
+// Bilde-galleri: hent og vis alle bilder i mappen, med mulighet for sletting
+async function lastBildeGalleri() {
+  const el = document.getElementById('admin-galleri');
+  el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center;padding:12px 0">Laster bilder…</p>';
+  try {
+    const res = await apiKall({ action: 'listAlleBilder' });
+    if (res.feil) throw new Error(res.feil);
+    const bilder = res.bilder || [];
+    if (!bilder.length) {
+      el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center;padding:12px 0">Ingen bilder lagret ennå.</p>';
+      return;
+    }
+    const totaltMB = (bilder.reduce((s,b) => s + (b.stoerrelseBytes || 0), 0) / (1024*1024)).toFixed(1);
+    const forelderloese = bilder.filter(b => b.forelderloest).length;
+    el.innerHTML = `
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px">
+        <span><strong>${bilder.length}</strong> bilder · <strong>${totaltMB}</strong> MB totalt</span>
+        ${forelderloese > 0 ? `<span style="color:#B45309"><strong>${forelderloese}</strong> foreldreløse (ikke tilknyttet noen tur)</span>` : ''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
+        ${bilder.map(b => renderGalleriKort(b)).join('')}
+      </div>`;
+  } catch(e) {
+    el.innerHTML = `<p style="font-size:13px;color:#C0392B;text-align:center">Kunne ikke laste: ${e.message}</p>`;
+  }
+}
+
+function renderGalleriKort(b) {
+  const kb = (b.stoerrelseBytes / 1024).toFixed(0);
+  const dato = b.turDato ? formaterDatoKort(b.turDato) : '';
+  const tilknytning = b.forelderloest
+    ? `<span style="color:#B45309">Foreldreløs</span>`
+    : (b.turSjafor + (b.turScooter ? ' · ' + b.turScooter : '') + (dato ? ' · ' + dato : ''));
+  const urls = JSON.stringify([b.fullUrl]).replace(/"/g,'&quot;');
+  return `
+    <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--snow)">
+      <div style="width:100%;aspect-ratio:1;background:#e5e7eb;cursor:pointer;position:relative" onclick="apneLightbox(${urls}, 0)">
+        <img src="${b.thumbnailUrl}" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
+      </div>
+      <div style="padding:6px 8px;font-size:11px;color:var(--text2);line-height:1.4">
+        <div style="color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${b.navn}">${b.navn}</div>
+        <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tilknytning}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+          <span style="font-family:var(--mono)">${kb} KB</span>
+          <button onclick="slettBildeAdmin('${b.filId}', '${b.navn.replace(/'/g,"\\'")}')" style="background:none;border:none;color:#C0392B;cursor:pointer;font-size:12px;padding:2px 6px" title="Slett bilde">🗑</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function slettBildeAdmin(filId, navn) {
+  if (!confirm(`Slette bildet «${navn}»?\n\nBildet fjernes fra Drive OG fra alle turer det er tilknyttet.`)) return;
+  try {
+    const res = await apiKall({ action: 'slettBilde', filId });
+    if (res.feil) throw new Error(res.feil);
+    toast('Bilde slettet ✓', 'ok');
+    await lastData();  // Oppfrisker turer så referanser er borte
+    await lastBildeGalleri();
+  } catch(e) {
+    toast('Sletting feilet: ' + e.message, 'err');
+  }
+}
+
 function renderAdmin() {
   // Sjåfører (les-visning, siden de deles med maskin-appen)
   const sjaEl = document.getElementById('admin-sjaforer');
