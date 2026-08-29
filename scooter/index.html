@@ -185,7 +185,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="29.08" data-tid="21:30">21:30</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="29.08" data-tid="21:36">21:36</span>
 </div>
 
 <div class="nav">
@@ -199,10 +199,6 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div class="content">
 
 <div id="tab-dashboard" class="tab-content active">
-  <div id="dashboard-feilbanner" style="display:none;background:#FEF2F2;border:1px solid #F5C6C6;border-left:4px solid #E74C3C;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#7B241C;cursor:pointer;align-items:center;justify-content:space-between;gap:10px" onclick="toggleServicePanel()">
-    <span id="dashboard-feilbanner-tekst">–</span>
-    <span style="font-size:11px;opacity:0.7;white-space:nowrap">Vis detaljer →</span>
-  </div>
   <div class="stat-grid" id="stat-grid">
     <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Turer denne sesongen</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Totalt kjørt</div></div>
@@ -1016,21 +1012,6 @@ function resetSkjema() {
 
 // ── DASHBOARD ─────────────────────────────────────────
 function renderDashboard() {
-  // Feilbanner: vis kun om åpne scooter-feil finnes
-  const aktiveFeil = (typeof feilData !== 'undefined' && feilData)
-    ? feilData.filter(f => (f.enhet === 'scooter' || !f.enhet) && (f.status === 'Ny' || f.status === 'Påbegynt'))
-    : [];
-  const banner = document.getElementById('dashboard-feilbanner');
-  if (aktiveFeil.length > 0) {
-    const scooterNavn = [...new Set(aktiveFeil.map(f => f.maskin).filter(Boolean))];
-    const antTekst = aktiveFeil.length === 1 ? '1 åpen feil' : `${aktiveFeil.length} åpne feil`;
-    const detaljTekst = scooterNavn.length > 0 ? ` på ${scooterNavn.join(', ')}` : '';
-    document.getElementById('dashboard-feilbanner-tekst').innerHTML = `⚠️ <strong>${antTekst}</strong>${detaljTekst}`;
-    banner.style.display = 'flex';
-  } else {
-    banner.style.display = 'none';
-  }
-
   document.getElementById('stat-turer').textContent = turer.length;
   const totKm = turer.reduce((s,t) => s + (t.kmPerTur || 0), 0);
   document.getElementById('stat-km').textContent = totKm.toFixed(0) + ' km';
