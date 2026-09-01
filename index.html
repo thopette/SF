@@ -11,6 +11,24 @@
 
 } .topbar-titles h1 { font-size: 17px; font-weight: 600; color: #fff; } .topbar-sub { font-size: 11px; color: rgba(255,255,255,0.5); }  
  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} } .nav { display: flex; background: var(--white); border-bottom: 1.5px solid var(--border); position: sticky; top: 56px; z-index: 99; overflow-x: auto; } .nav::-webkit-scrollbar { display: none; } .nav-btn { flex: 1; min-width: 80px; padding: 12px 6px 10px; border: none; background: transparent; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; border-bottom: 2.5px solid transparent; transition: all 0.15s; } .nav-btn.active { color: var(--mid); border-bottom-color: var(--accent); } .nav-btn svg { width: 18px; height: 18px; } .section { display: none; padding: 16px; max-width: 900px; margin: 0 auto; } .section.active { display: block; } .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; } .card-header { background: linear-gradient(135deg, var(--navy) 0%, var(--mid) 100%); color: white; padding: 12px 16px; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; } .card-body { padding: 16px; } .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .form-grid.three { grid-template-columns: 1fr 1fr 1fr; } .form-grid.full { grid-template-columns: 1fr; } .field { margin-bottom: 0; } .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; } .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: var(--sans); font-size: 14px; color: var(--text); background: var(--snow); transition: border-color 0.15s; -webkit-appearance: none; } .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: var(--white); } .field textarea { resize: vertical; min-height: 70px; } .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 10px; position: relative; } .divider::before { content: attr(data-label); position: absolute; top: -9px; left: 0; background: var(--white); padding: 0 8px 0 0; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; } .btn { padding: 11px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 500; font-size: 14px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; } .btn-primary { background: var(--mid); color: white; } .btn-primary:active { background: var(--navy); transform: scale(0.98); } .btn-primary:disabled { background: #aaa; cursor: not-allowed; } .btn-danger { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; font-size: 12px; padding: 6px 10px; } .btn-outline { background: transparent; color: var(--mid); border: 1.5px solid var(--mid); } .btn-sm { padding: 7px 12px; font-size: 12px; } .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; align-items: center; } .toast { font-size: 13px; color: var(--success); display: none; align-items: center; gap: 5px; font-weight: 500; } .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; } @media (min-width: 600px) { .metrics { grid-template-columns: repeat(4, 1fr); } } .metric { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); } .metric-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; } .metric-value { font-size: 26px; font-weight: 600; color: var(--navy); font-family: var(--mono); line-height: 1; } .metric-sub { font-size: 11px; color: var(--text2); margin-top: 3px; } .trip-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); margin-bottom: 10px; } .trip-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; } .trip-route { font-size: 15px; font-weight: 600; color: var(--navy); } .trip-date { font-size: 12px; color: var(--text2); font-family: var(--mono); } .trip-driver { font-size: 13px; color: var(--mid); font-weight: 500; margin-bottom: 8px; } .trip-stats { display: flex; gap: 8px; flex-wrap: wrap; } .trip-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text2); background: var(--snow); border-radius: 6px; padding: 4px 8px; border: 1px solid var(--border); } .trip-stat span { font-weight: 600; color: var(--navy); font-family: var(--mono); font-size: 13px; } .trip-note { margin-top: 8px; font-size: 12px; color: var(--text2); font-style: italic; border-left: 2px solid var(--accent); padding-left: 8px; } .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 580px; table-layout: auto; } th { padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1.5px solid var(--border); background: var(--snow); white-space: nowrap; } td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; } tr:last-child td { border-bottom: none; } tr:hover td { background: var(--ice); } .chart-container { position: relative; width: 100%; height: 200px; } .empty { text-align: center; padding: 40px 20px; color: var(--text2); } .empty-icon { font-size: 36px; margin-bottom: 12px; } .empty p { font-size: 14px; line-height: 1.6; } .loading-overlay { display: none; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: var(--text2); font-size: 13px; } .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--mid); border-radius: 50%; animation: spin 0.7s linear infinite; }
+.photo-drop { border:2px dashed var(--border); border-radius:10px; padding:14px; text-align:center; color:var(--text2); background:var(--snow); cursor:pointer; }
+.photo-drop:hover { border-color:var(--mid); }
+.photo-preview-grid { margin-top:8px; display:none; flex-wrap:wrap; gap:8px; }
+.photo-thumb-wrap { position:relative; width:70px; height:70px; border-radius:8px; overflow:hidden; background:var(--ice); }
+.photo-thumb-wrap img { width:100%; height:100%; object-fit:cover; display:block; cursor:pointer; }
+.photo-thumb-wrap .fjern-btn { position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.65); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:11px; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; }
+.photo-badge { display:inline-flex; align-items:center; gap:3px; font-size:11px; color:var(--text2); background:var(--ice); border:1px solid var(--border); border-radius:12px; padding:2px 7px 2px 6px; cursor:pointer; margin-left:4px; }
+.photo-badge:hover { background:var(--snow); border-color:var(--mid); color:var(--mid); }
+.dash-thumbs { display:flex; gap:4px; flex-shrink:0; }
+.dash-thumb { width:36px; height:36px; border-radius:5px; overflow:hidden; cursor:pointer; background:var(--ice); border:1px solid var(--border); }
+.dash-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.lb-back { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:400; display:none; align-items:center; justify-content:center; padding:20px; }
+.lb-back.open { display:flex; }
+.lb-img { max-width:100%; max-height:80vh; border-radius:8px; }
+.lb-close { position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.15); border:none; color:white; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:22px; display:flex; align-items:center; justify-content:center; }
+.lb-nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.15); border:none; color:white; width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:26px; display:flex; align-items:center; justify-content:center; }
+.lb-nav.prev { left:16px; } .lb-nav.next { right:16px; }
+.lb-count { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:white; padding:6px 14px; border-radius:16px; font-size:13px; font-family:var(--mono); }
 .center-loader { display:none; position:fixed; inset:0; z-index:250; background:rgba(245,249,255,0.95); align-items:center; justify-content:center; flex-direction:column; gap:16px; }
 .center-loader.visible { display:flex; }
 .logo-blink-navy { }
@@ -105,7 +123,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v01.09 15:13</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v01.09 15:43</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -132,7 +150,7 @@ Dårlig
 Middels
 </button><button type="button" class="cond-btn" data-val="3" onclick="setCond(3)"><div class="cond-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
 Bra
-</button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Observasjoner og notater</label><textarea id="f-merknader" placeholder="Vær, snøforhold, utstyr, observasjoner… (feil registreres med knappen under)"></textarea></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-outline btn-sm" id="avbryt-edit-btn" onclick="avbrytEdit()" style="display:none">Avbryt</button><button type="button" onclick="serviceEnhet='maskin';toggleServicePanel();setServiceToggle('feil');visNyFeilSkjema()" style="display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Rapporter feil</button><button class="btn btn-primary" id="lagre-btn" onclick="lagreEllerOppdater()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg><span id="lagre-btn-tekst">Lagre økt</span></button></div></div></div></div><div class="section" id="tab-logg"><div style="display:flex;gap:6px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--white);overflow-x:auto;flex-wrap:nowrap"><button class="filter-btn active" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn" id="filter-uke" onclick="setLoggFilter('uke')">Uke</button><button class="filter-btn" id="filter-7d" onclick="setLoggFilter('7d')">7d</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">30d</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button><div style="width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 2px"></div><select id="logg-filter-forer" onchange="renderLogg()" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:16px;font-family:var(--sans);font-size:12px;background:var(--white);color:var(--text2);cursor:pointer;flex-shrink:0"><option value="">Alle førere</option></select><select id="logg-filter-loype" onchange="renderLogg()" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:16px;font-family:var(--sans);font-size:12px;background:var(--white);color:var(--text2);cursor:pointer;flex-shrink:0"><option value="">Alle løyper</option></select><button onclick="eksporterCSV()" style="display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:16px;border:1.5px solid var(--border);background:var(--white);font-family:var(--sans);font-size:12px;color:var(--text2);cursor:pointer;flex-shrink:0;white-space:nowrap"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Excel</button></div><div id="logg-summary" style="display:none;padding:8px 16px;background:var(--ice);border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);display:flex;gap:16px;flex-wrap:wrap;align-items:center"></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div>
+</button></div></div><hr class="divider" data-label="Merknader" style="margin-top:4px"><div class="form-grid full"><div class="field"><label>Observasjoner og notater</label><textarea id="f-merknader" placeholder="Vær, snøforhold, utstyr, observasjoner… (feil registreres med knappen under)"></textarea></div></div><hr class="divider" data-label="Bilder" style="margin-top:12px"><div class="form-grid full"><div class="field"><div class="photo-drop" id="photo-drop" onclick="document.getElementById('photo-input').click()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><div style="margin-top:4px;font-size:12px">Trykk for å ta bilde eller velg fra galleri</div></div><input type="file" id="photo-input" accept="image/*" multiple style="display:none"><div class="photo-preview-grid" id="photo-preview-grid"></div></div></div><div class="form-actions"><span class="toast" id="toast">✓ Tur lagret i Google Sheets!</span><button class="btn btn-outline btn-sm" id="avbryt-edit-btn" onclick="avbrytEdit()" style="display:none">Avbryt</button><button type="button" onclick="serviceEnhet='maskin';toggleServicePanel();setServiceToggle('feil');visNyFeilSkjema()" style="display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Rapporter feil</button><button class="btn btn-primary" id="lagre-btn" onclick="lagreEllerOppdater()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg><span id="lagre-btn-tekst">Lagre økt</span></button></div></div></div></div><div class="section" id="tab-logg"><div style="display:flex;gap:6px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--border);background:var(--white);overflow-x:auto;flex-wrap:nowrap"><button class="filter-btn active" id="filter-sesong" onclick="setLoggFilter('sesong')">Sesong</button><button class="filter-btn" id="filter-uke" onclick="setLoggFilter('uke')">Uke</button><button class="filter-btn" id="filter-7d" onclick="setLoggFilter('7d')">7d</button><button class="filter-btn" id="filter-30d" onclick="setLoggFilter('30d')">30d</button><button class="filter-btn" id="filter-alle" onclick="setLoggFilter('alle')">Alle</button><div style="width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 2px"></div><select id="logg-filter-forer" onchange="renderLogg()" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:16px;font-family:var(--sans);font-size:12px;background:var(--white);color:var(--text2);cursor:pointer;flex-shrink:0"><option value="">Alle førere</option></select><select id="logg-filter-loype" onchange="renderLogg()" style="padding:5px 8px;border:1.5px solid var(--border);border-radius:16px;font-family:var(--sans);font-size:12px;background:var(--white);color:var(--text2);cursor:pointer;flex-shrink:0"><option value="">Alle løyper</option></select><button onclick="eksporterCSV()" style="display:flex;align-items:center;gap:4px;padding:5px 10px;border-radius:16px;border:1.5px solid var(--border);background:var(--white);font-family:var(--sans);font-size:12px;color:var(--text2);cursor:pointer;flex-shrink:0;white-space:nowrap"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Excel</button></div><div id="logg-summary" style="display:none;padding:8px 16px;background:var(--ice);border-bottom:1px solid var(--border);font-size:12px;color:var(--text2);display:flex;gap:16px;flex-wrap:wrap;align-items:center"></div><div class="card"><div class="loading-overlay" id="logg-loading"><div class="spinner"></div> Henter data…</div>
 <!-- Desktop tabell -->
 <div class="table-wrap logg-desktop"><table><thead><tr>
 <th>Dato</th><th>Runde / Fører</th><th>Slutt</th><th>Km kjørt</th><th>Timer</th><th>Vær</th><th>Føre</th><th style="text-align:center">Fuel</th><th style="text-align:center">AdB</th><th style="width:80px"></th>
@@ -633,6 +651,176 @@ oppdaterStandHint();
 byggRundeGrid();
 }
 }
+// ── BILDER (tur-vedlegg) ──
+let valgtBildeUrls = [];       // Array av URLer for bilder brukt i pågående ny økt / redigering
+let bildeOpplasterKoe = 0;     // Antall bilder som venter på svar fra server
+
+// Filplukker: håndter én eller flere bilder, ett om gangen for å unngå rate-limit
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('photo-input');
+  if (inp) inp.addEventListener('change', async (e) => {
+    const filer = Array.from(e.target.files || []);
+    if (!filer.length) return;
+    bildeOpplasterKoe += filer.length;
+    oppdaterBildeUI();
+    for (const fil of filer) {
+      await lastOppEttBilde(fil);
+      bildeOpplasterKoe = Math.max(0, bildeOpplasterKoe - 1);
+      oppdaterBildeUI();
+    }
+    e.target.value = '';
+  });
+});
+
+async function lastOppEttBilde(fil) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const komprimert = await komprimerBilde(ev.target.result, 1600, 0.82);
+        const res = await apiKall({
+          action: 'lastOppBilde',
+          filnavn: (fil.name || ('bilde-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
+          base64: komprimert,
+          mimeType: 'image/jpeg'
+        });
+        if (res.feil) throw new Error(res.feil);
+        valgtBildeUrls.push(res.url);
+      } catch(err) {
+        alert('Bildeopplasting feilet: ' + err.message);
+        console.error(err);
+      }
+      resolve();
+    };
+    reader.readAsDataURL(fil);
+  });
+}
+
+function oppdaterBildeUI() {
+  renderBildeGrid();
+  // Sperr lagre-knappen mens opplasting pågår
+  const btn = document.getElementById('lagre-btn');
+  const drop = document.getElementById('photo-drop');
+  if (btn) {
+    if (bildeOpplasterKoe > 0) {
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div> Vent, laster opp ${bildeOpplasterKoe} bilde${bildeOpplasterKoe===1?'':'r'}…`;
+    } else if (btn.disabled && btn.innerHTML.includes('Vent, laster opp')) {
+      // Bare gjenopprett hvis knappen ble disable-t av bildeopplasting
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg><span id="lagre-btn-tekst">' + (editModus ? 'Lagre endringer' : 'Lagre økt') + '</span>';
+    }
+  }
+  if (drop) {
+    drop.style.opacity = bildeOpplasterKoe > 0 ? '0.5' : '1';
+    drop.style.pointerEvents = bildeOpplasterKoe > 0 ? 'none' : 'auto';
+  }
+}
+
+function renderBildeGrid() {
+  const el = document.getElementById('photo-preview-grid');
+  if (!el) return;
+  const antLaster = bildeOpplasterKoe || 0;
+  if (!valgtBildeUrls.length && !antLaster) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = 'flex';
+  const urlsJson = JSON.stringify(valgtBildeUrls).replace(/"/g,'&quot;');
+  const ferdige = valgtBildeUrls.map((url, i) => `<div class="photo-thumb-wrap"><img src="${url}" alt="Bilde ${i+1}" onclick="apneLightbox(${urlsJson}, ${i})"><button class="fjern-btn" onclick="fjernBildeIdx(${i})" type="button" aria-label="Fjern">×</button></div>`).join('');
+  const placeholders = Array(antLaster).fill(0).map(() => `<div class="photo-thumb-wrap" style="display:flex;align-items:center;justify-content:center;background:var(--ice);border:1.5px dashed var(--border)"><div class="spinner" style="border-color:rgba(15,58,95,0.2);border-top-color:var(--mid)"></div></div>`).join('');
+  el.innerHTML = ferdige + placeholders;
+}
+
+function fjernBildeIdx(i) {
+  valgtBildeUrls.splice(i, 1);
+  renderBildeGrid();
+}
+
+function fjernAlleBilder() {
+  valgtBildeUrls = [];
+  renderBildeGrid();
+  const inp = document.getElementById('photo-input');
+  if (inp) inp.value = '';
+}
+
+// Helper: liten bilde-badge for logg (viser 📷 3 om turen har bilder)
+function _bildeBadge(tur) {
+  const urls = String(tur.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (!urls.length) return '';
+  const urlsAttr = JSON.stringify(urls).replace(/"/g,'&quot;');
+  return `<span class="photo-badge" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, 0)" title="Se ${urls.length} bilde${urls.length===1?'':'r'}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>${urls.length}</span>`;
+}
+
+// Helper: små thumbnails for dashboard (viser opptil 3 mini-bilder til høyre)
+function _bildeThumbs(tur, maks) {
+  const urls = String(tur.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (!urls.length) return '';
+  const urlsAttr = JSON.stringify(urls).replace(/"/g,'&quot;');
+  const vis = urls.slice(0, maks || 3);
+  const rest = urls.length - vis.length;
+  return `<div class="dash-thumbs">${vis.map((u, i) => `<div class="dash-thumb" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${i})"><img src="${u}" alt="Bilde"></div>`).join('')}${rest > 0 ? `<div class="dash-thumb" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text2);cursor:pointer" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${vis.length})">+${rest}</div>` : ''}</div>`;
+}
+
+// Komprimer bilde til JPEG (samme som scooter-app)
+async function komprimerBilde(dataUrl, maxDim, kvalitet) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) { height = Math.round(height * (maxDim / width)); width = maxDim; }
+        else { width = Math.round(width * (maxDim / height)); height = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', kvalitet));
+    };
+    img.onerror = () => reject(new Error('Kunne ikke lese bildet'));
+    img.src = dataUrl;
+  });
+}
+
+// Lightbox for tur-bilder
+let _lbUrls = [];
+let _lbIdx = 0;
+function apneLightbox(urls, startIdx) {
+  _lbUrls = Array.isArray(urls) ? urls : [urls];
+  _lbIdx = Math.max(0, Math.min(startIdx || 0, _lbUrls.length - 1));
+  const lb = document.getElementById('mask-lightbox');
+  if (!lb) return;
+  oppdaterLightbox();
+  lb.classList.add('open');
+}
+function lukkLightbox(event) {
+  // Kun lukk hvis klikk er på bakgrunn eller lukke-knappen (ikke bilde)
+  if (event && event.target && event.target.tagName === 'IMG') return;
+  document.getElementById('mask-lightbox')?.classList.remove('open');
+}
+function navLightbox(dir) {
+  if (!_lbUrls.length) return;
+  _lbIdx = (_lbIdx + dir + _lbUrls.length) % _lbUrls.length;
+  oppdaterLightbox();
+}
+function oppdaterLightbox() {
+  const img = document.getElementById('lb-img');
+  const count = document.getElementById('lb-count');
+  const prev = document.getElementById('lb-prev');
+  const next = document.getElementById('lb-next');
+  if (img) img.src = _lbUrls[_lbIdx] || '';
+  if (count) count.textContent = `${_lbIdx + 1} / ${_lbUrls.length}`;
+  const flere = _lbUrls.length > 1;
+  if (prev) prev.style.display = flere ? 'flex' : 'none';
+  if (next) next.style.display = flere ? 'flex' : 'none';
+}
+document.addEventListener('keydown', (e) => {
+  const lb = document.getElementById('mask-lightbox');
+  if (!lb || !lb.classList.contains('open')) return;
+  if (e.key === 'Escape') lukkLightbox({target:{tagName:'DIV'}});
+  else if (e.key === 'ArrowLeft') navLightbox(-1);
+  else if (e.key === 'ArrowRight') navLightbox(1);
+});
+
 // ── FØREFORHOLD ──
 let condVal = 0;
 let editModus = false;   // true når vi redigerer en eksisterende økt
@@ -743,7 +931,8 @@ snupunkt: snupunkt,
 maskin: aktivMaskin ? aktivMaskin.navn : '',
 timerStartMaskin: aktivMaskin ? aktivMaskin.timerStart : '',
 kmStartMaskin: aktivMaskin ? aktivMaskin.kmStart : '',
-merknader: document.getElementById('f-merknader').value.trim()
+merknader: document.getElementById('f-merknader').value.trim(),
+bildeUrl: valgtBildeUrls.join(',')
 };
 try {
 setSyncStatus('loading', 'Sync');
@@ -755,6 +944,7 @@ nullstillRunder();
 document.getElementById('f-diesel').checked=false;
 document.getElementById('f-adblue').checked=false;
 setCond(0);
+fjernAlleBilder();  // nullstill bilder for neste tur
 hideLoading();
 btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Lagre økt';
 showTab('dashboard');
@@ -818,6 +1008,7 @@ const el = document.getElementById(id); if(el) el.value='';
 document.getElementById('f-diesel').checked = false;
 document.getElementById('f-adblue').checked = false;
 setCond(0);
+fjernAlleBilder();
 const _now = new Date();
 const _localDato = _now.getFullYear() + '-' +
 String(_now.getMonth()+1).padStart(2,'0') + '-' +
@@ -842,6 +1033,9 @@ document.getElementById('f-diesel').checked = t.diesel==='Ja';
 document.getElementById('f-adblue').checked = t.adblue==='Ja';
 setCond(t.forkond||0);
 document.getElementById('f-merknader').value = t.merknader||'';
+// Last inn eksisterende bilder for redigering
+valgtBildeUrls = String(t.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
+renderBildeGrid();
 oppdaterStandHint();
 // Velg runder og fyll inn avstikkere/snupunkter
 const valgtRunder = (t.loype||'').split(' + ').map(r=>r.trim()).filter(Boolean);
@@ -920,15 +1114,26 @@ timerStartMaskin: aktivMaskin ? aktivMaskin.timerStart : '',
 kmStartMaskin: aktivMaskin ? aktivMaskin.kmStart : '',
 merknader: document.getElementById('f-merknader').value.trim(),
 vaer: (turer.find(t => String(t.id) === String(editTurId)) || {}).vaer || '',
+bildeUrl: valgtBildeUrls.join(','),
 redigert: true
 };
+// Ved redigering: finn ut hvilke bilder brukeren fjernet, så vi kan slette dem fra Drive.
+// Alle andre bilder bevares (bevareBilder=true forhindrer at slett() rydder Drive).
+const originalTur = turer.find(t => String(t.id) === String(editTurId));
+const gamleUrls = originalTur ? String(originalTur.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean) : [];
+const fjernedeUrls = gamleUrls.filter(url => !valgtBildeUrls.includes(url));
 const btn = document.getElementById('lagre-btn');
 btn.disabled = true;
 showLoading('Lagrer endringer…');
 try {
 setSyncStatus('loading', 'Sync');
-await apiKall({ action: 'slett', id: editTurId });
+await apiKall({ action: 'slett', id: editTurId, bevareBilder: true });
 await apiKall({ action: 'leggTil', tur: oppdatert });
+// Slett bilder brukeren fjernet under redigering
+for (const url of fjernedeUrls) {
+const m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+if (m && m[1]) { try { await apiKall({ action: 'slettBilde', filId: m[1] }); } catch(e) { console.warn('Kunne ikke slette bilde:', e); } }
+}
 setSyncStatus('ok', 'Sync');
 hideLoading();
 avbrytEdit();
@@ -1043,7 +1248,7 @@ const forkondTekst = t.forkond===1 ? '● Dårlig' : t.forkond===2 ? '●● Mid
 const forkondKlasse = t.forkond===1 ? 'cond-1' : t.forkond===2 ? 'cond-2' : t.forkond===3 ? 'cond-3' : '';
 return `
 <div class="trip-card">
-<div class="trip-header"><div class="trip-route">${t.loype}</div><div class="trip-date">${formatDato(t.dato)}</div></div>
+<div class="trip-header"><div class="trip-route">${t.loype}</div><div style="display:flex;align-items:center;gap:8px">${_bildeThumbs(t, 3)}<div class="trip-date">${formatDato(t.dato)}</div></div></div>
 <div class="trip-driver">👤 ${t.forer}</div>
 <div class="trip-stats" style="margin-bottom:6px">
 ${t.slutt ? `<div class="trip-stat"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>${t.slutt}</span></div>` : ''}
@@ -1155,7 +1360,7 @@ const timerVis = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc) ? (parse
 const fornavn = t.forer ? t.forer.split(' ')[0] : '–';
 return `<tr style="${idx%2===0?'background:var(--white)':'background:var(--snow)'}">
 <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--text2)">${formatDato(t.dato)}${t.redigert?'<span style="margin-left:4px;font-size:10px;color:var(--text2);background:var(--ice);border:1px solid var(--border);border-radius:3px;padding:1px 4px">✎</span>':''}</td>
-<td><div style="font-weight:700;font-size:13px;color:var(--navy);line-height:1.3">${t.loype}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">👤 ${fornavn}</div></td>
+<td><div style="font-weight:700;font-size:13px;color:var(--navy);line-height:1.3">${t.loype}</div><div style="font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:6px">👤 ${fornavn}${_bildeBadge(t)}</div></td>
 <td style="font-family:var(--mono);font-size:12px">${t.slutt||'–'}</td>
 <td style="font-family:var(--mono)">${kmVis}</td>
 <td style="font-family:var(--mono)">${timerVis}</td>
@@ -1194,6 +1399,7 @@ return `<div class="logg-kort">
 <span class="logg-kort-slutt">🕐 ${t.slutt||'–'}</span>
 ${cond}
 ${t.vaer ? `<span style="font-size:14px">${t.vaer}</span>` : ''}
+${_bildeBadge(t)}
 </div>
 <div class="logg-kort-stats">
 ${kmVis!=='–' ? `<div class="logg-kort-stat">📏 <span>${kmVis} km</span></div>` : ''}
@@ -4043,4 +4249,5 @@ allowfullscreen>
 Sørli Friluftslag – Langrennskalender · Åpnes i Google Kalender ved klikk
 </div>
 </div>
+<div class="lb-back" id="mask-lightbox" onclick="lukkLightbox(event)"><button class="lb-close" onclick="lukkLightbox({target:this})" aria-label="Lukk">×</button><button class="lb-nav prev" id="lb-prev" onclick="event.stopPropagation();navLightbox(-1)" aria-label="Forrige">‹</button><img class="lb-img" id="lb-img" src="" alt="Bilde" onclick="event.stopPropagation()"><button class="lb-nav next" id="lb-next" onclick="event.stopPropagation();navLightbox(1)" aria-label="Neste">›</button><div class="lb-count" id="lb-count"></div></div>
 </body></html>
