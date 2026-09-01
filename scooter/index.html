@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="11:45">11:45</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="12:16">12:16</span>
 </div>
 
 <div class="nav">
@@ -1582,10 +1582,32 @@ async function lagreFeilPanel() {
 }
 
 // ── KONTAKTER ────────────────────────────────────────
-function toggleKontaktPanel() {
+async function toggleKontaktPanel() {
   if (_synligPanel('kontakt-panel')) { lukkAllePaneler(); return; }
   _visPanel('kontakt-panel');
+  // Sperre backdrop-klikk mens vi laster (unngår utilsiktet lukking)
+  const bd = document.getElementById('panel-backdrop');
+  if (bd) bd.style.pointerEvents = 'none';
+  // Vis midlertidig laster-melding mens vi henter ferske data
+  const el = document.getElementById('kontakt-innhold');
+  if (el) el.innerHTML = '<div style="text-align:center;padding:30px 20px;color:var(--text2);font-size:13px"><div class="spinner" style="display:inline-block;width:20px;height:20px;margin-bottom:8px"></div><div>Henter kontakter…</div></div>';
+  // Hent alltid friske kontakter ved åpning – unngår at endringer fra andre enheter mangler
+  try {
+    const cfg = await apiKall({ action: 'hentConfigScooter' });
+    if (cfg && !cfg.feil) {
+      kontakter = cfg.kontakter || kontakter;
+      sjaforer = kontakter.filter(x => x.sjaforScooter || x.sjaforMaskin).map(x => x.navn).filter(Boolean);
+      if (cfg.innstillinger) {
+        const jaCheck = (v) => String(v).toLowerCase() === 'ja';
+        window.__varslerAdmin = {
+          tillatScooterFolgeMaskinTur: jaCheck(cfg.innstillinger.varslerTillatScooterFolgeMaskinTur)
+        };
+      }
+    }
+  } catch(e) { console.warn('Kunne ikke oppdatere kontakter:', e); }
   renderKontakter();
+  // Aktiver backdrop igjen etter kort delay – gir brukeren tid å se innholdet
+  setTimeout(() => { if (bd) bd.style.pointerEvents = ''; }, 300);
 }
 function renderKontakter() {
   const el = document.getElementById('kontakt-innhold');
@@ -1629,6 +1651,10 @@ function bygVarslerHtml(k, epostNaa, id) {
   // Bruker epostNaa (fra input-feltet, live) heller enn k.epost (lagret verdi)
   if (!epostNaa) {
     return `<div style="margin-bottom:8px;padding:8px 10px;background:var(--snow);border-radius:6px;font-size:11px;color:var(--text2);font-style:italic">Fyll inn e-post for å motta varsler</div>`;
+  }
+  // Ikke-sjåfører får ikke varsler i det hele tatt
+  if (!k.sjaforMaskin && !k.sjaforScooter) {
+    return `<div style="margin-bottom:8px;padding:8px 10px;background:var(--snow);border-radius:6px;font-size:11px;color:var(--text2);font-style:italic">Kun sjåfører kan motta e-postvarsler</div>`;
   }
   const scooterOnly = k.sjaforScooter && !k.sjaforMaskin;
   const crossBlokkert = scooterOnly && !(window.__varslerAdmin?.tillatScooterFolgeMaskinTur);
