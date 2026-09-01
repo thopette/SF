@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="09:11">09:11</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="11:18">11:18</span>
 </div>
 
 <div class="nav">
@@ -1625,19 +1625,15 @@ function renderKontakter() {
   </div>`;
   el.innerHTML = html;
 }
-function redigerKontakt(id) {
-  const k = kontakter.find(x => x.id === id);
-  if (!k) return;
-  const card = document.getElementById('kk-'+id);
-  if (!card) return;
-  const esc = (s) => String(s||'').replace(/"/g,'&quot;');
-  // Varsler-seksjon: kun synlig hvis kontakten har e-post.
-  // VarslerFeilMaskin er disablet hvis kontakten ikke er maskin-sjåfør.
+function bygVarslerHtml(k, epostNaa, id) {
+  // Bruker epostNaa (fra input-feltet, live) heller enn k.epost (lagret verdi)
+  if (!epostNaa) {
+    return `<div style="margin-bottom:8px;padding:8px 10px;background:var(--snow);border-radius:6px;font-size:11px;color:var(--text2);font-style:italic">Fyll inn e-post for å motta varsler</div>`;
+  }
   const feilMaskinDisabled = !k.sjaforMaskin;
-  // Cross-abonnement (om admin har skrudd av): scooter-only kan ikke abonnere på maskin-turer
   const scooterOnly = k.sjaforScooter && !k.sjaforMaskin;
   const turMaskinDisabled = scooterOnly && !(window.__varslerAdmin?.tillatScooterFolgeMaskinTur);
-  const varslerHtml = k.epost ? `
+  return `
     <div style="margin-bottom:8px;padding:10px;background:var(--ice);border-radius:6px">
       <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">📧 E-post-varsler</div>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:${turMaskinDisabled?'var(--text2)':'var(--text)'}" title="${turMaskinDisabled?'Deaktivert av admin':''}"><input type="checkbox" id="ek-vTM-${id}" ${k.varslerTurMaskin?'checked':''} ${turMaskinDisabled?'disabled':''} style="width:auto;margin:0"> Nye maskin-turer${turMaskinDisabled?' <span style="font-size:10px;color:var(--text2);font-style:italic">(deaktivert av admin)</span>':''}</label>
@@ -1647,14 +1643,32 @@ function redigerKontakt(id) {
       <div style="margin-top:8px;padding:8px 10px;background:#FEF5E7;border-left:3px solid #E67E22;border-radius:4px;font-size:11px;color:#7E5109;line-height:1.4">
         ⚠️ <strong>NB:</strong> Enkelte jobb-kontoer blokkerer varsler fra gmail-adresser. Bruk gjerne <strong>gmail, outlook, icloud</strong> eller egen privat e-post for å være sikker på å motta varsler.
       </div>
-    </div>` : `<div style="margin-bottom:8px;padding:8px 10px;background:var(--snow);border-radius:6px;font-size:11px;color:var(--text2);font-style:italic">Fyll inn e-post for å motta varsler</div>`;
+    </div>`;
+}
+
+// Live-oppdatering av varsler-blokk mens man taster e-post
+function oppdaterVarslerBlokk(id) {
+  const k = kontakter.find(x => x.id === id);
+  if (!k) return;
+  const epostNaa = document.getElementById('ek-epost-' + id)?.value.trim() || '';
+  const blokk = document.getElementById('varsler-blokk-' + id);
+  if (blokk) blokk.innerHTML = bygVarslerHtml(k, epostNaa, id);
+}
+
+function redigerKontakt(id) {
+  const k = kontakter.find(x => x.id === id);
+  if (!k) return;
+  const card = document.getElementById('kk-'+id);
+  if (!card) return;
+  const esc = (s) => String(s||'').replace(/"/g,'&quot;');
+  const varslerHtml = bygVarslerHtml(k, k.epost, id);
   card.innerHTML = `
     <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">Rediger kontakt</div>
     <div style="margin-bottom:6px"><input type="text" id="ek-navn-${id}" value="${esc(k.navn)}" placeholder="Navn" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-    <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+    <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" oninput="oppdaterVarslerBlokk('${id}')" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-    ${varslerHtml}
+    <div id="varsler-blokk-${id}">${varslerHtml}</div>
     <div style="display:flex;gap:6px;align-items:center">
       <button onclick="slettKontaktEntry('${id}')" title="Slett kontakt" style="padding:7px 10px;background:white;color:var(--danger);border:1.5px solid #FECACA;border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">🗑 Slett</button>
       <div style="flex:1"></div>
