@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="11:18">11:18</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="11:34">11:34</span>
 </div>
 
 <div class="nav">
@@ -1632,11 +1632,14 @@ function bygVarslerHtml(k, epostNaa, id) {
   }
   const feilMaskinDisabled = !k.sjaforMaskin;
   const scooterOnly = k.sjaforScooter && !k.sjaforMaskin;
-  const turMaskinDisabled = scooterOnly && !(window.__varslerAdmin?.tillatScooterFolgeMaskinTur);
+  const turMaskinBlokkert = scooterOnly && !(window.__varslerAdmin?.tillatScooterFolgeMaskinTur);
+  // Om admin har blokkert cross-abonnement: skjul hele Nye-maskin-turer-haken helt (ikke vis grået-ut variant)
+  const maskinTurHake = turMaskinBlokkert ? '' :
+    `<label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vTM-${id}" ${k.varslerTurMaskin?'checked':''} style="width:auto;margin:0"> Nye maskin-turer</label>`;
   return `
     <div style="margin-bottom:8px;padding:10px;background:var(--ice);border-radius:6px">
       <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">📧 E-post-varsler</div>
-      <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:${turMaskinDisabled?'var(--text2)':'var(--text)'}" title="${turMaskinDisabled?'Deaktivert av admin':''}"><input type="checkbox" id="ek-vTM-${id}" ${k.varslerTurMaskin?'checked':''} ${turMaskinDisabled?'disabled':''} style="width:auto;margin:0"> Nye maskin-turer${turMaskinDisabled?' <span style="font-size:10px;color:var(--text2);font-style:italic">(deaktivert av admin)</span>':''}</label>
+      ${maskinTurHake}
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vTS-${id}" ${k.varslerTurScooter?'checked':''} style="width:auto;margin:0"> Nye scooter-turer</label>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:${feilMaskinDisabled?'var(--text2)':'var(--text)'}" title="${feilMaskinDisabled?'Kun tilgjengelig for maskin-sjåfører':''}"><input type="checkbox" id="ek-vFM-${id}" ${k.varslerFeilMaskin?'checked':''} ${feilMaskinDisabled?'disabled':''} style="width:auto;margin:0"> Nye maskin-feil${feilMaskinDisabled?' <span style="font-size:10px;color:var(--text2);font-style:italic">(krever maskin-sjåfør)</span>':''}</label>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vFS-${id}" ${k.varslerFeilScooter?'checked':''} style="width:auto;margin:0"> Nye scooter-feil</label>
@@ -1680,6 +1683,7 @@ async function lagreKontaktRedigert(id) {
   const k = kontakter.find(x => x.id === id);
   if (!k) return;
   const chk = (elId) => document.getElementById(elId)?.checked || false;
+  // Hent hakenes verdier – om haken er skjult (turMaskinBlokkert), behold eksisterende verdi
   const oppdatert = {
     id,
     navn: document.getElementById('ek-navn-'+id)?.value.trim() || k.navn,
@@ -1690,22 +1694,31 @@ async function lagreKontaktRedigert(id) {
     sjaforMaskin: k.sjaforMaskin || false,
     sjaforScooter: k.sjaforScooter || false,
     // Varsler-preferanser (kun hvis e-post finnes)
-    varslerTurMaskin: chk('ek-vTM-'+id),
+    // Om haken er skjult i UI (f.eks. maskin-turer blokkert av admin), fall tilbake til lagret verdi
+    varslerTurMaskin: document.getElementById('ek-vTM-'+id) ? chk('ek-vTM-'+id) : (k.varslerTurMaskin || false),
     varslerTurScooter: chk('ek-vTS-'+id),
     varslerFeilMaskin: chk('ek-vFM-'+id),
     varslerFeilScooter: chk('ek-vFS-'+id)
   };
+  // Disable lagre-knappen mens vi venter
+  const btn = document.querySelector(`button[onclick="lagreKontaktRedigert('${id}')"]`);
+  const originalText = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner" style="display:inline-block;width:12px;height:12px;vertical-align:middle;margin-right:4px"></div>Lagrer…'; btn.style.opacity = '0.6'; btn.style.cursor = 'not-allowed'; }
   try {
     const res = await apiKall({ action: 'lagreKontakt', kontakt: oppdatert });
-    if (res.ok) {
-      const idx = kontakter.findIndex(x => x.id === id);
-      if (idx >= 0) kontakter[idx] = { ...oppdatert };
-      // Scooter-appens sjåfør-liste: både scooter- OG maskin-sjåfører
-      sjaforer = kontakter.filter(x => x.sjaforScooter || x.sjaforMaskin).map(x => x.navn).filter(Boolean);
-      renderSjaforChips();
-      renderKontakter();
-    }
-  } catch(e) { toast('Feil: ' + e.message, 'err'); }
+    if (res.feil) throw new Error(res.feil);
+    if (!res.ok) throw new Error('Ukjent feil ved lagring');
+    const idx = kontakter.findIndex(x => x.id === id);
+    if (idx >= 0) kontakter[idx] = { ...oppdatert };
+    // Scooter-appens sjåfør-liste: både scooter- OG maskin-sjåfører
+    sjaforer = kontakter.filter(x => x.sjaforScooter || x.sjaforMaskin).map(x => x.navn).filter(Boolean);
+    renderSjaforChips();
+    renderKontakter();
+    toast('Kontakt lagret ✓', 'ok');
+  } catch(e) {
+    toast('Kunne ikke lagre: ' + e.message, 'err');
+    if (btn) { btn.disabled = false; btn.innerHTML = originalText; btn.style.opacity = ''; btn.style.cursor = ''; }
+  }
 }
 async function lagreKontaktEntry() {
   const kontakt = {
