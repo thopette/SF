@@ -6,8 +6,8 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .topbar h1 { color:var(--white); font-size:15px; font-weight:500; letter-spacing:0.3px; }
 .topbar-version { font-size:10px; color:rgba(255,255,255,0.45); font-family:var(--mono); white-space:nowrap; cursor:pointer; user-select:none; }
 .topbar-version:hover { color:rgba(255,255,255,0.7); }
-.nav { background:var(--white); border-bottom:1px solid var(--border); display:flex; overflow-x:auto; padding:0 4px; position:sticky; top:48px; z-index:90; }
-.nav-btn { background:none; border:none; padding:12px 12px 10px; color:var(--text2); font-family:var(--sans); font-size:12px; font-weight:500; cursor:pointer; border-bottom:2px solid transparent; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:68px; }
+.nav { background:var(--white); border-bottom:1px solid var(--border); display:flex; padding:0 4px; position:sticky; top:48px; z-index:90; }
+.nav-btn { background:none; border:none; padding:12px 8px 10px; color:var(--text2); font-family:var(--sans); font-size:12px; font-weight:500; cursor:pointer; border-bottom:2px solid transparent; display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; min-width:0; }
 .nav-btn.active { color:var(--scooter-accent); border-bottom-color:var(--scooter-accent); }
 .nav-btn svg { width:20px; height:20px; }
 .content { padding:14px; max-width:640px; margin:0 auto; }
@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="14:46">14:46</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="15:01">15:01</span>
 </div>
 
 <div class="nav">
