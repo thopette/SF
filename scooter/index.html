@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="08:47">08:47</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="09:11">09:11</span>
 </div>
 
 <div class="nav">
@@ -602,6 +602,11 @@ async function lastData() {
     // Sesong-datoer deles med maskinloggen (samme Innstillinger-ark)
     sesongStart = parseSesongDato(innstillinger.sesongStart);
     sesongSlutt = parseSesongDato(innstillinger.sesongSlutt);
+    // Cache varsler-admin for kontakt-panelet (cross-abonnement-sjekk)
+    const jaCheck = (v) => String(v).toLowerCase() === 'ja';
+    window.__varslerAdmin = {
+      tillatScooterFolgeMaskinTur: jaCheck(innstillinger.varslerTillatScooterFolgeMaskinTur)
+    };
     renderSjaforChips();
     renderScooterCards();
     renderDashboard();
@@ -1629,10 +1634,13 @@ function redigerKontakt(id) {
   // Varsler-seksjon: kun synlig hvis kontakten har e-post.
   // VarslerFeilMaskin er disablet hvis kontakten ikke er maskin-sjåfør.
   const feilMaskinDisabled = !k.sjaforMaskin;
+  // Cross-abonnement (om admin har skrudd av): scooter-only kan ikke abonnere på maskin-turer
+  const scooterOnly = k.sjaforScooter && !k.sjaforMaskin;
+  const turMaskinDisabled = scooterOnly && !(window.__varslerAdmin?.tillatScooterFolgeMaskinTur);
   const varslerHtml = k.epost ? `
     <div style="margin-bottom:8px;padding:10px;background:var(--ice);border-radius:6px">
       <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">📧 E-post-varsler</div>
-      <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vTM-${id}" ${k.varslerTurMaskin?'checked':''} style="width:auto;margin:0"> Nye maskin-turer</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:${turMaskinDisabled?'var(--text2)':'var(--text)'}" title="${turMaskinDisabled?'Deaktivert av admin':''}"><input type="checkbox" id="ek-vTM-${id}" ${k.varslerTurMaskin?'checked':''} ${turMaskinDisabled?'disabled':''} style="width:auto;margin:0"> Nye maskin-turer${turMaskinDisabled?' <span style="font-size:10px;color:var(--text2);font-style:italic">(deaktivert av admin)</span>':''}</label>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vTS-${id}" ${k.varslerTurScooter?'checked':''} style="width:auto;margin:0"> Nye scooter-turer</label>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:${feilMaskinDisabled?'var(--text2)':'var(--text)'}" title="${feilMaskinDisabled?'Kun tilgjengelig for maskin-sjåfører':''}"><input type="checkbox" id="ek-vFM-${id}" ${k.varslerFeilMaskin?'checked':''} ${feilMaskinDisabled?'disabled':''} style="width:auto;margin:0"> Nye maskin-feil${feilMaskinDisabled?' <span style="font-size:10px;color:var(--text2);font-style:italic">(krever maskin-sjåfør)</span>':''}</label>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vFS-${id}" ${k.varslerFeilScooter?'checked':''} style="width:auto;margin:0"> Nye scooter-feil</label>
