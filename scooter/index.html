@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="12:29">12:29</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="13:03">13:03</span>
 </div>
 
 <div class="nav">
@@ -209,6 +209,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Totalt kjørt</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-fore">–</div><div class="stat-label">Snitt føreforhold</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-sno">–</div><div class="stat-label">Snø høyere strøk (sist)</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">🛷 Scooterpark</div>
+    <div id="scooterpark-widget" style="padding:6px 14px 12px"><p style="font-size:13px;color:var(--text2);padding:8px 0">Laster…</p></div>
   </div>
   <div class="card">
     <div class="card-header">Siste turer</div>
@@ -349,10 +353,6 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 </div>
 
 <div id="tab-admin" class="tab-content">
-  <div class="card">
-    <div class="card-header">Sjåfører</div>
-    <div class="card-body" id="admin-sjaforer"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
-  </div>
   <div class="card">
     <div class="card-header">Scootere</div>
     <div class="card-body" id="admin-scootere"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
@@ -1037,6 +1037,7 @@ function resetSkjema() {
 
 // ── DASHBOARD ─────────────────────────────────────────
 function renderDashboard() {
+  renderScooterpark();
   document.getElementById('stat-turer').textContent = turer.length;
   const totKm = turer.reduce((s,t) => s + (t.kmPerTur || 0), 0);
   document.getElementById('stat-km').textContent = totKm.toFixed(0) + ' km';
@@ -1187,6 +1188,100 @@ function renderTurItem(t) {
     stats.push(`<span class="log-thumbs">${thumbs}</span>`);
   }
   return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${stats.join('')}</div></div>`;
+}
+
+// ── SCOOTERPARK-WIDGET (Alt A: kortrekke med mini-sparklines) ──
+// Viser km-stand, siste ukes aktivitet og trend siste 30 dager per scooter.
+function renderScooterpark() {
+  const el = document.getElementById('scooterpark-widget');
+  if (!el) return;
+  if (!scootere || !scootere.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2);padding:8px 0">Ingen scootere registrert. Legg til under Admin.</p>';
+    return;
+  }
+  // Beregn per scooter: nåværende km-stand (høyeste km), km siste uke, punkter for sparkline
+  const now = new Date();
+  const grense7d = new Date(now); grense7d.setDate(grense7d.getDate() - 7);
+  const grense30d = new Date(now); grense30d.setDate(grense30d.getDate() - 30);
+
+  const rows = scootere.filter(s => s.aktiv !== false).map(s => {
+    const scooterTurer = turer.filter(t => t.scooter === s.navn);
+    // Nåværende km: høyeste km-verdi observert (fallback: kmStart)
+    const kmVerdier = scooterTurer.map(t => parseFloat(t.km) || 0).filter(v => v > 0);
+    const naKm = kmVerdier.length ? Math.max(...kmVerdier) : (parseFloat(s.kmStart) || 0);
+    // Km siste uke = sum av kmPerTur for turer siste 7 dager
+    const turerSiste7 = scooterTurer.filter(t => {
+      const d = new Date(t.dato);
+      return d >= grense7d;
+    });
+    const kmSiste7 = turerSiste7.reduce((sum, t) => sum + (parseFloat(t.kmPerTur) || 0), 0);
+    // Sparkline: km-stand over tid siste 30 dager (bruk sluttkm på hver tur, sorter kronologisk)
+    const turerSiste30 = scooterTurer.filter(t => new Date(t.dato) >= grense30d)
+      .sort((a, b) => (a.dato + ' ' + (a.slutt || '')).localeCompare(b.dato + ' ' + (b.slutt || '')));
+    const punkter = turerSiste30.map(t => parseFloat(t.km) || 0).filter(v => v > 0);
+    return {
+      navn: s.navn,
+      naKm: naKm,
+      kmSiste7: kmSiste7,
+      antTurerSiste7: turerSiste7.length,
+      punkter: punkter,
+      inaktiv: turerSiste7.length === 0
+    };
+  });
+
+  if (!rows.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2);padding:8px 0">Ingen aktive scootere.</p>';
+    return;
+  }
+
+  el.innerHTML = rows.map((r, idx) => {
+    const isLast = idx === rows.length - 1;
+    const borderStyle = isLast ? '' : 'border-bottom:1px solid var(--ice)';
+    const dempet = r.inaktiv ? 'opacity:0.55;' : '';
+    const ikonBg = r.inaktiv ? 'background:var(--ice);color:var(--text2)' : 'background:linear-gradient(135deg,var(--navy),var(--mid));color:white';
+    const kmFarge = r.inaktiv ? 'color:var(--text2)' : 'color:var(--navy)';
+    const sparkline = _byggSparkline(r.punkter, r.inaktiv);
+    const undertekst = r.inaktiv
+      ? '<span style="font-style:italic">Ikke kjørt siste 7d</span>'
+      : `+${r.kmSiste7.toFixed(0)} km siste uke · ${r.antTurerSiste7} tur${r.antTurerSiste7 === 1 ? '' : 'er'}`;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;${borderStyle};${dempet}">
+      <div style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;${ikonBg}">🛷</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.navn}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:1px">${undertekst}</div>
+      </div>
+      ${sparkline}
+      <div style="text-align:right;flex-shrink:0;min-width:60px">
+        <div style="font-size:16px;font-weight:700;font-family:var(--mono);line-height:1;${kmFarge}">${r.naKm.toFixed(0)}</div>
+        <div style="font-size:10px;color:var(--text2);letter-spacing:0.3px">KM</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Bygger en mini-sparkline SVG (60x24) fra en liste av tallverdier.
+// Hvis inaktiv eller <2 punkter, viser en stiplet linje.
+function _byggSparkline(punkter, inaktiv) {
+  if (inaktiv || !punkter || punkter.length < 2) {
+    return '<svg width="60" height="24" viewBox="0 0 60 24" style="flex-shrink:0;opacity:0.4"><line x1="0" y1="12" x2="60" y2="12" stroke="#9BA5B4" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2,2"/></svg>';
+  }
+  const min = Math.min(...punkter);
+  const max = Math.max(...punkter);
+  const range = max - min || 1;
+  const width = 60;
+  const height = 24;
+  const padY = 3;
+  const pts = punkter.map((v, i) => {
+    const x = (i / (punkter.length - 1)) * width;
+    const y = height - padY - ((v - min) / range) * (height - padY * 2);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  });
+  const lastX = width;
+  const lastY = punkter.length ? (height - padY - ((punkter[punkter.length - 1] - min) / range) * (height - padY * 2)) : height / 2;
+  return `<svg width="60" height="24" viewBox="0 0 60 24" style="flex-shrink:0">
+    <polyline points="${pts.join(' ')}" fill="none" stroke="var(--mid)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2" fill="var(--mid)"/>
+  </svg>`;
 }
 
 function formaterDatoKort(dato) {
@@ -1344,15 +1439,6 @@ async function slettBildeAdmin(filId, navn) {
 }
 
 function renderAdmin() {
-  // Sjåfører (les-visning, siden de deles med maskin-appen)
-  const sjaEl = document.getElementById('admin-sjaforer');
-  if (!sjaforer.length) {
-    sjaEl.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen sjåfører registrert. Legg til i maskin-appen (deles).</p>';
-  } else {
-    sjaEl.innerHTML = sjaforer.map(s => `<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:14px">${s}</div>`).join('') +
-      '<p style="font-size:12px;color:var(--text2);margin-top:10px;font-style:italic">Sjåfører deles med maskin-appen. Legg til/endre der.</p>';
-  }
-
   // Scootere
   const scEl = document.getElementById('admin-scootere');
   const scootereHtml = scootere.map((s,i) => {
@@ -1636,7 +1722,8 @@ async function lagreFeilPanel() {
     toast('Feil meldt ✓', 'ok');
     document.getElementById('feil-modal').classList.remove('open');
     await hentFeilData();
-    renderServicePanel();
+    // Lukk hele service-panelet etter suksess (bruker forventer å komme tilbake til dashboard)
+    setTimeout(() => { lukkAllePaneler(); }, 300);
   } catch(e) { toast('Feil: ' + e.message, 'err'); }
 }
 
