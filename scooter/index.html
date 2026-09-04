@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="15:48">15:48</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="12:29">12:29</span>
 </div>
 
 <div class="nav">
@@ -961,6 +961,14 @@ async function lagreTur() {
     const action = redigererTurId ? 'oppdaterScooterTur' : 'leggTilScooter';
     const res = await apiKall({ action, tur });
     if (res.feil) throw new Error(res.feil);
+    // Send e-post-varsel i bakgrunn – kun for nye turer (ikke oppdatering)
+    if (!redigererTurId) {
+      try {
+        const turMedId = Object.assign({}, tur, res.id ? { id: res.id } : {});
+        apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'scooter' })
+          .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
+      } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
+    }
     toast(redigererTurId ? 'Tur oppdatert ✓' : 'Tur lagret ✓', 'ok');
     avbrytRediger();  // Nullstiller state og form
     await lastData();
@@ -1619,6 +1627,12 @@ async function lagreFeilPanel() {
   try {
     const res = await apiKall({ action: 'lagreFeil', feil });
     if (res.feil) throw new Error(res.feil);
+    // Send e-post-varsel i bakgrunn (fire-and-forget)
+    try {
+      const feilMedId = Object.assign({}, feil, { id: res.id });
+      apiKall({ action: 'sendVarselFeil', feil: feilMedId, appType: 'scooter' })
+        .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
+    } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
     toast('Feil meldt ✓', 'ok');
     document.getElementById('feil-modal').classList.remove('open');
     await hentFeilData();
