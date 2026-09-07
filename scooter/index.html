@@ -1435,10 +1435,14 @@ function renderGalleriInnhold() {
 
 function renderGalleriKort(b) {
   const kb = (b.stoerrelseBytes / 1024).toFixed(0);
-  const dato = b.turDato ? formaterDatoKort(b.turDato) : '';
+  const turDato = b.turDato ? formaterDatoKort(b.turDato) : '';
+  // Prominent dato: bruk tur-dato hvis tilknyttet, ellers opplastingsdato som fallback
+  const visDato = b.turDato
+    ? new Date(b.turDato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })
+    : (b.opprettet ? new Date(b.opprettet).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' }) + ' (opplastet)' : 'Ukjent dato');
   const tilknytning = b.forelderloest
     ? `<span style="color:#B45309">Foreldreløs</span>`
-    : (b.turSjafor + (b.turScooter ? ' · ' + b.turScooter : '') + (dato ? ' · ' + dato : ''));
+    : (b.turSjafor + (b.turScooter ? ' · ' + b.turScooter : ''));
   const urls = JSON.stringify([b.fullUrl]).replace(/"/g,'&quot;');
   // Type-badge øverst til venstre på thumbnail
   const typeBadge = b.type === 'maskin'
@@ -1453,7 +1457,7 @@ function renderGalleriKort(b) {
         ${typeBadge}
       </div>
       <div style="padding:6px 8px;font-size:11px;color:var(--text2);line-height:1.4">
-        <div style="color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${b.navn}">${b.navn}</div>
+        <div style="color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${b.navn}">${visDato}</div>
         <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tilknytning}</div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
           <span style="font-family:var(--mono)">${kb} KB</span>
