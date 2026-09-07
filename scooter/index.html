@@ -1912,7 +1912,7 @@ function redigerKontakt(id) {
     <div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" oninput="oppdaterVarslerBlokk('${id}')" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer;padding:6px 8px;background:var(--snow);border-radius:6px"><input type="checkbox" id="ek-aktiv-${id}" ${k.aktiv !== false ? 'checked':''} style="width:auto"><span>Aktiv sjåfør <span style="font-size:11px;color:var(--text2)">(fjern haken for å skjule fra sjåfør-valg)</span></span></label>
+    ${k.aktiv === false ? `<div style="margin-bottom:10px;padding:6px 10px;background:#FEF2F2;border-radius:6px;font-size:12px;color:#991B1B">⏸ Inaktiv sjåfør – endres fra maskin-appen</div>` : ''}
     <div id="varsler-blokk-${id}">${varslerHtml}</div>
     <div style="display:flex;gap:6px;align-items:center">
       <button onclick="slettKontaktEntry('${id}')" title="Slett kontakt" style="padding:7px 10px;background:white;color:var(--danger);border:1.5px solid #FECACA;border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">🗑 Slett</button>
@@ -1932,10 +1932,10 @@ async function lagreKontaktRedigert(id) {
     telefon: document.getElementById('ek-tlf-'+id)?.value.trim() || '',
     epost: document.getElementById('ek-epost-'+id)?.value.trim() || '',
     notat: document.getElementById('ek-notat-'+id)?.value.trim() || '',
-    // Scooter-appen kan IKKE endre sjåfør-type. Behold eksisterende verdier.
+    // Scooter-appen kan IKKE endre sjåfør-type eller aktiv-status. Behold eksisterende verdier.
     sjaforMaskin: k.sjaforMaskin || false,
     sjaforScooter: k.sjaforScooter || false,
-    aktiv: document.getElementById('ek-aktiv-'+id) ? chk('ek-aktiv-'+id) : (k.aktiv !== false),
+    aktiv: k.aktiv !== false,
     // Varsler-preferanser (kun hvis e-post finnes)
     // Om haken er skjult i UI (f.eks. maskin-turer blokkert av admin), fall tilbake til lagret verdi
     varslerTurMaskin: document.getElementById('ek-vTM-'+id) ? chk('ek-vTM-'+id) : (k.varslerTurMaskin || false),
