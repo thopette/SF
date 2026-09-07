@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="19:59">19:59</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="20:08">20:08</span>
 </div>
 
 <div class="nav">
@@ -1815,21 +1815,29 @@ function renderKontakter() {
   const el = document.getElementById('kontakt-innhold');
   if (!el) return;
   let html = '';
-  // Sortér: sjåfører (uansett kategori) først, deretter alfabetisk
+  // Sorter for scooter-app: scooter-sjåfører først, deretter maskin-sjåfører, til sist andre.
+  // Inaktive nedprioriteres innen sin gruppe.
   const sortert = [...kontakter].sort((a,b) => {
-    const aErSjafor = (a.sjaforMaskin || a.sjaforScooter) ? 1 : 0;
-    const bErSjafor = (b.sjaforMaskin || b.sjaforScooter) ? 1 : 0;
-    if (bErSjafor !== aErSjafor) return bErSjafor - aErSjafor;
+    const rolle = (k) => k.sjaforScooter ? 0 : (k.sjaforMaskin ? 1 : 2);
+    const rA = rolle(a), rB = rolle(b);
+    if (rA !== rB) return rA - rB;
+    const aktivA = a.aktiv !== false ? 0 : 1;
+    const aktivB = b.aktiv !== false ? 0 : 1;
+    if (aktivA !== aktivB) return aktivA - aktivB;
     return (a.navn||'').localeCompare(b.navn||'');
   });
   if (sortert.length) {
     sortert.forEach(k => {
-      // Ingen sjåfør-badges i scooter-appens kontaktliste (etter ønske)
+      const badges = [];
+      if (k.sjaforScooter) badges.push('<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:#EAF6FE;color:#2E7BB8;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Scooter</span>');
+      if (k.sjaforMaskin) badges.push('<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:var(--ice);color:var(--mid);font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Maskin</span>');
+      if (k.aktiv === false) badges.push('<span style="font-size:9px;padding:2px 6px;border-radius:8px;background:#FEF2F2;color:#991B1B;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-left:6px">Inaktiv</span>');
+      const kortDempet = k.aktiv === false ? 'opacity:0.65;' : '';
       const tlfHtml = k.telefon ? `<a href="tel:${k.telefon}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px">📞 ${k.telefon}</a>` : '';
       const epostHtml = k.epost ? `<a href="mailto:${k.epost}" style="font-size:13px;color:var(--mid);text-decoration:none;display:flex;align-items:center;gap:5px;margin-top:4px">✉️ ${k.epost}</a>` : '';
-      html += `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--snow)" id="kk-${k.id}">
+      html += `<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;background:var(--snow);${kortDempet}" id="kk-${k.id}">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px">
-          <div style="font-size:14px;font-weight:600;color:var(--navy)">${k.navn||'–'}</div>
+          <div style="font-size:14px;font-weight:600;color:var(--navy);display:flex;align-items:center;flex-wrap:wrap">${k.navn||'–'}${badges.join('')}</div>
           <button onclick="redigerKontakt('${k.id}')" title="Rediger" style="background:none;border:none;cursor:pointer;color:var(--text2);font-size:15px;padding:2px 6px;flex-shrink:0">✏️</button>
         </div>
         ${tlfHtml}${epostHtml}
@@ -1904,6 +1912,7 @@ function redigerKontakt(id) {
     <div style="margin-bottom:6px"><input type="tel" id="ek-tlf-${id}" value="${esc(k.telefon)}" placeholder="Telefon" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:6px"><input type="email" id="ek-epost-${id}" value="${esc(k.epost)}" placeholder="E-post" oninput="oppdaterVarslerBlokk('${id}')" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
     <div style="margin-bottom:8px"><input type="text" id="ek-notat-${id}" value="${esc(k.notat)}" placeholder="Notat" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer;padding:6px 8px;background:var(--snow);border-radius:6px"><input type="checkbox" id="ek-aktiv-${id}" ${k.aktiv !== false ? 'checked':''} style="width:auto"><span>Aktiv sjåfør <span style="font-size:11px;color:var(--text2)">(fjern haken for å skjule fra sjåfør-valg)</span></span></label>
     <div id="varsler-blokk-${id}">${varslerHtml}</div>
     <div style="display:flex;gap:6px;align-items:center">
       <button onclick="slettKontaktEntry('${id}')" title="Slett kontakt" style="padding:7px 10px;background:white;color:var(--danger);border:1.5px solid #FECACA;border-radius:6px;font-family:var(--sans);font-size:13px;cursor:pointer">🗑 Slett</button>
@@ -1926,6 +1935,7 @@ async function lagreKontaktRedigert(id) {
     // Scooter-appen kan IKKE endre sjåfør-type. Behold eksisterende verdier.
     sjaforMaskin: k.sjaforMaskin || false,
     sjaforScooter: k.sjaforScooter || false,
+    aktiv: document.getElementById('ek-aktiv-'+id) ? chk('ek-aktiv-'+id) : (k.aktiv !== false),
     // Varsler-preferanser (kun hvis e-post finnes)
     // Om haken er skjult i UI (f.eks. maskin-turer blokkert av admin), fall tilbake til lagret verdi
     varslerTurMaskin: document.getElementById('ek-vTM-'+id) ? chk('ek-vTM-'+id) : (k.varslerTurMaskin || false),
@@ -1943,8 +1953,8 @@ async function lagreKontaktRedigert(id) {
     if (!res.ok) throw new Error('Ukjent feil ved lagring');
     const idx = kontakter.findIndex(x => x.id === id);
     if (idx >= 0) kontakter[idx] = { ...oppdatert };
-    // Scooter-appens sjåfør-liste: både scooter- OG maskin-sjåfører
-    sjaforer = kontakter.filter(x => x.sjaforScooter || x.sjaforMaskin).map(x => x.navn).filter(Boolean);
+    // Scooter-appens sjåfør-liste: både scooter- OG maskin-sjåfører (kun aktive)
+    sjaforer = kontakter.filter(x => (x.sjaforScooter || x.sjaforMaskin) && x.aktiv !== false).map(x => x.navn).filter(Boolean);
     renderSjaforChips();
     renderKontakter();
     toast('Kontakt lagret ✓', 'ok');
