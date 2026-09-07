@@ -3889,7 +3889,7 @@ html += `<div style="margin-top:16px;border-top:1px solid var(--border);padding-
 <div class="field" style="margin-bottom:10px"><input type="text" id="nk-notat" placeholder="Notat (rolle, selskap…)" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:13px;background:var(--snow)"></div>
 <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="nk-sjaforMaskin" style="width:auto"><span>Sjåfør for maskin</span></label>
 <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="nk-sjaforScooter" style="width:auto"><span>Sjåfør for scooter</span></label>
-<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="nk-aktiv" checked style="width:auto"><span>Aktiv <span style="font-size:11px;color:var(--text2)">(fjern haken for å skjule fra sjåfør-liste midlertidig)</span></span></label>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="nk-inaktiv" style="width:auto"><span>Inaktiv <span style="font-size:11px;color:var(--text2)">(skjul fra sjåfør-valg – varsler beholdes)</span></span></label>
 <button onclick="lagreKontaktEntry()" style="width:100%;padding:9px;background:var(--mid);color:white;border:none;border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Legg til</button>
 </div>`;
 el.innerHTML = html;
@@ -3956,7 +3956,7 @@ style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radiu
 style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:13px;background:white"></div>
 <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="ek-sjaforMaskin-${id}" ${k.sjaforMaskin?'checked':''} onchange="oppdaterVarslerBlokk('${id}')" style="width:auto"><span>Sjåfør for maskin</span></label>
 <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:6px;cursor:pointer"><input type="checkbox" id="ek-sjaforScooter-${id}" ${k.sjaforScooter?'checked':''} onchange="oppdaterVarslerBlokk('${id}')" style="width:auto"><span>Sjåfør for scooter</span></label>
-<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="ek-aktiv-${id}" ${k.aktiv !== false ? 'checked':''} style="width:auto"><span>Aktiv <span style="font-size:11px;color:var(--text2)">(skjul fra sjåfør-liste)</span></span></label>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:10px;cursor:pointer"><input type="checkbox" id="ek-inaktiv-${id}" ${k.aktiv === false ? 'checked':''} style="width:auto"><span>Inaktiv <span style="font-size:11px;color:var(--text2)">(skjul fra sjåfør-valg – varsler beholdes)</span></span></label>
 <div id="varsler-blokk-${id}">${varslerHtml}</div>
 <div style="display:flex;gap:6px">
 <button id="ek-lagre-${id}" onclick="lagreKontaktRedigert('${id}')" style="flex:1;padding:7px;background:var(--mid);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer">Lagre</button>
@@ -3976,7 +3976,7 @@ epost: document.getElementById('ek-epost-'+id)?.value.trim() || '',
 notat: document.getElementById('ek-notat-'+id)?.value.trim() || '',
 sjaforMaskin: document.getElementById('ek-sjaforMaskin-'+id)?.checked || false,
 sjaforScooter: document.getElementById('ek-sjaforScooter-'+id)?.checked || false,
-aktiv: document.getElementById('ek-aktiv-'+id) ? chk('ek-aktiv-'+id) : (k.aktiv !== false),
+aktiv: document.getElementById('ek-inaktiv-'+id) ? !chk('ek-inaktiv-'+id) : (k.aktiv !== false),
 // Om varsler-haken er skjult i UI (blokkert av admin), behold lagret verdi
 varslerTurMaskin: document.getElementById('ek-vTM-'+id) ? chk('ek-vTM-'+id) : (k.varslerTurMaskin || false),
 varslerTurScooter: chk('ek-vTS-'+id),
@@ -4012,7 +4012,7 @@ epost: document.getElementById('nk-epost')?.value.trim(),
 notat: document.getElementById('nk-notat')?.value.trim(),
 sjaforMaskin: document.getElementById('nk-sjaforMaskin')?.checked || false,
 sjaforScooter: document.getElementById('nk-sjaforScooter')?.checked || false,
-aktiv: document.getElementById('nk-aktiv')?.checked !== false
+aktiv: !document.getElementById('nk-inaktiv')?.checked
 };
 if (!kontakt.navn) { alert('Navn er påkrevd.'); return; }
 try {
