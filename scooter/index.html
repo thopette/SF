@@ -231,9 +231,8 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div id="tab-ny" class="tab-content active">
   <div class="card">
     <div class="card-header" id="ny-card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="ny-tittel">Ny scooter-tur</span></div>
-    <div id="rediger-banner" style="display:none;padding:10px 14px;background:#FEF5E7;border-bottom:1px solid #F5CBA7;color:#7E5109;font-size:12px;display:none;align-items:center;justify-content:space-between;gap:8px">
-      <span>✏️ <strong>Redigerer tur</strong> – lagre for å oppdatere</span>
-      <button onclick="avbrytRediger()" class="btn btn-sm btn-outline" style="padding:4px 10px;font-size:11px">Avbryt</button>
+    <div id="rediger-banner" style="display:none;padding:10px 14px;background:#FEF5E7;border-bottom:1px solid #F5CBA7;color:#7E5109;font-size:12px;align-items:center;gap:8px">
+      <span>✏️ <strong>Redigerer tur</strong> – bruk «Avbryt» nederst for å gå tilbake uten å lagre</span>
     </div>
     <div class="card-body">
       <div class="field"><label>Sjåfør</label><div class="chip-row" id="sjafor-chips"></div></div>
@@ -271,7 +270,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
       </div>
 
       <div class="big-cta-bar">
-        <button class="btn btn-outline" onclick="resetSkjema()">Nullstill</button>
+        <button class="btn btn-outline" onclick="avbrytNyOkt()">Avbryt</button>
         <button type="button" onclick="rapporterFeilFraNyOkt()" style="display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Rapporter feil</button>
         <button class="btn btn-primary btn-big" id="lagre-btn" onclick="lagreTur()">Lagre tur</button>
       </div>
@@ -1033,6 +1032,33 @@ function avbrytRediger() {
   document.getElementById('rediger-banner').style.display = 'none';
   document.getElementById('lagre-btn').innerHTML = 'Lagre tur';
   resetSkjema();
+}
+
+// Smart avbryt-funksjon som håndterer både ny tur og redigering.
+// Bekrefter kun om skjemaet har innhold slik at raske "hoppet-inn-i-feil-fane"-scenarioer ikke gir dialog.
+function avbrytNyOkt() {
+  const harInnhold = !!(document.getElementById('f-km').value ||
+    document.getElementById('f-tid').value ||
+    document.getElementById('f-beskrivelse').value ||
+    document.getElementById('f-sno-lav').value ||
+    document.getElementById('f-sno-hoy').value ||
+    document.getElementById('f-merknader-ski').value ||
+    valgtSjafor || valgtScooter ||
+    document.querySelectorAll('#fore-rating .rating-btn.selected').length);
+  const redigering = !!redigererTurId;
+  if (harInnhold || redigering) {
+    const spm = redigering
+      ? 'Avbryte redigeringen og gå tilbake til loggen? Endringer lagres ikke.'
+      : 'Nullstille skjemaet og gå til dashboard?';
+    if (!confirm(spm)) return;
+  }
+  if (redigering) {
+    avbrytRediger();
+    visTab('logg');
+  } else {
+    resetSkjema();
+    visTab('dashboard');
+  }
 }
 
 function resetSkjema() {
