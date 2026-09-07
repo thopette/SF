@@ -190,12 +190,12 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="13:10">13:10</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="19:59">19:59</span>
 </div>
 
 <div class="nav">
-  <button class="nav-btn active" onclick="visTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
-  <button class="nav-btn" onclick="visTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ny økt</button>
+  <button class="nav-btn" onclick="visTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</button>
+  <button class="nav-btn active" onclick="visTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ny økt</button>
   <button class="nav-btn" onclick="visTab('logg')" id="btn-logg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Logg</button>
   <button class="nav-btn" onclick="visTab('stats')" id="btn-stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Statistikk</button>
   <button class="nav-btn" onclick="visTab('galleri')" id="btn-galleri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Galleri</button>
@@ -203,7 +203,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
 <div class="content">
 
-<div id="tab-dashboard" class="tab-content active">
+<div id="tab-dashboard" class="tab-content">
   <div class="stat-grid" id="stat-grid">
     <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Turer denne sesongen</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Totalt kjørt</div></div>
@@ -228,7 +228,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </div>
 </div>
 
-<div id="tab-ny" class="tab-content">
+<div id="tab-ny" class="tab-content active">
   <div class="card">
     <div class="card-header" id="ny-card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="ny-tittel">Ny scooter-tur</span></div>
     <div id="rediger-banner" style="display:none;padding:10px 14px;background:#FEF5E7;border-bottom:1px solid #F5CBA7;color:#7E5109;font-size:12px;display:none;align-items:center;justify-content:space-between;gap:8px">
@@ -356,6 +356,15 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <div class="card">
     <div class="card-header">Scootere</div>
     <div class="card-body" id="admin-scootere"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+  <div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <span>Bilder på Drive</span>
+      <span id="admin-bilder-status" style="font-size:11px;color:var(--text2);font-weight:400"></span>
+    </div>
+    <div class="card-body" id="admin-bilder"><p style="font-size:13px;color:var(--text2)">Klikk «Last inn» for å se bilder</p>
+      <button onclick="lastAdminBilder()" class="btn btn-outline" style="margin-top:8px">Last inn bilder</button>
+    </div>
   </div>
 </div>
 
@@ -970,9 +979,11 @@ async function lagreTur() {
       } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
     }
     toast(redigererTurId ? 'Tur oppdatert ✓' : 'Tur lagret ✓', 'ok');
+    const varRedigering = !!redigererTurId;
     avbrytRediger();  // Nullstiller state og form
     await lastData();
-    visTab('logg');
+    // Nye turer → gå til Dashboard (bruker ser den øverst). Redigering → gå til Logg (finner der de var).
+    visTab(varRedigering ? 'logg' : 'dashboard');
   } catch(e) {
     toast('Lagring feilet: ' + e.message, 'err');
   } finally {
@@ -1452,6 +1463,51 @@ function renderAdmin() {
     </div>`;
   }).join('');
   scEl.innerHTML = scootereHtml + '<div style="text-align:right"><button class="btn btn-primary btn-sm" onclick="visScooterModal(-1)">+ Ny scooter</button></div>';
+}
+
+// Bilde-admin: hent alle bilder fra Drive og vis dem med slette-knapp ved mouseover.
+// Ved store volum kan bruker slette gamle/uønskede bilder for å spare plass.
+let adminBilderCache = [];
+async function lastAdminBilder() {
+  const el = document.getElementById('admin-bilder');
+  const status = document.getElementById('admin-bilder-status');
+  el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Laster bilder…</p>';
+  try {
+    const res = await apiKall({ action: 'hentAlleBilder' });
+    if (!res.ok) { el.innerHTML = '<p style="color:var(--danger)">Feil: ' + (res.feil || 'ukjent') + '</p>'; return; }
+    adminBilderCache = res.bilder || [];
+    status.textContent = adminBilderCache.length + ' bilder · ' + res.totalStorrelseMb + ' MB';
+    renderAdminBilder();
+  } catch(e) { el.innerHTML = '<p style="color:var(--danger)">Feil: ' + e.message + '</p>'; }
+}
+function renderAdminBilder() {
+  const el = document.getElementById('admin-bilder');
+  if (!adminBilderCache.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen bilder</p>'; return; }
+  el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">
+    ${adminBilderCache.map(b => `<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--ice);border:1px solid var(--border)" onmouseover="this.querySelector('.slett-x').style.opacity='1'" onmouseout="this.querySelector('.slett-x').style.opacity='0'">
+      <a href="${b.fullUrl}" target="_blank" style="display:block;width:100%;height:100%">
+        <img src="${b.thumbnailUrl}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
+      </a>
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:3px 6px;background:linear-gradient(0deg,rgba(0,0,0,0.7),transparent);color:white;font-size:10px;line-height:1.2">${b.storrelseKb} KB</div>
+      <button class="slett-x" onclick="slettAdminBilde('${b.id}',event)" title="Slett bilde" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(220,38,38,0.95);color:white;font-size:14px;line-height:1;cursor:pointer;opacity:0;transition:opacity 0.15s;font-weight:700;padding:0">×</button>
+    </div>`).join('')}
+  </div>
+  <p style="font-size:11px;color:var(--text2);margin-top:12px;font-style:italic">Hold musen over et bilde for å se slett-knapp. Slettede bilder havner i søppelkurven på Drive og kan gjenopprettes derfra.</p>`;
+}
+async function slettAdminBilde(bildeId, event) {
+  event.preventDefault(); event.stopPropagation();
+  if (!confirm('Slette dette bildet? Det havner i søppelkurven på Drive.')) return;
+  try {
+    const res = await apiKall({ action: 'slettBilde', bildeId });
+    if (res.ok) {
+      adminBilderCache = adminBilderCache.filter(b => b.id !== bildeId);
+      document.getElementById('admin-bilder-status').textContent = adminBilderCache.length + ' bilder';
+      renderAdminBilder();
+      toast('Bilde slettet', 'ok');
+    } else {
+      toast('Sletting feilet: ' + (res.feil || 'ukjent'), 'err');
+    }
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
 }
 
 function visScooterModal(idx) {
