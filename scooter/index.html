@@ -1565,7 +1565,20 @@ function renderAdminBilder() {
   <p style="font-size:11px;color:var(--text2);margin-top:12px;font-style:italic">Slettede bilder havner i Drive-søppelkurven og kan gjenopprettes derfra i 30 dager.</p>
   <div style="margin-top:8px;padding:10px 12px;background:#FEF5E7;border-left:3px solid #E67E22;border-radius:6px;font-size:12px;color:#7E5109;line-height:1.5">
     💡 <strong>Tips:</strong> For å faktisk frigjøre Drive-plass må du <a href="https://drive.google.com/drive/trash" target="_blank" style="color:#E67E22;font-weight:600">tømme søppelkurven på Drive</a>. Ellers ligger bildene der i 30 dager og teller mot kvoten.
+  </div>
+  <div style="margin-top:8px;text-align:right">
+    <button onclick="ryddOppReferanser()" class="btn btn-sm btn-outline" style="padding:4px 10px;font-size:11px" title="Fjern bilde-URL-er i loggen som peker til slettede filer">🧹 Rydd opp gamle referanser</button>
   </div>`;
+}
+async function ryddOppReferanser() {
+  if (!confirm('Sjekker alle turer og fjerner bilde-referanser som peker til slettede filer. Kan ta noen sekunder. Fortsett?')) return;
+  try {
+    const res = await apiKall({ action: 'ryddOppSlettedeBildeReferanser' });
+    if (res.ok) {
+      const r = res.rapport;
+      toast(`Ryddet ${r.maskin} maskin- og ${r.scooter} scooter-turer (sjekket ${r.sjekket} URL-er)`, 'ok');
+    } else toast('Feil: ' + (res.feil || 'ukjent'), 'err');
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
 }
 
 function toggleMultiModus() {
