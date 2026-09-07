@@ -272,6 +272,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
       <div class="big-cta-bar">
         <button class="btn btn-outline" onclick="resetSkjema()">Nullstill</button>
+        <button type="button" onclick="rapporterFeilFraNyOkt()" style="display:flex;align-items:center;gap:6px;padding:9px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);color:var(--text2);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Rapporter feil</button>
         <button class="btn btn-primary btn-big" id="lagre-btn" onclick="lagreTur()">Lagre tur</button>
       </div>
     </div>
@@ -1775,12 +1776,27 @@ async function lagreFeilPanel() {
       apiKall({ action: 'sendVarselFeil', feil: feilMedId, appType: 'scooter' })
         .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
     } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
-    toast('Feil meldt ✓', 'ok');
+    toast('Feil registrert ✓', 'ok');
+    // Lukk feil-modal og HELE service-panelet så bruker naturlig fortsetter tur-registrering.
     document.getElementById('feil-modal').classList.remove('open');
+    lukkAllePaneler();
     await hentFeilData();
-    // Lukk hele service-panelet etter suksess (bruker forventer å komme tilbake til dashboard)
-    setTimeout(() => { lukkAllePaneler(); }, 300);
   } catch(e) { toast('Feil: ' + e.message, 'err'); }
+}
+
+// Rapporter feil fra Ny økt-fanen: åpne feil-modal med scooter og sjåfør pre-fylt fra skjemaet
+// slik at bruker kan melde feil og fortsette tur-registreringen etterpå.
+function rapporterFeilFraNyOkt() {
+  visNyFeilPanel();
+  // Pre-fyll scooter og sjåfør fra det åpne Ny økt-skjemaet
+  const scooterVal = document.getElementById('scooter-select')?.value || document.getElementById('f-scooter')?.value || '';
+  const sjaforVal = document.getElementById('f-forer')?.value || '';
+  const kmVal = document.getElementById('f-km')?.value || '';
+  const scEl = document.getElementById('feil-scooter'); if (scEl && scooterVal) scEl.value = scooterVal;
+  const foEl = document.getElementById('feil-forer'); if (foEl && sjaforVal) foEl.value = sjaforVal;
+  const kmEl = document.getElementById('feil-km'); if (kmEl && kmVal) kmEl.value = kmVal;
+  // Fokus på beskrivelse for rask registrering
+  setTimeout(() => document.getElementById('feil-beskrivelse')?.focus(), 100);
 }
 
 // ── KONTAKTER ────────────────────────────────────────
