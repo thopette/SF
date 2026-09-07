@@ -1592,9 +1592,27 @@ function renderAdminBilder() {
   <div style="margin-top:8px;padding:10px 12px;background:#FEF5E7;border-left:3px solid #E67E22;border-radius:6px;font-size:12px;color:#7E5109;line-height:1.5">
     💡 <strong>Tips:</strong> For å faktisk frigjøre Drive-plass må du <a href="https://drive.google.com/drive/trash" target="_blank" style="color:#E67E22;font-weight:600">tømme søppelkurven på Drive</a>. Ellers ligger bildene der i 30 dager og teller mot kvoten.
   </div>
-  <div style="margin-top:8px;text-align:right">
+  <div style="margin-top:8px;text-align:right;display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
     <button onclick="ryddOppReferanser()" class="btn btn-sm btn-outline" style="padding:4px 10px;font-size:11px" title="Fjern bilde-URL-er i loggen som peker til slettede filer">🧹 Rydd opp gamle referanser</button>
+    <button onclick="nullstillBildearkivet()" style="padding:4px 10px;font-size:11px;background:white;color:var(--danger);border:1.5px solid #FECACA;border-radius:6px;cursor:pointer;font-weight:600" title="Slett ALLE bilder og tøm alle URL-referanser">🗑️ Nullstill hele bildearkivet</button>
   </div>`;
+}
+async function nullstillBildearkivet() {
+  if (!confirm(`⚠️ ADVARSEL – Dette sletter ALLE ${adminBilderCache.length} bildene og tømmer alle bilde-referanser fra hele loggen (maskin + scooter).\n\nBrukes typisk kun ved oppstart/test-oppsett.\n\nFortsett?`)) return;
+  if (!confirm('Er du HELT sikker? Alle bilder havner i Drive-søppelkurven. Loggen består, men alle bilde-referanser slettes.')) return;
+  try {
+    const res = await apiKall({ action: 'nullstillHeleBildearkivet' });
+    if (res.ok) {
+      const r = res.rapport;
+      toast(`Nullstilt: ${r.bilderSlettet} bilder slettet, ${r.radeneRyddet.maskin + r.radeneRyddet.scooter} turer ryddet`, 'ok');
+      adminBilderCache = [];
+      adminValgteBilder.clear();
+      const resStatus = await apiKall({ action: 'hentDiskStatus' });
+      if (resStatus.ok) adminDiskStatus = resStatus;
+      document.getElementById('admin-bilder-status').textContent = '0 bilder';
+      renderAdminBilder();
+    } else toast('Feil: ' + (res.feil || 'ukjent'), 'err');
+  } catch(e) { toast('Feil: ' + e.message, 'err'); }
 }
 async function ryddOppReferanser() {
   if (!confirm('Sjekker alle turer og fjerner bilde-referanser som peker til slettede filer. Kan ta noen sekunder. Fortsett?')) return;
