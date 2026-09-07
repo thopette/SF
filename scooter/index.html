@@ -1584,7 +1584,10 @@ function renderAdminBilder() {
            <button class="slett-x" onclick="slettAdminBilde('${b.id}',event)" title="Slett" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(220,38,38,0.95);color:white;font-size:14px;line-height:1;cursor:pointer;opacity:0;transition:opacity 0.15s;font-weight:700;padding:0">×</button>`;
       return `<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--ice);${ramme}cursor:${adminMultiModus?'pointer':'default'}" ${mouseHandler} ${klikkHandler}>
         ${bildeContent}
-        <div style="position:absolute;bottom:0;left:0;right:0;padding:3px 6px;background:linear-gradient(0deg,rgba(0,0,0,0.7),transparent);color:white;font-size:10px;line-height:1.2;pointer-events:none">${b.storrelseKb} KB</div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:3px 6px;background:linear-gradient(0deg,rgba(0,0,0,0.75),transparent);color:white;font-size:10px;line-height:1.2;pointer-events:none;display:flex;justify-content:space-between;gap:4px">
+          <span style="font-weight:600">${new Date(b.opprettet).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })}</span>
+          <span style="opacity:0.75">${b.storrelseKb} KB</span>
+        </div>
       </div>`;
     }).join('')}
   </div>
