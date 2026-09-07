@@ -1436,10 +1436,22 @@ function renderGalleriInnhold() {
 function renderGalleriKort(b) {
   const kb = (b.stoerrelseBytes / 1024).toFixed(0);
   const turDato = b.turDato ? formaterDatoKort(b.turDato) : '';
-  // Prominent dato: bruk tur-dato hvis tilknyttet, ellers opplastingsdato som fallback
+  // Prominent dato: bruk tur-dato hvis tilknyttet, ellers opplastingsdato som fallback.
+  // Bruker manuell parse for YYYY-MM-DD så vi unngår tidssonebugs (JS Date parser feiltolker).
+  const parseDato = (s) => {
+    if (!s) return null;
+    const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? null : d;
+  };
+  const formatterDato = (d, suffix) => {
+    if (!d) return 'Ukjent dato';
+    return d.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' }) + (suffix || '');
+  };
   const visDato = b.turDato
-    ? new Date(b.turDato).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' })
-    : (b.opprettet ? new Date(b.opprettet).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' }) + ' (opplastet)' : 'Ukjent dato');
+    ? formatterDato(parseDato(b.turDato))
+    : formatterDato(parseDato(b.opprettet), ' (opplastet)');
   const tilknytning = b.forelderloest
     ? `<span style="color:#B45309">Foreldreløs</span>`
     : (b.turSjafor + (b.turScooter ? ' · ' + b.turScooter : ''));
