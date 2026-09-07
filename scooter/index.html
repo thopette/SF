@@ -2596,6 +2596,10 @@ async function initAlt() {
     const loader = document.getElementById('center-loader');
     if (loader) loader.classList.remove('visible');
   }
+  // Ny økt er default-fane: sett dato + klokkeslett så bruker ikke må gjøre det manuelt
+  const n = new Date();
+  const slut = document.getElementById('f-slutt'); if (slut && !slut.value) slut.value = n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
+  const dato = document.getElementById('f-dato'); if (dato && !dato.value) dato.value = n.toISOString().substring(0,10);
   // Bakgrunnsjobber som ikke skal blokkere UI
   hentVaer();
   hentFeilData();
