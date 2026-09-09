@@ -3007,18 +3007,27 @@ function renderAdminBilder() {
   el.innerHTML = diskBoks + verktoylinje + `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">
     ${adminBilderCache.map(b => {
       const erValgt = adminValgteBilder.has(b.id);
-      const ramme = erValgt ? 'border:3px solid var(--danger);' : 'border:1px solid var(--border);';
+      const erProfil = !!b.profilFor;
+      // Profilbilder får blå ramme, valgte får rød – valgt trumfer profil
+      const ramme = erValgt ? 'border:3px solid var(--danger);'
+                  : erProfil ? 'border:2px solid #2E7BB8;'
+                  : 'border:1px solid var(--border);';
       const klikkHandler = adminMultiModus ? `onclick="toggleValgtBilde('${b.id}',event)"` : '';
       const mouseHandler = adminMultiModus ? '' : `onmouseover="this.querySelector('.slett-x').style.opacity='1'" onmouseout="this.querySelector('.slett-x').style.opacity='0'"`;
+      // Blått "PROFIL"-badge øverst til venstre for scooter-profilbilder (viser navnet på hover)
+      const profilBadge = erProfil
+        ? `<div title="Profilbilde for ${b.profilFor.navn}" style="position:absolute;top:4px;left:4px;padding:2px 6px;background:#2E7BB8;color:white;font-size:9px;font-weight:700;border-radius:8px;text-transform:uppercase;letter-spacing:0.3px;pointer-events:none">${b.profilFor.type === 'scooter' ? '🛷' : '🚜'} Profil</div>`
+        : '';
       const bildeContent = adminMultiModus
         ? `<img src="${b.thumbnailUrl}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
-           ${erValgt ? '<div style="position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:var(--danger);color:white;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center">✓</div>' : ''}`
+           ${erValgt ? '<div style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:var(--danger);color:white;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center">✓</div>' : ''}`
         : `<a href="${b.fullUrl}" target="_blank" style="display:block;width:100%;height:100%">
              <img src="${b.thumbnailUrl}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">
            </a>
            <button class="slett-x" onclick="slettAdminBilde('${b.id}',event)" title="Slett" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(220,38,38,0.95);color:white;font-size:14px;line-height:1;cursor:pointer;opacity:0;transition:opacity 0.15s;font-weight:700;padding:0">×</button>`;
       return `<div style="position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--ice);${ramme}cursor:${adminMultiModus?'pointer':'default'}" ${mouseHandler} ${klikkHandler}>
         ${bildeContent}
+        ${profilBadge}
         <div style="position:absolute;bottom:0;left:0;right:0;padding:3px 6px;background:linear-gradient(0deg,rgba(0,0,0,0.75),transparent);color:white;font-size:10px;line-height:1.2;pointer-events:none;display:flex;justify-content:space-between;gap:4px">
           <span style="font-weight:600">${new Date(b.opprettet).toLocaleDateString('nb-NO', { day: 'numeric', month: 'short' })}</span>
           <span style="opacity:0.75">${b.storrelseKb} KB</span>
@@ -3085,7 +3094,14 @@ function velgAlleBilder(alle) {
 async function slettValgteBilder() {
   const ids = Array.from(adminValgteBilder);
   if (!ids.length) return;
-  if (!confirm(`Slette ${ids.length} bilde${ids.length>1?'r':''}? De havner i Drive-søppelkurven.`)) return;
+  // Profilbilder = ekstra advarsel siden de er koblet til scootere/maskiner
+  const profilbilder = adminBilderCache.filter(b => adminValgteBilder.has(b.id) && b.profilFor);
+  let bekreft = `Slette ${ids.length} bilde${ids.length>1?'r':''}? De havner i Drive-søppelkurven.`;
+  if (profilbilder.length) {
+    const navn = profilbilder.map(b => `• ${b.profilFor.type === 'scooter' ? '🛷' : '🚜'} ${b.profilFor.navn}`).join('\n');
+    bekreft = `⚠ ${profilbilder.length} av bildene er PROFILBILDER for:\n\n${navn}\n\nDisse mister profilbildet sitt. Fortsett?`;
+  }
+  if (!confirm(bekreft)) return;
   try {
     const res = await apiKall({ action: 'slettFlereBilder', bildeIds: ids });
     if (res.ok) {
@@ -3105,7 +3121,11 @@ async function slettValgteBilder() {
 
 async function slettAdminBilde(bildeId, event) {
   event.preventDefault(); event.stopPropagation();
-  if (!confirm('Slette dette bildet? Det havner i søppelkurven på Drive.')) return;
+  const b = adminBilderCache.find(x => x.id === bildeId);
+  const bekreft = b && b.profilFor
+    ? `⚠ Dette er PROFILBILDET for ${b.profilFor.type === 'scooter' ? '🛷' : '🚜'} ${b.profilFor.navn}.\n\n${b.profilFor.navn} mister profilbildet sitt. Fortsett?`
+    : 'Slette dette bildet? Det havner i søppelkurven på Drive.';
+  if (!confirm(bekreft)) return;
   try {
     const res = await apiKall({ action: 'slettBilde', bildeId });
     if (res.ok) {
