@@ -123,7 +123,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v01.09 20:08</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v01.09 08:17</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -655,6 +655,8 @@ byggRundeGrid();
 // ── BILDER (tur-vedlegg) ──
 let valgtBildeUrls = [];       // Array av URLer for bilder brukt i pågående ny økt / redigering
 let bildeOpplasterKoe = 0;     // Antall bilder som venter på svar fra server
+let harFeilFraDenneOkta = false;  // Settes når bruker melder feil via "Rapporter feil"-knappen i Ny økt
+let _feilFraNyOkt = false;  // Midlertidig markør fra rapporterFeilFraNyOkt() → lagreNyFeil()
 
 // Filplukker: håndter én eller flere bilder, ett om gangen for å unngå rate-limit
 document.addEventListener('DOMContentLoaded', () => {
@@ -933,7 +935,8 @@ maskin: aktivMaskin ? aktivMaskin.navn : '',
 timerStartMaskin: aktivMaskin ? aktivMaskin.timerStart : '',
 kmStartMaskin: aktivMaskin ? aktivMaskin.kmStart : '',
 merknader: document.getElementById('f-merknader').value.trim(),
-bildeUrl: valgtBildeUrls.join(',')
+bildeUrl: valgtBildeUrls.join(','),
+harFeil: harFeilFraDenneOkta
 };
 try {
 setSyncStatus('loading', 'Sync');
@@ -949,6 +952,7 @@ apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'maskin' })
 } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
 ['f-forer','f-slutt','f-km','f-timer-slutt','f-merknader'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
 nullstillRunder();
+harFeilFraDenneOkta = false;  // Nullstill feil-flagg etter lagring
 document.getElementById('f-diesel').checked=false;
 document.getElementById('f-adblue').checked=false;
 setCond(0);
@@ -1369,7 +1373,7 @@ const timerVis = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc) ? (parse
 const fornavn = t.forer ? t.forer.split(' ')[0] : '–';
 return `<tr style="${idx%2===0?'background:var(--white)':'background:var(--snow)'}">
 <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--text2)">${formatDato(t.dato)}${t.redigert?'<span style="margin-left:4px;font-size:10px;color:var(--text2);background:var(--ice);border:1px solid var(--border);border-radius:3px;padding:1px 4px">✎</span>':''}</td>
-<td><div style="font-weight:700;font-size:13px;color:var(--navy);line-height:1.3">${t.loype}</div><div style="font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:6px">👤 ${fornavn}${_bildeBadge(t)}</div></td>
+<td><div style="font-weight:700;font-size:13px;color:var(--navy);line-height:1.3">${t.loype}${(t.harFeil === 'Ja' || t.HarFeil === 'Ja') ? ` <span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:2px;padding:1px 5px;background:#FEF2F2;color:#B91C1C;font-size:10px;font-weight:600;border-radius:6px;border:1px solid #FECACA;vertical-align:middle">⚙</span>` : ''}</div><div style="font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:6px">👤 ${fornavn}${_bildeBadge(t)}</div></td>
 <td style="font-family:var(--mono);font-size:12px">${t.slutt||'–'}</td>
 <td style="font-family:var(--mono)">${kmVis}</td>
 <td style="font-family:var(--mono)">${timerVis}</td>
@@ -1409,6 +1413,7 @@ return `<div class="logg-kort">
 ${cond}
 ${t.vaer ? `<span style="font-size:14px">${t.vaer}</span>` : ''}
 ${_bildeBadge(t)}
+${(t.harFeil === 'Ja' || t.HarFeil === 'Ja') ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:3px;padding:1px 6px;background:#FEF2F2;color:#B91C1C;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #FECACA">⚙ Feil</span>` : ''}
 </div>
 <div class="logg-kort-stats">
 ${kmVis!=='–' ? `<div class="logg-kort-stat">📏 <span>${kmVis} km</span></div>` : ''}
@@ -3636,6 +3641,7 @@ renderServiceInnhold();
 // sjåfør, km-stand og timerteller fra det åpne skjemaet. Maskin-dropdown er allerede
 // pre-valgt (aktiv maskin). Slipper å skrive inn på nytt før man legger til beskrivelsen.
 function rapporterFeilFraNyOkt() {
+  _feilFraNyOkt = true;  // Markør – lagreNyFeil setter harFeilFraDenneOkta hvis lagring lykkes
   serviceEnhet = 'maskin';
   toggleServicePanel();
   setServiceToggle('feil');
@@ -3715,6 +3721,8 @@ if (res && res.ok) {
 feilData.push({ ...feil, id: res.id, dato: new Date().toISOString().split('T')[0], status: 'Ny', statusDato: '' });
 oppdaterServiceBadge();
 lagretOk = true;
+// Om feilen ble meldt via "Rapporter feil"-knappen i Ny økt-fanen: merk pågående tur med feil-flagg
+if (_feilFraNyOkt) { harFeilFraDenneOkta = true; _feilFraNyOkt = false; }
 // Send e-post-varsel i bakgrunn (fire-and-forget) – ikke await, blokker aldri UI
 try {
 const feilMedId = Object.assign({}, feil, { id: res.id });
