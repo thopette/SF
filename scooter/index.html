@@ -309,22 +309,13 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <div id="stats-sjafor" style="padding:0 14px 14px"></div>
   </div>
 
-  <!-- Per scooter -->
+  <!-- Scooter-oversikt (Alt B – kompakt med utvidbar detalj) -->
   <div class="card">
-    <div class="card-header">Per scooter</div>
-    <div id="stats-scooter" style="padding:0 14px 14px"></div>
-  </div>
-
-  <!-- Km-utvikling pr scooter -->
-  <div class="card">
-    <div class="card-header">Km-utvikling pr scooter</div>
-    <div id="stats-km-utvikling" style="padding:14px"></div>
-  </div>
-
-  <!-- Feil pr scooter -->
-  <div class="card">
-    <div class="card-header">Feil registrert pr scooter</div>
-    <div id="stats-feil-scooter" style="padding:14px"></div>
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <span>Scootere</span>
+      <button id="stats-vis-inaktive-btn" onclick="toggleVisInaktiveScootere()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1.5px solid var(--border);background:white;color:var(--text2);cursor:pointer;font-weight:500">👁 Vis inaktive</button>
+    </div>
+    <div id="stats-scooter-oversikt" style="padding:14px"></div>
   </div>
 
   <!-- Aktivitet over tid -->
@@ -2303,9 +2294,7 @@ function renderStats() {
   const t = turerISesong(filter);
   renderStatsTotaler(t);
   renderStatsSjafor(t);
-  renderStatsScooter(t);
-  renderStatsKmUtvikling(t);
-  renderStatsFeilScooter(t, filter);
+  renderScooterOversikt(t, filter);
   renderStatsAktivitet(t, filter);
   renderStatsVaer(t);
   renderStatsFore(t);
@@ -2359,153 +2348,129 @@ function renderStatsSjafor(t) {
     </table>`;
 }
 
-function renderStatsScooter(t) {
-  const el = document.getElementById('stats-scooter');
-  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center;padding:12px 0">Ingen data</p>'; return; }
-  const per = {};
-  t.forEach(x => {
-    const n = x.scooter || 'Ukjent';
-    if (!per[n]) per[n] = { turer: 0, km: 0, siste: '', sisteKm: 0 };
-    per[n].turer++;
-    per[n].km += x.kmPerTur || 0;
-    if (!per[n].siste || x.dato > per[n].siste) {
-      per[n].siste = x.dato;
-      per[n].sisteKm = x.km || 0;
-    }
-  });
-  const rader = Object.entries(per).sort((a,b) => b[1].km - a[1].km);
-  el.innerHTML = `
-    <table style="width:100%;border-collapse:collapse;font-size:13px">
-      <thead><tr style="text-align:left;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">
-        <th style="padding:8px 6px;font-weight:600">Scooter</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right">Turer</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right">Km kjørt</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste km-stand</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste tur</th>
-      </tr></thead>
-      <tbody>${rader.map(([n,d]) => `
-        <tr style="border-top:1px solid var(--border)">
-          <td style="padding:8px 6px;font-weight:500;color:var(--navy)">${n}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.turer}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.km.toFixed(0)}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.sisteKm.toFixed(0)}</td>
-          <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
-        </tr>`).join('')}</tbody>
-    </table>`;
+let statsScooterVisInaktive = false;
+let statsScooterUtvidet = new Set();  // Set av scooter-navn som er utvidet
+
+function toggleVisInaktiveScootere() {
+  statsScooterVisInaktive = !statsScooterVisInaktive;
+  const btn = document.getElementById('stats-vis-inaktive-btn');
+  if (btn) {
+    btn.textContent = statsScooterVisInaktive ? '👁 Skjul inaktive' : '👁 Vis inaktive';
+    btn.style.background = statsScooterVisInaktive ? '#EAF6FE' : 'white';
+  }
+  renderScooterOversikt(_sisteScooterTurer || [], _sisteScooterFilter || 'alle');
 }
 
-// Km-utvikling: liten linjegraf per scooter som viser km-stand over tid.
-// Bygger på selve km-avlesningene (ikke kmPerTur).
-function renderStatsKmUtvikling(t) {
-  const el = document.getElementById('stats-km-utvikling');
-  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
+function toggleScooterUtvidet(navn) {
+  if (statsScooterUtvidet.has(navn)) statsScooterUtvidet.delete(navn);
+  else statsScooterUtvidet.add(navn);
+  renderScooterOversikt(_sisteScooterTurer || [], _sisteScooterFilter || 'alle');
+}
 
-  // Grupper turer pr scooter, sorter kronologisk
-  const perScooter = {};
+let _sisteScooterTurer = null, _sisteScooterFilter = null;
+function renderScooterOversikt(t, filter) {
+  _sisteScooterTurer = t; _sisteScooterFilter = filter;
+  const el = document.getElementById('stats-scooter-oversikt');
+  if (!scootere || !scootere.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center;padding:12px 0">Ingen scootere registrert. Legg til under Admin.</p>'; return; }
+
+  // Beregn statistikk per scooter
+  const per = {};
+  scootere.forEach(s => { per[s.navn] = { navn: s.navn, aktiv: s.aktiv !== false, kmStart: parseFloat(s.kmStart) || 0, turer: 0, kmTotalt: 0, sisteKm: null, sisteDato: null }; });
   t.forEach(x => {
-    if (!x.scooter || !x.dato || !x.km) return;
-    if (!perScooter[x.scooter]) perScooter[x.scooter] = [];
-    perScooter[x.scooter].push({ dato: x.dato, km: x.km });
+    if (!x.scooter) return;
+    if (!per[x.scooter]) per[x.scooter] = { navn: x.scooter, aktiv: false, kmStart: 0, turer: 0, kmTotalt: 0, sisteKm: null, sisteDato: null };
+    per[x.scooter].turer++;
+    per[x.scooter].kmTotalt += (parseFloat(x.kmPerTur) || 0);
+    const km = parseFloat(x.km);
+    if (km > 0 && (per[x.scooter].sisteKm === null || km > per[x.scooter].sisteKm)) per[x.scooter].sisteKm = km;
+    if (!per[x.scooter].sisteDato || x.dato > per[x.scooter].sisteDato) per[x.scooter].sisteDato = x.dato;
   });
 
-  const scooterNavn = Object.keys(perScooter).sort();
-  if (!scooterNavn.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen km-data</p>'; return; }
+  // Sorter: aktive først (etter km-totalt desc), deretter inaktive
+  const alle = Object.values(per).sort((a,b) => {
+    if (a.aktiv !== b.aktiv) return a.aktiv ? -1 : 1;
+    return b.kmTotalt - a.kmTotalt;
+  });
+  const aktive = alle.filter(x => x.aktiv);
+  const inaktive = alle.filter(x => !x.aktiv);
+  const synlige = statsScooterVisInaktive ? alle : aktive;
 
-  const html = scooterNavn.map(navn => {
-    const punkter = perScooter[navn].sort((a,b) => a.dato.localeCompare(b.dato));
-    if (punkter.length < 2) {
-      return `<div style="margin-bottom:14px">
-        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px">${navn}</div>
-        <div style="font-size:12px;color:var(--text2)">Kun ${punkter.length} registrering – trenger minst 2 for graf</div>
+  // Feil per scooter (bruker feilData)
+  const feilPerScooter = {};
+  (feilData || []).forEach(f => {
+    const navn = f.maskin;
+    if (!feilPerScooter[navn]) feilPerScooter[navn] = { ny: [], paabegynt: [], ferdig: [] };
+    if (f.status === 'Ny') feilPerScooter[navn].ny.push(f);
+    else if (f.status === 'Påbegynt') feilPerScooter[navn].paabegynt.push(f);
+    else if (f.status === 'Ferdig') feilPerScooter[navn].ferdig.push(f);
+  });
+
+  const kort = synlige.map(s => {
+    const feil = feilPerScooter[s.navn] || { ny: [], paabegynt: [], ferdig: [] };
+    const antFeil = feil.ny.length + feil.paabegynt.length + feil.ferdig.length;
+    const utvidet = statsScooterUtvidet.has(s.navn);
+    const kortOpacity = s.aktiv ? '' : 'opacity:0.7;';
+    const statusBadge = s.aktiv
+      ? '<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#EAF3DE;color:#3B6D11;font-weight:600">● Aktiv</span>'
+      : '<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#FEF2F2;color:#991B1B;font-weight:600">⏸ Inaktiv</span>';
+
+    // Kompakt rad (alltid synlig)
+    const kompakt = `
+      <div style="display:grid;grid-template-columns:1fr auto auto auto auto;gap:12px;align-items:center;padding:2px 0">
+        <div style="min-width:0">
+          <div style="font-size:14px;font-weight:700;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.navn}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">${statusBadge}${s.sisteDato ? ' · sist ' + formaterDatoKort(s.sisteDato) : ''}</div>
+        </div>
+        <div style="text-align:center;min-width:60px">
+          <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${s.sisteKm !== null ? s.sisteKm : '–'}</div>
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Km-stand</div>
+        </div>
+        <div style="text-align:center;min-width:50px">
+          <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${s.turer}</div>
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Turer</div>
+        </div>
+        <div style="text-align:center;min-width:80px">
+          ${antFeil ? `<div style="display:flex;justify-content:center;gap:4px;align-items:baseline">
+            ${feil.ny.length ? `<span style="font-size:14px;font-weight:700;color:#E74C3C">${feil.ny.length}</span>` : ''}
+            ${feil.ny.length && (feil.paabegynt.length || feil.ferdig.length) ? '<span style="color:var(--text2);font-size:10px">/</span>' : ''}
+            ${feil.paabegynt.length ? `<span style="font-size:14px;font-weight:700;color:#F39C12">${feil.paabegynt.length}</span>` : ''}
+            ${feil.paabegynt.length && feil.ferdig.length ? '<span style="color:var(--text2);font-size:10px">/</span>' : ''}
+            ${feil.ferdig.length ? `<span style="font-size:14px;font-weight:700;color:#27AE60">${feil.ferdig.length}</span>` : ''}
+          </div>` : '<div style="font-size:12px;color:var(--text2)">–</div>'}
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Ny/På/Løst</div>
+        </div>
+        <button onclick="toggleScooterUtvidet('${s.navn.replace(/'/g, "\\'")}')" style="padding:6px 10px;background:${utvidet?'#EAF6FE':'white'};border:1.5px solid ${utvidet?'#2E7BB8':'var(--border)'};border-radius:6px;color:${utvidet?'#2E7BB8':'var(--text2)'};font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap">${utvidet ? '▲ Skjul' : '▼ Vis'}</button>
+      </div>`;
+
+    // Utvidet innhold (kun om utvidet)
+    let ekstra = '';
+    if (utvidet) {
+      const feilListe = (arr, statusFarge, statusTekst, statusBg) => arr.length
+        ? arr.map(f => `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:${statusBg};border-radius:5px;font-size:12px;margin-bottom:4px;line-height:1.4">
+            <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${(f.beskrivelse||'').substring(0,60)}${(f.beskrivelse||'').length>60?'…':''}</strong><br><span style="font-size:11px;color:var(--text2)">${f.forer||''} · ${f.dato||''}</span></span>
+            <span style="color:${statusFarge};font-size:10px;font-weight:600;flex-shrink:0;margin-left:6px">${statusTekst}</span>
+          </div>`).join('')
+        : '';
+      const alleFeilHtml = (feil.ny.length || feil.paabegynt.length || feil.ferdig.length)
+        ? feilListe(feil.ny, '#E74C3C', 'NY', '#FEF2F2')
+          + feilListe(feil.paabegynt, '#F39C12', 'PÅBEGYNT', '#FFFBF0')
+          + feilListe(feil.ferdig, '#27AE60', 'LØST', '#F0FBF4')
+        : '<div style="font-size:12px;color:var(--text2);font-style:italic;padding:6px 0">Ingen feil registrert 🎉</div>';
+
+      ekstra = `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #F0F5FB">
+        <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">⚙ Feil & rep (${antFeil})</div>
+        ${alleFeilHtml}
       </div>`;
     }
-    const kmVerdier = punkter.map(p => p.km);
-    const minKm = Math.min(...kmVerdier);
-    const maksKm = Math.max(...kmVerdier);
-    const spenn = maksKm - minKm || 1;
-    const totKjort = maksKm - minKm;
 
-    const W = 340, H = 90, pad = { l: 6, r: 6, t: 10, b: 22 };
-    const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
-
-    const punktStr = punkter.map((p, i) => {
-      const x = pad.l + (i / (punkter.length - 1)) * iw;
-      const y = pad.t + ih - ((p.km - minKm) / spenn) * ih;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(' ');
-
-    const firstDato = formaterDatoKort(punkter[0].dato);
-    const lastDato = formaterDatoKort(punkter[punkter.length-1].dato);
-
-    return `<div style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-        <div style="font-size:13px;font-weight:600;color:var(--navy)">${navn}</div>
-        <div style="font-size:11px;color:var(--text2)">${totKjort.toFixed(0)} km i perioden</div>
-      </div>
-      <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-height:100px" xmlns="http://www.w3.org/2000/svg">
-        <polyline points="${punktStr}" fill="none" stroke="#4A9FD4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        ${punkter.map((p, i) => {
-          const x = pad.l + (i / (punkter.length - 1)) * iw;
-          const y = pad.t + ih - ((p.km - minKm) / spenn) * ih;
-          return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="#4A9FD4"><title>${formaterDatoKort(p.dato)}: ${p.km} km</title></circle>`;
-        }).join('')}
-        <text x="${pad.l}" y="${H-6}" font-size="9" fill="#9ca3af">${firstDato} (${minKm} km)</text>
-        <text x="${W-pad.r}" y="${H-6}" font-size="9" fill="#9ca3af" text-anchor="end">${lastDato} (${maksKm} km)</text>
-      </svg>
-    </div>`;
+    return `<div style="background:${s.aktiv?'var(--snow)':'#F7F8FA'};border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;${kortOpacity}">${kompakt}${ekstra}</div>`;
   }).join('');
 
-  el.innerHTML = html;
-}
+  const inaktivHint = !statsScooterVisInaktive && inaktive.length
+    ? `<div style="text-align:center;font-size:11px;color:var(--text2);font-style:italic;margin-top:8px">${inaktive.length} inaktiv${inaktive.length>1?'e':''} scooter${inaktive.length>1?'e':''} skjult</div>`
+    : '';
 
-// Feil registrert pr scooter (bruker feilData som er lastet inn separat)
-function renderStatsFeilScooter(t, filter) {
-  const el = document.getElementById('stats-feil-scooter');
-  if (!feilData || feilData.length === 0) {
-    el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen feil registrert – 🎉</p>';
-    return;
-  }
-
-  // Filtrer feilData på sesong-perioden (bruk feilens dato)
-  let feilIPeriode = feilData;
-  if (filter && filter !== 'alle') {
-    feilIPeriode = feilData.filter(f => sesongForDato(f.dato) === filter);
-  }
-
-  if (feilIPeriode.length === 0) {
-    el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen feil registrert i denne perioden</p>';
-    return;
-  }
-
-  const perScooter = {};
-  feilIPeriode.forEach(f => {
-    const navn = f.maskin || 'Ukjent';
-    if (!perScooter[navn]) perScooter[navn] = { total: 0, aapen: 0, lukket: 0, siste: '' };
-    perScooter[navn].total++;
-    if (f.status === 'Ny' || f.status === 'Påbegynt') perScooter[navn].aapen++;
-    else perScooter[navn].lukket++;
-    if (!perScooter[navn].siste || f.dato > perScooter[navn].siste) perScooter[navn].siste = f.dato;
-  });
-
-  const rader = Object.entries(perScooter).sort((a,b) => b[1].total - a[1].total);
-  el.innerHTML = `
-    <table style="width:100%;border-collapse:collapse;font-size:13px">
-      <thead><tr style="text-align:left;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">
-        <th style="padding:8px 6px;font-weight:600">Scooter</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right">Totalt</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right">Åpne</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right">Lukket</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste</th>
-      </tr></thead>
-      <tbody>${rader.map(([n,d]) => `
-        <tr style="border-top:1px solid var(--border)">
-          <td style="padding:8px 6px;font-weight:500;color:var(--navy)">${n}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.total}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono);color:${d.aapen > 0 ? '#C0392B' : 'var(--text2)'};font-weight:${d.aapen > 0 ? '600' : '400'}">${d.aapen}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono);color:var(--text2)">${d.lukket}</td>
-          <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
-        </tr>`).join('')}</tbody>
-    </table>`;
+  el.innerHTML = kort + inaktivHint;
 }
 
 function renderStatsAktivitet(t, sesong) {
