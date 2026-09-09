@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="08:17">08:17</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="09.09" data-tid="08:34">08:34</span>
 </div>
 
 <div class="nav">
@@ -645,7 +645,8 @@ function mapTur(t) {
     bildeUrl: t.BildeUrl || '',
     vaer: t.Vaer || '',
     redigert: String(t.Registrert || '').includes('[redigert]'),
-    kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur) || null : null
+    kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur) || null : null,
+    harFeil: (t.HarFeil === 'Ja' || t.HarFeil === true)
   };
 }
 
@@ -1231,8 +1232,7 @@ function renderTurItem(t) {
     stats.push(`<span class="log-thumbs">${thumbs}</span>`);
   }
   // Feil-badge: viser at bruker meldte en feil under denne turen
-  const harFeil = (t.harFeil === 'Ja' || t.HarFeil === 'Ja' || t.harFeil === true || t.HarFeil === true);
-  const feilBadge = harFeil
+  const feilBadge = t.harFeil
     ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>`
     : '';
   return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${feilBadge}${stats.join('')}</div></div>`;
