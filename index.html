@@ -3521,7 +3521,13 @@ return { bg:'#F0FBF4', border:'#27AE60', dot:'#27AE60', tekst:'Ferdig' };
 function renderFeilInnhold(el) {
 // Filtrer på enhet (maskin/scooter) basert på hvilket ikon som åpnet panelet
 const alle = feilData.filter(f => (f.enhet||'maskin').toLowerCase() === serviceEnhet);
-const aktive = alle.filter(f => f.status === 'Ny' || f.status === 'Påbegynt').sort((a,b) => b.dato.localeCompare(a.dato));
+// Sorter aktive: Ny (rødt, mest presserende) først, deretter Påbegynt (gult), nyeste dato først innen hver gruppe
+const statusPri = s => s === 'Ny' ? 0 : s === 'Påbegynt' ? 1 : 2;
+const aktive = alle.filter(f => f.status === 'Ny' || f.status === 'Påbegynt').sort((a,b) => {
+  const pa = statusPri(a.status), pb = statusPri(b.status);
+  if (pa !== pb) return pa - pb;
+  return (b.dato||'').localeCompare(a.dato||'');
+});
 const filtrert = filterServiceTurer(alle.filter(f => f.status === 'Ferdig')).sort((a,b) => b.dato.localeCompare(a.dato));
 const enhetsNavn = serviceEnhet === 'maskin' ? 'maskin' : 'scooter';
 let html = `<button onclick="visNyFeilSkjema()" style="width:100%;padding:10px;border:1.5px dashed var(--mid);border-radius:8px;background:var(--ice);color:var(--mid);font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px">+ Ny ${enhetsNavn}-feil / reparasjon</button>`;
