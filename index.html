@@ -163,7 +163,7 @@ Km kjørt per måned <span id="stats-km-periode" style="font-size:10px;font-weig
 Runder – statistikk <span id="stats-runder-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
 </div><div class="card-body" id="stats-loype-container"><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div><div id="stats-loype-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px"></div><div id="stats-loype-panel" style="display:none;border:1.5px solid var(--accent);border-radius:var(--radius);background:var(--ice);padding:16px;margin-top:4px"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
 Maskiner
-<button id="stats-vis-inaktive-btn" onclick="toggleVisInaktiveMaskiner()" style="margin-left:auto;padding:4px 10px;font-size:11px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:white;cursor:pointer;font-weight:500">👁 Vis inaktive</button>
+<button type="button" id="stats-vis-inaktive-btn" onclick="toggleVisInaktiveMaskiner()" style="margin-left:auto;padding:4px 10px;font-size:11px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:white;cursor:pointer;font-weight:500">👁 Vis inaktive</button>
 </div><div class="card-body" id="stats-maskiner-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 Sjåførstatistikk – denne sesongen
 </div><div class="card-body" id="stats-sjaforer-kort"></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -2072,8 +2072,9 @@ panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 // Avstikker-frekvens fjernet – vises under runde-kortene
 let statsMaskinVisInaktive = false;
 let statsMaskinUtvidet = new Set();
+let _sisteMaskinListe = [];  // Cache siste liste for indeks-oppslag
 
-function toggleVisInaktiveMaskiner() {
+window.toggleVisInaktiveMaskiner = function() {
   statsMaskinVisInaktive = !statsMaskinVisInaktive;
   const btn = document.getElementById('stats-vis-inaktive-btn');
   if (btn) {
@@ -2081,13 +2082,15 @@ function toggleVisInaktiveMaskiner() {
     btn.style.background = statsMaskinVisInaktive ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.15)';
   }
   renderStatsMaskiner();
-}
+};
 
-function toggleMaskinUtvidet(navn) {
-  if (statsMaskinUtvidet.has(navn)) statsMaskinUtvidet.delete(navn);
-  else statsMaskinUtvidet.add(navn);
+window.toggleMaskinUtvidetByIdx = function(idx) {
+  const m = _sisteMaskinListe[idx];
+  if (!m) return;
+  if (statsMaskinUtvidet.has(m.navn)) statsMaskinUtvidet.delete(m.navn);
+  else statsMaskinUtvidet.add(m.navn);
   renderStatsMaskiner();
-}
+};
 
 function renderStatsMaskiner() {
   const el = document.getElementById('stats-maskiner-innhold');
@@ -2102,8 +2105,9 @@ function renderStatsMaskiner() {
   const aktive = sorted.filter(m => m.aktiv);
   const inaktive = sorted.filter(m => !m.aktiv);
   const synlige = statsMaskinVisInaktive ? sorted : aktive;
+  _sisteMaskinListe = synlige;  // Cache for onclick-oppslag ved indeks
 
-  el.innerHTML = synlige.map(m => {
+  el.innerHTML = synlige.map((m, idx) => {
     const mTurer = turer.filter(t => t.maskin === m.navn);
     const kmMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.km)||0)) : parseFloat(m.kmStart)||0;
     const timerMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.timerSlutt)||0)) : parseFloat(m.timerStart)||0;
@@ -2154,7 +2158,7 @@ function renderStatsMaskiner() {
           <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${mService.length}</div>
           <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Servicer</div>
         </div>
-        <button onclick="toggleMaskinUtvidet('${m.navn.replace(/'/g,"\\'")}')" style="padding:6px 10px;background:${utvidet?'#EAF6FE':'white'};border:1.5px solid ${utvidet?'#2E7BB8':'var(--border)'};border-radius:6px;color:${utvidet?'#2E7BB8':'var(--text2)'};font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap">${utvidet ? '▲ Skjul' : '▼ Vis'}</button>
+        <button type="button" onclick="toggleMaskinUtvidetByIdx(${idx})" style="padding:6px 10px;background:${utvidet?'#EAF6FE':'white'};border:1.5px solid ${utvidet?'#2E7BB8':'var(--border)'};border-radius:6px;color:${utvidet?'#2E7BB8':'var(--text2)'};font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap">${utvidet ? '▲ Skjul' : '▼ Vis'}</button>
       </div>`;
 
     let ekstra = '';
