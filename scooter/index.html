@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="20:08">20:08</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="01.09" data-tid="08:17">08:17</span>
 </div>
 
 <div class="nav">
@@ -468,6 +468,8 @@ let bildeOpplasterKoe = 0; // Antall bilder som venter på server-svar
 let scooterBildeUrl = ''; // For scooter-modal (kun ett bilde)
 let redigerScooterIdx = -1;
 let redigererTurId = null;  // ID på turen som redigeres (null = ny økt)
+let harFeilFraDenneOkta = false;  // Settes når bruker melder feil via "Rapporter feil"-knappen i Ny økt
+let _feilFraNyOkt = false;  // Midlertidig markør fra rapporterFeilFraNyOkt() → lagreFeilPanel()
 let sesongStart = '';  // DD.MM (fra Innstillinger, delt med maskinlogg)
 let sesongSlutt = '';  // DD.MM
 let innstillinger = {};
@@ -952,7 +954,9 @@ async function lagreTur() {
     merknaderSki: document.getElementById('f-merknader-ski').value.trim(),
     // Komma-separert liste av URL-er – bakoverkompatibel med gammel "én URL"-modell
     bildeUrl: valgtBildeUrls.join(','),
-    vaer: vaerStreng
+    vaer: vaerStreng,
+    // Feil-flagg: settes hvis bruker meldte feil via "Rapporter feil"-knappen i Ny økt
+    harFeil: harFeilFraDenneOkta
   };
 
   // Ved rediger: send ID for oppdatering (behold opprinnelig vær hvis samme dato som opprinnelig)
@@ -1028,6 +1032,7 @@ function startRedigerTur(id) {
 
 function avbrytRediger() {
   redigererTurId = null;
+  harFeilFraDenneOkta = false;  // Nullstill feil-flagg
   document.getElementById('ny-tittel').textContent = 'Ny scooter-tur';
   document.getElementById('rediger-banner').style.display = 'none';
   document.getElementById('lagre-btn').innerHTML = 'Lagre tur';
@@ -1225,7 +1230,12 @@ function renderTurItem(t) {
     ).join('');
     stats.push(`<span class="log-thumbs">${thumbs}</span>`);
   }
-  return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${stats.join('')}</div></div>`;
+  // Feil-badge: viser at bruker meldte en feil under denne turen
+  const harFeil = (t.harFeil === 'Ja' || t.HarFeil === 'Ja' || t.harFeil === true || t.HarFeil === true);
+  const feilBadge = harFeil
+    ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>`
+    : '';
+  return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${feilBadge}${stats.join('')}</div></div>`;
 }
 
 // ── SCOOTERPARK-WIDGET (Alt A: kortrekke med mini-sparklines) ──
@@ -1436,8 +1446,9 @@ function renderGalleriInnhold() {
 function renderGalleriKort(b) {
   const kb = (b.stoerrelseBytes / 1024).toFixed(0);
   const turDato = b.turDato ? formaterDatoKort(b.turDato) : '';
-  // Prominent dato: bruk tur-dato hvis tilknyttet, ellers opplastingsdato som fallback.
-  // Bruker manuell parse for YYYY-MM-DD så vi unngår tidssonebugs (JS Date parser feiltolker).
+  // Bruk alltid opplastingsdato (når bildet kom inn i systemet).
+  // Tur-dato kan være misvisende hvis fotoene er tatt for lenge siden.
+  // Manuell parse for YYYY-MM-DD så vi unngår tidssonebugs (JS Date parser feiltolker).
   const parseDato = (s) => {
     if (!s) return null;
     const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -1445,13 +1456,8 @@ function renderGalleriKort(b) {
     const d = new Date(s);
     return isNaN(d.getTime()) ? null : d;
   };
-  const formatterDato = (d, suffix) => {
-    if (!d) return 'Ukjent dato';
-    return d.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' }) + (suffix || '');
-  };
-  const visDato = b.turDato
-    ? formatterDato(parseDato(b.turDato))
-    : formatterDato(parseDato(b.opprettet), ' (opplastet)');
+  const d = parseDato(b.opprettet);
+  const visDato = d ? d.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Ukjent dato';
   const tilknytning = b.forelderloest
     ? `<span style="color:#B45309">Foreldreløs</span>`
     : (b.turSjafor + (b.turScooter ? ' · ' + b.turScooter : ''));
@@ -1994,6 +2000,8 @@ async function lagreFeilPanel() {
         .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
     } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
     toast('Feil registrert ✓', 'ok');
+    // Om feilen ble meldt via "Rapporter feil"-knappen i Ny økt-fanen: merk pågående tur med feil-flagg
+    if (_feilFraNyOkt) { harFeilFraDenneOkta = true; _feilFraNyOkt = false; }
     // Lukk feil-modal og HELE service-panelet så bruker naturlig fortsetter tur-registrering.
     document.getElementById('feil-modal').classList.remove('open');
     lukkAllePaneler();
@@ -2004,6 +2012,7 @@ async function lagreFeilPanel() {
 // Rapporter feil fra Ny økt-fanen: åpne feil-modal med scooter, sjåfør og km-stand pre-fylt
 // fra det aktive skjemaet (valgtSjafor/valgtScooter er JS-state, ikke DOM-input).
 function rapporterFeilFraNyOkt() {
+  _feilFraNyOkt = true;  // Markør – lagreFeilPanel setter harFeilFraDenneOkta hvis lagring lykkes
   visNyFeilPanel();
   // visNyFeilPanel() nullstiller feltene – sett verdiene ETTERPÅ (setTimeout så DOM er klar)
   setTimeout(() => {
