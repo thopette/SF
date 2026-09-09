@@ -1946,6 +1946,15 @@ function renderServicePanel() {
     return;
   }
 
+  const renderNotatLogg = (notatLogg) => {
+    if (!notatLogg) return '';
+    const linjer = String(notatLogg).split('\n').filter(Boolean);
+    if (!linjer.length) return '';
+    return `<div style="margin-top:8px;margin-left:16px;border-left:2px solid var(--border);padding-left:10px">
+      ${linjer.map(l => `<div style="font-size:11px;color:var(--text2);margin-bottom:3px;line-height:1.4">${l.replace(/</g,'&lt;')}</div>`).join('')}
+    </div>`;
+  };
+
   const renderFeilKort = (f, erHistorikk) => {
     const statusFarge = f.status === 'Ny' ? '#E74C3C' : f.status === 'Påbegynt' ? '#F39C12' : '#27AE60';
     const kortBakgrunn = erHistorikk ? '#F7F8FA' : 'var(--snow)';
@@ -1957,9 +1966,13 @@ function renderServicePanel() {
       </div>
       <div style="font-size:12px;color:var(--text);margin-bottom:4px">${(f.beskrivelse||'').replace(/</g,'&lt;')}</div>
       <div style="font-size:11px;color:var(--text2)">${f.dato||''} · ${f.forer||''}${f.kmstand?' · km '+f.kmstand:''}${erHistorikk && f.statusDato ? ' · fullført '+f.statusDato : ''}</div>
-      ${!erHistorikk ? `<div style="display:flex;gap:6px;margin-top:6px">
-        ${f.status !== 'Påbegynt' ? `<button class="btn btn-sm btn-outline" style="padding:4px 8px;font-size:11px" onclick="oppdaterFeilStatus('${f.id}','Påbegynt')">Ta ansvar</button>` : ''}
-        <button class="btn btn-sm btn-outline" style="padding:4px 8px;font-size:11px;color:var(--success);border-color:#D5F5E3" onclick="oppdaterFeilStatus('${f.id}','Ferdig')">Ferdig</button>
+      ${renderNotatLogg(f.notatLogg)}
+      ${!erHistorikk ? `<div style="margin-top:8px">
+        <input type="text" id="scooter-notat-${f.id}" placeholder="Kommentar (valgfritt)…" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:12px;background:white;margin-bottom:6px">
+        <div style="display:flex;gap:6px">
+          ${f.status !== 'Påbegynt' ? `<button class="btn btn-sm btn-outline" style="padding:5px 8px;font-size:11px;flex:1" onclick="settFeilStatusScooter('${f.id}','Påbegynt')">Sett påbegynt</button>` : ''}
+          <button class="btn btn-sm btn-outline" style="padding:5px 8px;font-size:11px;flex:1;color:var(--success);border-color:#D5F5E3" onclick="settFeilStatusScooter('${f.id}','Ferdig')">Sett ferdig</button>
+        </div>
       </div>` : ''}
     </div>`;
   };
@@ -1975,12 +1988,24 @@ function renderServicePanel() {
   }
   el.innerHTML = html;
 }
-async function oppdaterFeilStatus(id, status) {
+// Sett status med kommentar-input + valgfri navn-prompt (samme mønster som maskin)
+async function settFeilStatusScooter(id, status) {
+  const notatInput = document.getElementById('scooter-notat-' + id);
+  const notat = notatInput ? notatInput.value.trim() : '';
+  const forer = prompt('Ditt navn (valgfritt):') || '';
   try {
-    const res = await apiKall({ action: 'oppdaterFeilStatus', id, status });
+    const res = await apiKall({ action: 'oppdaterFeilStatus', id, status, statusAv: forer, notat });
     if (res.feil) throw new Error(res.feil);
     const f = feilData.find(x => String(x.id) === String(id));
-    if (f) { f.status = status; f.statusDato = new Date().toISOString().split('T')[0]; }
+    if (f) {
+      f.status = status;
+      f.statusDato = new Date().toISOString().split('T')[0];
+      if (notat) {
+        const now = new Date().toISOString().split('T')[0];
+        const entry = now + ' [' + status + (forer ? ' – ' + forer : '') + ']: ' + notat;
+        f.notatLogg = f.notatLogg ? f.notatLogg + '\n' + entry : entry;
+      }
+    }
     oppdaterServiceBadge();
     renderServicePanel();
     toast('Status oppdatert ✓', 'ok');
@@ -2446,10 +2471,19 @@ function renderScooterOversikt(t, filter) {
     let ekstra = '';
     if (utvidet) {
       const feilListe = (arr, statusFarge, statusTekst, statusBg) => arr.length
-        ? arr.map(f => `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:${statusBg};border-radius:5px;font-size:12px;margin-bottom:4px;line-height:1.4">
-            <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${(f.beskrivelse||'').substring(0,60)}${(f.beskrivelse||'').length>60?'…':''}</strong><br><span style="font-size:11px;color:var(--text2)">${f.forer||''} · ${f.dato||''}</span></span>
-            <span style="color:${statusFarge};font-size:10px;font-weight:600;flex-shrink:0;margin-left:6px">${statusTekst}</span>
-          </div>`).join('')
+        ? arr.map(f => {
+            const notater = f.notatLogg ? String(f.notatLogg).split('\n').filter(Boolean) : [];
+            const notatHtml = notater.length ? `<div style="margin-top:4px;padding-left:10px;border-left:2px solid ${statusFarge}44">
+              ${notater.map(n => `<div style="font-size:10px;color:var(--text2);line-height:1.3;margin-bottom:2px">${n.replace(/</g,'&lt;')}</div>`).join('')}
+            </div>` : '';
+            return `<div style="padding:6px 10px;background:${statusBg};border-radius:5px;font-size:12px;margin-bottom:4px;line-height:1.4">
+              <div style="display:flex;justify-content:space-between">
+                <span style="min-width:0;flex:1"><strong>${(f.beskrivelse||'').substring(0,60)}${(f.beskrivelse||'').length>60?'…':''}</strong><br><span style="font-size:11px;color:var(--text2)">${f.forer||''} · ${f.dato||''}</span></span>
+                <span style="color:${statusFarge};font-size:10px;font-weight:600;flex-shrink:0;margin-left:6px">${statusTekst}</span>
+              </div>
+              ${notatHtml}
+            </div>`;
+          }).join('')
         : '';
       const alleFeilHtml = (feil.ny.length || feil.paabegynt.length || feil.ferdig.length)
         ? feilListe(feil.ny, '#E74C3C', 'NY', '#FEF2F2')
