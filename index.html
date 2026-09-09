@@ -163,6 +163,7 @@ Km kjørt per måned <span id="stats-km-periode" style="font-size:10px;font-weig
 Runder – statistikk <span id="stats-runder-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
 </div><div class="card-body" id="stats-loype-container"><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div><div id="stats-loype-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px"></div><div id="stats-loype-panel" style="display:none;border:1.5px solid var(--accent);border-radius:var(--radius);background:var(--ice);padding:16px;margin-top:4px"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
 Maskiner
+<button id="stats-vis-inaktive-btn" onclick="toggleVisInaktiveMaskiner()" style="margin-left:auto;padding:4px 10px;font-size:11px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:white;cursor:pointer;font-weight:500">👁 Vis inaktive</button>
 </div><div class="card-body" id="stats-maskiner-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
 Sjåførstatistikk – denne sesongen
 </div><div class="card-body" id="stats-sjaforer-kort"></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -2069,106 +2070,130 @@ ${vaerHtml}`;
 panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 };
 // Avstikker-frekvens fjernet – vises under runde-kortene
-// ── Feil & Reparasjoner statistikk ──
+let statsMaskinVisInaktive = false;
+let statsMaskinUtvidet = new Set();
+
+function toggleVisInaktiveMaskiner() {
+  statsMaskinVisInaktive = !statsMaskinVisInaktive;
+  const btn = document.getElementById('stats-vis-inaktive-btn');
+  if (btn) {
+    btn.textContent = statsMaskinVisInaktive ? '👁 Skjul inaktive' : '👁 Vis inaktive';
+    btn.style.background = statsMaskinVisInaktive ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.15)';
+  }
+  renderStatsMaskiner();
+}
+
+function toggleMaskinUtvidet(navn) {
+  if (statsMaskinUtvidet.has(navn)) statsMaskinUtvidet.delete(navn);
+  else statsMaskinUtvidet.add(navn);
+  renderStatsMaskiner();
+}
+
 function renderStatsMaskiner() {
-const el = document.getElementById('stats-maskiner-innhold');
-if (!el) return;
+  const el = document.getElementById('stats-maskiner-innhold');
+  if (!el) return;
+  if (!maskiner || !maskiner.length) { el.innerHTML = '<p style="color:var(--text2);font-size:13px;text-align:center;padding:12px 0">Ingen maskiner registrert. Legg til under Admin.</p>'; return; }
 
-const sorted = [...maskiner].sort((a,b) => {
-if (a.aktiv && !b.aktiv) return -1;
-if (!a.aktiv && b.aktiv) return 1;
-return a.navn.localeCompare(b.navn);
-});
+  const sorted = [...maskiner].sort((a,b) => {
+    if (a.aktiv && !b.aktiv) return -1;
+    if (!a.aktiv && b.aktiv) return 1;
+    return a.navn.localeCompare(b.navn);
+  });
+  const aktive = sorted.filter(m => m.aktiv);
+  const inaktive = sorted.filter(m => !m.aktiv);
+  const synlige = statsMaskinVisInaktive ? sorted : aktive;
 
-el.innerHTML = sorted.map(m => {
-// Get stats from turer for this maskin
-const mTurer = turer.filter(t => t.maskin === m.navn);
-const kmMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.km)||0)) : parseFloat(m.kmStart)||0;
-const timerMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.timerSlutt)||0)) : parseFloat(m.timerStart)||0;
-const kmTotalt = Math.max(0, kmMax - (parseFloat(m.kmStart)||0));
-const timerTotalt = Math.max(0, timerMax - (parseFloat(m.timerStart)||0));
+  el.innerHTML = synlige.map(m => {
+    const mTurer = turer.filter(t => t.maskin === m.navn);
+    const kmMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.km)||0)) : parseFloat(m.kmStart)||0;
+    const timerMax = mTurer.length ? Math.max(...mTurer.map(t=>parseFloat(t.timerSlutt)||0)) : parseFloat(m.timerStart)||0;
+    const kmTotalt = Math.max(0, kmMax - (parseFloat(m.kmStart)||0));
+    const timerTotalt = Math.max(0, timerMax - (parseFloat(m.timerStart)||0));
 
-// Feil for this maskin
-const mFeil = (feilData||[]).filter(f => f.maskin === m.navn);
-const feilNy = mFeil.filter(f=>f.status==='Ny').length;
-const feilPab = mFeil.filter(f=>f.status==='Påbegynt').length;
-const feilFerdig = mFeil.filter(f=>f.status==='Ferdig').length;
+    const mFeil = (feilData||[]).filter(f => f.maskin === m.navn);
+    const feilNy = mFeil.filter(f=>f.status==='Ny');
+    const feilPab = mFeil.filter(f=>f.status==='Påbegynt');
+    const feilFerdig = mFeil.filter(f=>f.status==='Ferdig');
+    const antFeil = mFeil.length;
 
-// Service for this maskin
-const mService = (serviceData||[]).filter(s => s.maskin === m.navn)
-.sort((a,b)=>(b.dato||'').localeCompare(a.dato||''));
+    const mService = (serviceData||[]).filter(s => s.maskin === m.navn)
+      .sort((a,b)=>(b.dato||'').localeCompare(a.dato||''));
 
-// Utfaset dato = last tur dato
-const sisteTur = mTurer.sort((a,b)=>(b.dato||'').localeCompare(a.dato||''))[0];
-const utfasetDato = !m.aktiv && sisteTur ? formatDato(sisteTur.dato) : '';
+    const sisteTur = mTurer.sort((a,b)=>(b.dato||'').localeCompare(a.dato||''))[0];
+    const utvidet = statsMaskinUtvidet.has(m.navn);
+    const kortOpacity = m.aktiv ? '' : 'opacity:0.7;';
+    const statusBadge = m.aktiv
+      ? '<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#EAF3DE;color:#3B6D11;font-weight:600">● Aktiv</span>'
+      : '<span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#FEF2F2;color:#991B1B;font-weight:600">⏸ Inaktiv</span>';
 
-const dotFarge = m.aktiv ? '#639922' : 'var(--border)';
-const opacity = m.aktiv ? '1' : '0.7';
+    const kompakt = `
+      <div style="display:grid;grid-template-columns:1fr auto auto auto auto auto;gap:12px;align-items:center;padding:2px 0">
+        <div style="min-width:0">
+          <div style="font-size:14px;font-weight:700;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.navn}</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:2px">${statusBadge}${sisteTur ? ' · sist ' + formatDato(sisteTur.dato) : ''}</div>
+        </div>
+        <div style="text-align:center;min-width:65px">
+          <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${kmTotalt.toFixed(0)}</div>
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Km totalt</div>
+        </div>
+        <div style="text-align:center;min-width:60px">
+          <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${timerTotalt.toFixed(1)}</div>
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Timer</div>
+        </div>
+        <div style="text-align:center;min-width:80px">
+          ${antFeil ? `<div style="display:flex;justify-content:center;gap:4px;align-items:baseline">
+            ${feilNy.length ? `<span style="font-size:14px;font-weight:700;color:#E74C3C">${feilNy.length}</span>` : ''}
+            ${feilNy.length && (feilPab.length || feilFerdig.length) ? '<span style="color:var(--text2);font-size:10px">/</span>' : ''}
+            ${feilPab.length ? `<span style="font-size:14px;font-weight:700;color:#F39C12">${feilPab.length}</span>` : ''}
+            ${feilPab.length && feilFerdig.length ? '<span style="color:var(--text2);font-size:10px">/</span>' : ''}
+            ${feilFerdig.length ? `<span style="font-size:14px;font-weight:700;color:#27AE60">${feilFerdig.length}</span>` : ''}
+          </div>` : '<div style="font-size:12px;color:var(--text2)">–</div>'}
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Ny/På/Løst</div>
+        </div>
+        <div style="text-align:center;min-width:55px">
+          <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${mService.length}</div>
+          <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Servicer</div>
+        </div>
+        <button onclick="toggleMaskinUtvidet('${m.navn.replace(/'/g,"\\'")}')" style="padding:6px 10px;background:${utvidet?'#EAF6FE':'white'};border:1.5px solid ${utvidet?'#2E7BB8':'var(--border)'};border-radius:6px;color:${utvidet?'#2E7BB8':'var(--text2)'};font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap">${utvidet ? '▲ Skjul' : '▼ Vis'}</button>
+      </div>`;
 
-const statBoks = (lbl, val, sub) => `
-<div style="background:var(--ice);border:1px solid var(--border);border-radius:7px;padding:9px 11px">
-<div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px">${lbl}</div>
-<div style="font-size:15px;font-weight:600;color:var(--navy);font-family:var(--mono)">${val}</div>
-<div style="font-size:10px;color:var(--text2);margin-top:1px">${sub}</div>
-</div>`;
+    let ekstra = '';
+    if (utvidet) {
+      const feilListe = (arr, statusFarge, statusTekst, statusBg) => arr.length
+        ? arr.map(f => `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:${statusBg};border-radius:5px;font-size:12px;margin-bottom:4px;line-height:1.4">
+            <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><strong>${(f.beskrivelse||'').substring(0,60)}${(f.beskrivelse||'').length>60?'…':''}</strong><br><span style="font-size:11px;color:var(--text2)">${f.forer||''} · ${f.dato||''}</span></span>
+            <span style="color:${statusFarge};font-size:10px;font-weight:600;flex-shrink:0;margin-left:6px">${statusTekst}</span>
+          </div>`).join('')
+        : '';
+      const alleFeilHtml = antFeil
+        ? feilListe(feilNy, '#E74C3C', 'NY', '#FEF2F2')
+          + feilListe(feilPab, '#F39C12', 'PÅBEGYNT', '#FFFBF0')
+          + feilListe(feilFerdig, '#27AE60', 'LØST', '#F0FBF4')
+        : '<div style="font-size:12px;color:var(--text2);font-style:italic;padding:6px 0">Ingen feil registrert 🎉</div>';
 
-const feilPilBtn = (cls, col, bg, txt, status) => txt > 0 ? `
-<div onclick="serviceEnhet='maskin';toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" 
-style="flex:1;text-align:center;padding:5px 4px;border-radius:6px;
-font-size:11px;font-weight:600;background:${bg};color:${col};cursor:pointer"
-title="Åpne feil & rep">${txt} ${status}</div>` : '';
+      const serviceHtml = mService.length
+        ? mService.map(s => `<div style="display:flex;justify-content:space-between;padding:6px 10px;background:#F7F8FA;border-radius:5px;font-size:12px;margin-bottom:4px">
+            <span><strong>${(s.type||'Service').substring(0,40)}</strong>${s.beskrivelse ? ' · ' + s.beskrivelse.substring(0,40) : ''}<br><span style="font-size:11px;color:var(--text2)">${formatDato(s.dato)}${s.utfortAv ? ' · ' + s.utfortAv : ''}</span></span>
+            <span style="color:var(--text2);font-family:var(--mono);font-size:11px;flex-shrink:0;margin-left:6px">${s.timerstand ? s.timerstand+'t' : ''}${s.kmstand ? (s.timerstand?' · ':'')+'km '+s.kmstand : ''}</span>
+          </div>`).join('')
+        : '<div style="font-size:12px;color:var(--text2);font-style:italic;padding:6px 0">Ingen service utført ennå</div>';
 
-const svcRader = mService.slice(0,3).map(s=>`
-<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border)">
-<span style="font-size:11px;font-family:var(--mono);color:var(--text2);width:72px;flex-shrink:0">${formatDato(s.dato)}</span>
-<span style="font-size:11px;color:var(--text);flex:1">${s.type||'Service'}</span>
-<span style="font-size:11px;font-family:var(--mono);color:var(--text2)">${s.timerstand||'–'}t</span>
-</div>`).join('');
+      ekstra = `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #F0F5FB;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">⚙ Feil & rep (${antFeil})</div>
+          ${alleFeilHtml}
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">🔧 Service (${mService.length})</div>
+          ${serviceHtml}
+        </div>
+      </div>`;
+    }
 
-return `<div style="border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;opacity:${opacity}">
-<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--snow)">
-<div style="width:10px;height:10px;border-radius:50%;background:${dotFarge};flex-shrink:0"></div>
-<span style="font-size:14px;font-weight:600;color:var(--navy);flex:1">${m.navn}</span>
-<span style="font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;
-background:${m.aktiv?'#EAF3DE':'var(--ice)'};color:${m.aktiv?'#3B6D11':'var(--text2)'}">
-${m.aktiv?'Aktiv':'Inaktiv'+(utfasetDato?' · utfaset '+utfasetDato:'')}</span>
-</div>
-<div style="padding:12px 14px">
-<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Bruk${!m.aktiv?' i vår periode':''}</div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
-${statBoks('Km-start', (parseFloat(m.kmStart)||0).toFixed(0), 'ved overtakelse')}
-${statBoks(m.aktiv?'Nåværende km':'Siste kjente km', kmMax.toFixed(0), 'siste tur')}
-${statBoks('Kjørt totalt', kmTotalt.toFixed(0), 'km')}
-${statBoks('Timer-start', (parseFloat(m.timerStart)||0).toFixed(1), 'ved overtakelse')}
-${statBoks(m.aktiv?'Nåværende timer':'Siste kjente timer', timerMax.toFixed(1), 'siste tur')}
-${statBoks('Timer totalt', timerTotalt.toFixed(1), 'timer')}
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px">
-<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Feil & Rep</div>
-${mFeil.length === 0 ? '<div style="font-size:11px;color:var(--text2)">Ingen feil registrert 👍</div>' : `
-<div style="display:flex;gap:6px;margin-bottom:10px">
-${feilNy > 0 ? `<div onclick="serviceEnhet='maskin';toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FCEBEB;color:#A32D2D;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #F7C1C1">${feilNy} Ny</div>` : ''}
-${feilPab > 0 ? `<div onclick="serviceEnhet='maskin';toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#FAEEDA;color:#854F0B;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #FAC775">${feilPab} Påbegynt</div>` : ''}
-${feilFerdig > 0 ? `<div onclick="serviceEnhet='maskin';toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')" style="flex:1;text-align:center;padding:8px 4px;border-radius:7px;background:#EAF3DE;color:#3B6D11;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #C0DD97">${feilFerdig} Løst</div>` : ''}
-</div>
-${mFeil.filter(f=>f.status!=='Ferdig').map(f=>`
-<div style="padding:7px 10px;border-radius:7px;background:${f.status==='Ny'?'#FEF0F0':'#FFFBF0'};border:1px solid ${f.status==='Ny'?'#F7C1C1':'#FAC775'};margin-bottom:5px;cursor:pointer" onclick="serviceEnhet='maskin';toggleServicePanel();setServiceToggle('feil');setServiceFilter('alle')">
-<div style="font-size:12px;font-weight:600;color:var(--navy)">${f.beskrivelse||'–'}</div>
-<div style="font-size:10px;color:var(--text2);margin-top:2px">${f.forer||'–'} · ${formatDato(f.dato)}</div>
-</div>`).join('')}
-`}
-</div>
-<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px">
-<div style="font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Service</div>
-<div style="font-size:22px;font-weight:700;color:var(--navy);font-family:var(--mono);margin-bottom:2px">${mService.length}</div>
-<div style="font-size:11px;color:var(--text2);margin-bottom:8px">utført totalt</div>
-${svcRader || '<div style="font-size:11px;color:var(--text2)">Ingen registrert</div>'}
-</div>
-</div>
-</div>
-</div>`;
-}).join('');
+    return `<div style="background:${m.aktiv?'var(--snow)':'#F7F8FA'};border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;${kortOpacity}">${kompakt}${ekstra}</div>`;
+  }).join('') + (!statsMaskinVisInaktive && inaktive.length
+    ? `<div style="text-align:center;font-size:11px;color:var(--text2);font-style:italic;margin-top:8px">${inaktive.length} inaktiv${inaktive.length>1?'e':''} maskin${inaktive.length>1?'er':''} skjult</div>`
+    : '');
 }
 
 function renderStatsFeil() {
