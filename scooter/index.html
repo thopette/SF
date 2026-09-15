@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="12:13">12:13</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="13:07">13:07</span>
 </div>
 
 <div class="nav">
@@ -1489,7 +1489,9 @@ function renderGalleriKort(b) {
     : (b.turSjafor + (b.turScooter ? ' · ' + b.turScooter : ''));
   const urls = JSON.stringify([b.fullUrl]).replace(/"/g,'&quot;');
   // Type-badge øverst til venstre på thumbnail
-  const typeBadge = b.type === 'maskin'
+  const typeBadge = b.type === 'profil'
+    ? `<span style="position:absolute;top:4px;left:4px;background:#2E7BB8;color:white;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600" title="Profilbilde for ${b.turScooter || 'scooter'}">🛷 PROFIL</span>`
+    : b.type === 'maskin'
     ? `<span style="position:absolute;top:4px;left:4px;background:rgba(15,58,95,0.85);color:white;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600" title="Maskin-tur">🚜</span>`
     : b.type === 'scooter'
     ? `<span style="position:absolute;top:4px;left:4px;background:rgba(15,58,95,0.85);color:white;font-size:10px;padding:2px 6px;border-radius:10px;font-weight:600" title="Scooter-tur">❄</span>`
