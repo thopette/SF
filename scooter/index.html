@@ -472,7 +472,8 @@ function stopSpinner() {
   }
 }
 
-async function apiKall(body) {
+async function apiKall(body, forsokNr) {
+  forsokNr = forsokNr || 1;
   startSpinner();
   try {
     const opts = { method: 'POST', redirect: 'follow', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) };
@@ -481,12 +482,19 @@ async function apiKall(body) {
     try {
       return JSON.parse(txt);
     } catch(e) {
-      console.error('Backend returnerte ikke JSON. Første 500 tegn:', txt.substring(0, 500));
-      console.error('Full response length:', txt.length, 'bytes');
-      const erLoginSide = txt.includes('<!DOCTYPE') || txt.includes('accounts.google.com');
+      console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}). Første 500 tegn:`, txt.substring(0, 500));
+      console.error('HTTP status:', res.status, 'Response length:', txt.length);
+      // Retry ved 404/HTML — kjent Apps Script POST-redirect-bug ved store payloads
+      if (forsokNr < 3) {
+        console.warn(`Prøver igjen (forsøk ${forsokNr + 1}/3)…`);
+        await new Promise(r => setTimeout(r, 500 * forsokNr));  // eksponentiell backoff
+        stopSpinner();
+        return apiKall(body, forsokNr + 1);
+      }
+      const erLoginSide = txt.includes('accounts.google.com');
       throw new Error(erLoginSide
-        ? 'Apps Script krever re-autorisering. Se konsoll for detaljer (F12). Åpne script-editoren, kjør en funksjon manuelt og godkjenn tilgang, deretter Distribuer → Ny versjon.'
-        : 'Uventet svar fra server (' + res.status + ')');
+        ? 'Apps Script krever re-autorisering. Åpne script-editoren og godkjenn tilgang, deretter Distribuer → Ny versjon.'
+        : `Server svarte ikke med JSON etter 3 forsøk (HTTP ${res.status}). Se konsoll for detaljer.`);
     }
   } finally {
     stopSpinner();
