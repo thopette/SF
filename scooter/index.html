@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="09:11">09:11</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="12:13">12:13</span>
 </div>
 
 <div class="nav">
@@ -1001,7 +1001,10 @@ async function lagreTur() {
     // Send e-post-varsel i bakgrunn – kun for nye turer (ikke oppdatering)
     if (!redigererTurId) {
       try {
-        const turMedId = Object.assign({}, tur, res.id ? { id: res.id } : {});
+        const turMedId = Object.assign({}, tur,
+          res.id ? { id: res.id } : {},
+          res.kmPerTur !== undefined ? { kmPerTur: res.kmPerTur } : {}
+        );
         apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'scooter' })
           .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
       } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
