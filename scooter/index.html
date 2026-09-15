@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="13:07">13:07</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="13:12">13:12</span>
 </div>
 
 <div class="nav">
@@ -470,6 +470,12 @@ function stopSpinner() {
     const el = document.getElementById('sf-spinner');
     if (el) el.style.display = 'none';
   }
+}
+
+// Genererer unik ID for bilde-opplasting. Brukes for idempotency: hvis retry treffer,
+// gjenbruker backend samme fil istedet for å lage duplikat.
+function _genUploadId() {
+  return 'up-' + Date.now() + '-' + Math.random().toString(36).substring(2, 10);
 }
 
 // Hybrid GET/POST strategi:
@@ -794,11 +800,13 @@ async function lastOppEttTurBilde(fil) {
     reader.onload = async (ev) => {
       try {
         const komprimert = await komprimerBilde(ev.target.result, 1600, 0.82);
+        const uploadId = _genUploadId();
         const res = await apiKall({
           action: 'lastOppBilde',
           filnavn: (fil.name || ('bilde-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
           base64: komprimert,
-          mimeType: 'image/jpeg'
+          mimeType: 'image/jpeg',
+          uploadId: uploadId
         });
         if (res.feil) throw new Error(res.feil);
         valgtBildeUrls.push(res.url);
@@ -841,11 +849,13 @@ async function lastOppScooterBilde(fil) {
       toast('Komprimerer og laster opp…', '');
       try {
         const komprimert = await komprimerBilde(dataUrl, 1600, 0.82);
+        const uploadId = _genUploadId();
         const res = await apiKall({
           action: 'lastOppBilde',
           filnavn: (fil.name || ('scooter-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
           base64: komprimert,
-          mimeType: 'image/jpeg'
+          mimeType: 'image/jpeg',
+          uploadId: uploadId
         });
         if (res.feil) throw new Error(res.feil);
         scooterBildeUrl = res.url;
