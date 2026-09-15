@@ -475,9 +475,19 @@ function stopSpinner() {
 async function apiKall(body) {
   startSpinner();
   try {
-    const opts = { method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) };
+    const opts = { method: 'POST', redirect: 'follow', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) };
     const res = await fetch(scriptUrl, opts);
-    return await res.json();
+    const txt = await res.text();
+    try {
+      return JSON.parse(txt);
+    } catch(e) {
+      console.error('Backend returnerte ikke JSON. Første 500 tegn:', txt.substring(0, 500));
+      console.error('Full response length:', txt.length, 'bytes');
+      const erLoginSide = txt.includes('<!DOCTYPE') || txt.includes('accounts.google.com');
+      throw new Error(erLoginSide
+        ? 'Apps Script krever re-autorisering. Se konsoll for detaljer (F12). Åpne script-editoren, kjør en funksjon manuelt og godkjenn tilgang, deretter Distribuer → Ny versjon.'
+        : 'Uventet svar fra server (' + res.status + ')');
+    }
   } finally {
     stopSpinner();
   }
