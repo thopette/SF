@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="08:47">08:47</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="09:11">09:11</span>
 </div>
 
 <div class="nav">
@@ -472,27 +472,40 @@ function stopSpinner() {
   }
 }
 
+// Hybrid GET/POST strategi:
+// GET brukes for lese-operasjoner (unngår Apps Script sin POST→302→404-redirect-bug)
+// POST brukes for skrive-operasjoner og store payloads (bilder)
 async function apiKall(body, forsokNr) {
   forsokNr = forsokNr || 1;
   startSpinner();
   try {
-    const opts = {
-      method: 'POST', redirect: 'follow',
-      headers: {'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify(body),
-      cache: 'no-store',
-      credentials: 'omit'
-    };
-    const res = await fetch(scriptUrl, opts);
+    const bodyStr = JSON.stringify(body);
+    const brukGet = bodyStr.length < 1500 && !body.tur && !body.base64 && !body.forere && !body.loyper && !body.maskiner && !body.innstillinger && !body.feil && !body.service && !body.kontakt && !body.scootere && !body.items && !body.bildeIds;
+    let res;
+    if (brukGet) {
+      const url = scriptUrl + '?data=' + encodeURIComponent(bodyStr);
+      res = await fetch(url, {
+        method: 'GET', redirect: 'follow',
+        cache: 'no-store',
+        credentials: 'omit'
+      });
+    } else {
+      res = await fetch(scriptUrl, {
+        method: 'POST', redirect: 'follow',
+        headers: {'Content-Type':'text/plain;charset=utf-8'},
+        body: bodyStr,
+        cache: 'no-store',
+        credentials: 'omit'
+      });
+    }
     const txt = await res.text();
     try {
       return JSON.parse(txt);
     } catch(e) {
-      console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}). Første 500 tegn:`, txt.substring(0, 500));
+      console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}, ${brukGet ? 'GET' : 'POST'}). Første 500 tegn:`, txt.substring(0, 500));
       console.error('HTTP status:', res.status, 'Response length:', txt.length);
       if (forsokNr < 4) {
         try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/4)…`, ''); } catch(_) {}
-        // Kortere ventetid: 200, 400, 800ms
         await new Promise(r => setTimeout(r, 200 * Math.pow(2, forsokNr - 1)));
         stopSpinner();
         return apiKall(body, forsokNr + 1);
