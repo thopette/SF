@@ -376,6 +376,11 @@ catch(e) {
   console.error('HTTP status:', res.status, 'Response length:', txt.length);
   if (forsokNr < 3) {
     console.warn(`Prøver igjen (forsøk ${forsokNr + 1}/3)…`);
+    // Vis diskret melding om at vi prøver igjen
+    try {
+      const t = document.getElementById('toast');
+      if (t) { t.textContent = `⚠ Nettverkshikk – prøver igjen (${forsokNr + 1}/3)…`; t.style.color = '#F39C12'; t.style.display = 'inline-flex'; setTimeout(() => { t.style.display = 'none'; t.style.color = ''; }, 2500); }
+    } catch(_) {}
     await new Promise(r => setTimeout(r, 500 * forsokNr));
     return apiKall(body, forsokNr + 1);
   }
@@ -689,7 +694,8 @@ let bildeOpplasterKoe = 0;     // Antall bilder som venter på svar fra server
 let harFeilFraDenneOkta = false;  // Settes når bruker melder feil via "Rapporter feil"-knappen i Ny økt
 let _feilFraNyOkt = false;  // Midlertidig markør fra rapporterFeilFraNyOkt() → lagreNyFeil()
 
-// Filplukker: håndter én eller flere bilder, ett om gangen for å unngå rate-limit
+// Filplukker: håndter én eller flere bilder, parallell (2 samtidig) for raskere gjennomføring.
+// Bruker kan fortsette å fylle ut skjemaet mens opplasting pågår i bakgrunnen.
 document.addEventListener('DOMContentLoaded', () => {
   const inp = document.getElementById('photo-input');
   if (inp) inp.addEventListener('change', async (e) => {
@@ -697,10 +703,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!filer.length) return;
     bildeOpplasterKoe += filer.length;
     oppdaterBildeUI();
-    for (const fil of filer) {
+    const kjør = async (fil) => {
       await lastOppEttBilde(fil);
       bildeOpplasterKoe = Math.max(0, bildeOpplasterKoe - 1);
       oppdaterBildeUI();
+    };
+    // Kjør 2 samtidig – batch-approach
+    for (let i = 0; i < filer.length; i += 2) {
+      const batch = filer.slice(i, i + 2);
+      await Promise.all(batch.map(kjør));
     }
     e.target.value = '';
   });
