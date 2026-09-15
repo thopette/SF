@@ -357,7 +357,8 @@ else loaderWrap.classList.remove('error');
 }
 
 // ── API ──
-async function apiKall(body) {
+async function apiKall(body, forsokNr) {
+forsokNr = forsokNr || 1;
 const controller = new AbortController();
 const timeout = setTimeout(() => controller.abort(), 40000);
 try {
@@ -368,7 +369,21 @@ body: JSON.stringify(body),
 signal: controller.signal
 });
 clearTimeout(timeout);
-return res.json();
+const txt = await res.text();
+try { return JSON.parse(txt); }
+catch(e) {
+  console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}). Første 500 tegn:`, txt.substring(0, 500));
+  console.error('HTTP status:', res.status, 'Response length:', txt.length);
+  if (forsokNr < 3) {
+    console.warn(`Prøver igjen (forsøk ${forsokNr + 1}/3)…`);
+    await new Promise(r => setTimeout(r, 500 * forsokNr));
+    return apiKall(body, forsokNr + 1);
+  }
+  const erLoginSide = txt.includes('accounts.google.com');
+  throw new Error(erLoginSide
+    ? 'Apps Script krever re-autorisering. Åpne script-editoren og godkjenn tilgang, deretter Distribuer → Ny versjon.'
+    : `Server svarte ikke med JSON etter 3 forsøk (HTTP ${res.status}). Se konsoll for detaljer.`);
+}
 } catch(e) {
 clearTimeout(timeout);
 if (e.name === 'AbortError') throw new Error('Tidsfrist utløpt – sjekk nettforbindelsen og prøv igjen.');
