@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="08:40">08:40</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="08:47">08:47</span>
 </div>
 
 <div class="nav">
@@ -476,7 +476,13 @@ async function apiKall(body, forsokNr) {
   forsokNr = forsokNr || 1;
   startSpinner();
   try {
-    const opts = { method: 'POST', redirect: 'follow', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) };
+    const opts = {
+      method: 'POST', redirect: 'follow',
+      headers: {'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(body),
+      cache: 'no-store',
+      credentials: 'omit'
+    };
     const res = await fetch(scriptUrl, opts);
     const txt = await res.text();
     try {
@@ -484,17 +490,17 @@ async function apiKall(body, forsokNr) {
     } catch(e) {
       console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}). Første 500 tegn:`, txt.substring(0, 500));
       console.error('HTTP status:', res.status, 'Response length:', txt.length);
-      if (forsokNr < 3) {
-        // Vis diskret melding til bruker om at vi prøver igjen
-        try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/3)…`, ''); } catch(_) {}
-        await new Promise(r => setTimeout(r, 500 * forsokNr));
+      if (forsokNr < 4) {
+        try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/4)…`, ''); } catch(_) {}
+        // Kortere ventetid: 200, 400, 800ms
+        await new Promise(r => setTimeout(r, 200 * Math.pow(2, forsokNr - 1)));
         stopSpinner();
         return apiKall(body, forsokNr + 1);
       }
       const erLoginSide = txt.includes('accounts.google.com');
       throw new Error(erLoginSide
-        ? 'Apps Script krever re-autorisering. Åpne script-editoren og godkjenn tilgang, deretter Distribuer → Ny versjon.'
-        : `Server svarte ikke etter 3 forsøk (HTTP ${res.status}). Prøv igjen om et øyeblikk.`);
+        ? 'Apps Script krever re-autorisering. Åpne script-editoren og godkjenn tilgang.'
+        : `Server svarte ikke etter 4 forsøk (HTTP ${res.status}). Prøv igjen om et øyeblikk.`);
     }
   } finally {
     stopSpinner();
