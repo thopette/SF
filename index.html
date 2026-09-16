@@ -142,6 +142,37 @@
 .bk-pill[data-flyt].done{background:#1E7A45;color:#fff}
 .bk-pop.bk-pop-flyt{top:calc(env(safe-area-inset-top,0px) + 152px)}
 }
+
+/* NIL + avstikker-estimater */
+.nilbadge{display:inline-flex;align-items:center;padding:1px 7px;background:#E0F4F1;color:#0B6B5C;font-size:10px;font-weight:700;border-radius:9px;border:1px solid #A9DDD4;margin-left:6px;vertical-align:middle;white-space:nowrap;letter-spacing:0}
+.nilbadge.delvis{background:#F1FAF8;color:#2F7A6E;border-style:dashed}
+.nil-toggle{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--border);border-radius:10px;background:var(--white);margin:0 0 14px;cursor:pointer}
+.nil-toggle.on{border-color:#0B8F7A;background:#E0F4F1}
+.nil-toggle input{width:22px;height:22px;accent-color:#0B8F7A;flex-shrink:0;margin:0}
+.nil-toggle b{display:block;font-size:14px;color:var(--navy)}
+.nil-toggle small{display:block;font-size:12px;color:var(--text2);line-height:1.35}
+.av-kol{display:grid;grid-template-columns:1fr 64px 64px 34px;gap:6px;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;margin:0 0 4px}
+#loype-modal-avstikkere .avstikker-admin-row{display:grid;grid-template-columns:1fr 64px 64px 34px;gap:6px;align-items:center}
+#loype-modal-avstikkere .avstikker-admin-row input{min-width:0;width:100%}
+.est-sum{font-size:12px;color:var(--text2);background:var(--snow);border:1px dashed var(--border);border-radius:6px;padding:8px 10px;margin:0 0 10px;line-height:1.45}
+.lr-tittel{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.4px;margin:10px 0 6px}
+.lr{display:grid;grid-template-columns:1fr auto auto;gap:4px 12px;font-size:12px}
+.lr span:nth-child(3n){text-align:right;font-family:var(--mono)}
+.lr .m{color:var(--text2)}
+.nil-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nil-tile{background:#E0F4F1;border-radius:10px;padding:10px 12px}
+.nil-tile .v{font-size:22px;font-weight:700;color:#0B4F45;font-family:var(--mono)}
+.nil-tile .l{font-size:11px;font-weight:600;color:#2F6B61;text-transform:uppercase;letter-spacing:.4px}
+.nil-tile .s{font-size:12px;color:#2F6B61}
+.nil-dager{margin-top:10px;font-size:13px;color:#0B4F45}
+.nil-bar{height:10px;border-radius:5px;background:#C9D6E3;overflow:hidden;margin:10px 0 4px}
+.nil-bar i{display:block;height:100%;background:#0B8F7A}
+.nil-leg{display:flex;justify-content:space-between;font-size:11px;color:var(--text2)}
+.nil-gr{display:grid;grid-template-columns:1fr 48px 56px 56px;gap:0 8px;font-size:13px;margin-top:12px}
+.nil-gr>span{padding:6px 0;border-top:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums}
+.nil-gr>span.n{text-align:left}
+.nil-gr>span.h{border-top:0;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--text2);font-weight:600;padding:2px 0}
+.nil-note{font-size:11px;color:var(--text2);font-style:italic;margin-top:8px}
 </style></head><body>
 <div id="loading-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(255,255,255,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px">
 <div class="spinner"></div>
@@ -173,7 +204,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v16.09 14:16</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v16.09 15:42</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -207,7 +238,7 @@ Bra
 </tr></thead><tbody id="logg-tbody"></tbody></table></div>
 <!-- Mobil kortvisning -->
 <div class="logg-mobil" id="logg-mobil"></div>
-<div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny økt» for å starte.</p></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn active" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-7d" onclick="setStatsFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+<div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny økt» for å starte.</p></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn active" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-7d" onclick="setStatsFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card" id="stats-nil-kort"><div class="card-header">Nærområdet / NIL <span id="stats-nil-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span></div><div class="card-body" id="stats-nil"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
 Km kjørt per måned <span id="stats-km-periode" style="font-size:10px;font-weight:400;opacity:0.7"></span>
 <span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Per fører <span id="stats-forer-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span></div><div class="table-wrap"><table><thead><tr><th>Fører</th><th>Turer</th><th>Km kjørt</th><th>Maskintimer</th><th>Km/t</th><th>Diesel fylt</th><th>AdBlue fylt</th></tr></thead><tbody id="stats-forer"></tbody></table><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Runder – statistikk <span id="stats-runder-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
@@ -262,14 +293,14 @@ Google Sheets tilkobling
 </div>
 </div></div>
 
-<div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
+<div style="margin-top:8px;text-align:center"><button class="btn btn-sm" style="color:var(--danger);border-color:#FECACA" onclick="loggUtAdmin()">Logg ut admin</button></div></div></div><div class="modal-bg" id="forer-modal"><div class="modal"><h3 id="forer-modal-title">Legg til fører</h3><div class="field" style="margin-bottom:16px"><label>Navn</label><input type="text" id="forer-navn-input" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkForerModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreForerNavn()">Lagre</button></div></div></div><div class="modal-bg" id="loype-modal"><div class="modal" style="max-width:520px"><h3 id="loype-modal-title">Ny hovedrunde</h3><div class="field" style="margin-bottom:12px"><label>Navn på runde</label><input type="text" id="loype-navn-input" placeholder="f.eks. Nordmarka rundt" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><label class="nil-toggle" for="loype-nil"><input type="checkbox" id="loype-nil" onchange="this.closest('.nil-toggle').classList.toggle('on', this.checked)"><div><b>Kjøring for NIL (nærområdet)</b><small>Alle turer på denne runden telles som kjøring for idrettslaget i statistikk og rapport</small></div></label><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">
 Avstikkere / tilbringere
-<button type="button" onclick="leggTilAvstikkerInput()" style="float:right;font-size:11px;color:var(--mid);background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-avstikkere"></div><div style="font-size:11px;font-weight:600;color:#B7770D;text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span>Faste snupunkter</span><button type="button" onclick="leggTilSnupunktInput()" style="font-size:11px;color:#E67E22;background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-snupunkter"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px">Estimat (brukes ved kombinerte turer)</div>
+<button type="button" onclick="leggTilAvstikkerInput()" style="float:right;font-size:11px;color:var(--mid);background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div class="av-kol"><span>Navn</span><span>Ca. km</span><span>Ca. min</span><span></span></div><div id="loype-modal-avstikkere"></div><div style="font-size:11px;font-weight:600;color:#B7770D;text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between"><span>Faste snupunkter</span><button type="button" onclick="leggTilSnupunktInput()" style="font-size:11px;color:#E67E22;background:none;border:none;cursor:pointer;font-weight:600">+ Legg til</button></div><div id="loype-modal-snupunkter"></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-top:14px;margin-bottom:8px">Estimat (brukes ved kombinerte turer)</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
-<div class="field"><label>Estimert km</label><input type="number" id="loype-km-estimat" placeholder="1" min="0.1" step="0.1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div>
-<div class="field"><label>Estimert timer</label><input type="number" id="loype-timer-estimat" placeholder="0.5" min="0.1" step="0.1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div>
+<div class="field"><label>Grunnrunde ca. km</label><input type="text" inputmode="decimal" data-desimal id="loype-km-estimat" placeholder="f.eks. 10" oninput="oppdaterEstSum()" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div>
+<div class="field"><label>Grunnrunde ca. min</label><input type="text" inputmode="numeric" data-desimal id="loype-timer-estimat" placeholder="f.eks. 90" oninput="oppdaterEstSum()" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div>
 </div>
-<div id="loype-modal-baseline" style="display:none;font-size:11px;border-radius:6px;padding:6px 10px;margin-bottom:14px"></div>
+<div class="est-sum" id="loype-est-sum">Estimat for en tur = grunnrunde + avstikkerne som er kjørt. La feltene stå tomme hvis dere ikke vet.</div><div id="loype-modal-baseline" style="display:none;font-size:11px;border-radius:6px;padding:6px 10px;margin-bottom:14px"></div>
 <div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkLoypeModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreLoype()">Lagre runde</button></div></div></div><div class="modal-bg" id="registrert-modal" style="align-items:flex-end;padding:0"><div class="modal" style="max-width:100%;width:100%;border-radius:var(--radius) var(--radius) 0 0;padding:24px 20px 32px;max-height:85vh;overflow-y:auto"><div style="text-align:center;margin-bottom:20px"><div style="width:52px;height:52px;border-radius:50%;background:var(--ice);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 12px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div><h3 style="font-size:18px;font-weight:600;color:var(--navy);margin-bottom:4px">Økt registrert!</h3><p style="font-size:13px;color:var(--text2)" id="reg-loype-tekst"></p></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Denne økten</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px"><div style="background:var(--ice);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Tid medgått</div><div style="font-size:24px;font-weight:600;color:var(--navy);font-family:var(--mono);line-height:1" id="reg-tid">–</div></div><div style="background:var(--ice);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Km kjørt</div><div style="font-size:24px;font-weight:600;color:var(--navy);font-family:var(--mono);line-height:1" id="reg-km">–</div></div></div><div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px"><div style="font-size:11px;font-weight:600;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px" id="reg-forer-label">Din sesong</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div style="background:var(--ice);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--mid);font-family:var(--mono)" id="reg-forer-turer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Økter</div></div><div style="background:var(--ice);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--mid);font-family:var(--mono)" id="reg-forer-km">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Km</div></div><div style="background:var(--ice);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--mid);font-family:var(--mono)" id="reg-forer-timer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Timer</div></div></div></div><div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Sesongen totalt</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px"><div style="background:var(--snow);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="reg-sesong-turer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Turer</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="reg-sesong-km">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Km</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="reg-sesong-timer">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Timer</div></div></div></div><button class="btn btn-primary" style="width:100%;justify-content:center" onclick="lukkRegistrertModal()">Lukk</button></div></div><div class="modal-bg" id="maskin-modal"><div class="modal" style="max-width:440px"><h3 id="maskin-modal-title">Ny maskin</h3><div class="form-grid full" style="margin-bottom:10px"><div class="field"><label>Maskinens navn / ID</label><input type="text" id="maskin-navn-input" placeholder="f.eks. Prinoth Bison X" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Km-stand ved oppstart</label><input type="number" id="maskin-km-input" placeholder="0" min="0" step="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Timerteller ved oppstart</label><input type="number" id="maskin-timer-input" placeholder="0.0" min="0" step="0.1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="margin-bottom:16px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow)"><input type="checkbox" id="maskin-aktiv-input" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><div><div style="font-size:13px;font-weight:600;color:var(--text)">Aktiv maskin</div><div style="font-size:11px;color:var(--text2)">Denne maskinen brukes ved nye registreringer</div></div></label></div><div class="modal-actions"><button class="btn btn-sm btn-outline" onclick="lukkMaskinModal()">Avbryt</button><button class="btn btn-sm btn-primary" onclick="lagreMaskin()">Lagre maskin</button></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script>
 
@@ -298,6 +329,213 @@ function tellesILaering(t) {
   const dato = String(t.dato || '').substring(0, 10);
   if (!dato) return false;
   return dato >= cutoff;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NIL + KOMBINASJONSLÆRING
+// NIL merkes på runden (Admin). Læringen skiller på hvilke avstikkere/snupunkt
+// som faktisk ble kjørt, slik at en delvis kjøring ikke blir snittet for hele runden.
+// ═══════════════════════════════════════════════════════════════
+function _loypeDef(navn) { return loyper.find(l => l.navn === navn); }
+function _runderITur(t) { return String(t.loype || '').split(' + ').map(r => r.trim()).filter(Boolean); }
+function _avstikkereFor(t, rundeNavn) {
+  const def = _loypeDef(rundeNavn);
+  if (!def) return [];
+  const alle = String(t.avstikkere || '').split('|').map(s => s.trim()).filter(Boolean);
+  return alle.filter(a => (def.avstikkere || []).includes(a)).sort();
+}
+function _snupunktFor(t, rundeNavn) {
+  const sp = String(t.snupunkt || '').trim();
+  if (!sp) return '';
+  if (sp === 'Ja') return _runderITur(t).length === 1 ? 'Ja' : '';
+  const def = _loypeDef(rundeNavn);
+  const deler = sp.split(',').map(s => s.trim()).filter(Boolean);
+  return def ? deler.filter(d => (def.snupunkter || []).includes(d)).join(',') : '';
+}
+function kombinasjonsNokkel(t, rundeNavn) {
+  const sp = _snupunktFor(t, rundeNavn);
+  return rundeNavn + '|' + _avstikkereFor(t, rundeNavn).join('+') + (sp ? '|snu:' + sp : '');
+}
+function kombinasjonsTekst(nokkel) {
+  const deler = nokkel.split('|');
+  const av = deler[1] ? deler[1].split('+').join(' + ') : 'Uten avstikkere';
+  const snu = deler[2] ? ' · snudde ved ' + deler[2].replace('snu:', '').replace(/^Ja$/, 'snupunkt') : '';
+  return av + snu;
+}
+function erNilRunde(navn) { const d = _loypeDef(navn); return !!(d && d.nil); }
+function nilStatus(t) {
+  const r = _runderITur(t);
+  const n = r.filter(erNilRunde).length;
+  return n === 0 ? '' : (n === r.length ? 'hel' : 'delvis');
+}
+function _nilBadge(t) {
+  const s = nilStatus(t);
+  return s === 'hel' ? ' <span class="nilbadge" title="Kjøring for NIL">NIL</span>'
+    : s === 'delvis' ? ' <span class="nilbadge delvis" title="Delvis kjøring for NIL">Delvis NIL</span>' : '';
+}
+
+// Diff (km kjørt per tur) for alle turer – mellomlagret til turer-lista endres
+let _dc = { ref: null, len: -1, map: {}, base: {} };
+function _diffAlle() {
+  if (_dc.ref !== turer || _dc.len !== turer.length) _dc = { ref: turer, len: turer.length, map: beregnDiff(turer), base: {} };
+  return _dc.map;
+}
+function _snitt(a) { return a.length ? a.reduce((s, v) => s + v, 0) / a.length : null; }
+// Snitt fra rene kjøringer (én runde i økta) med nøyaktig samme kombinasjon
+function beregnBaselineKomb(nokkel) {
+  _diffAlle();
+  if (nokkel in _dc.base) return _dc.base[nokkel];
+  const rundeNavn = nokkel.split('|')[0];
+  const rene = turer.filter(t => t.loype === rundeNavn && tellesILaering(t) && kombinasjonsNokkel(t, rundeNavn) === nokkel);
+  const km = rene.map(t => _dc.map[t.id]?.kmKjort || 0).filter(v => v > 0);
+  const ti = rene.map(t => parseFloat(t.timerBrukt) || parseFloat(t.timerBruktCalc) || 0).filter(v => v > 0);
+  const r = (km.length || ti.length) ? { km: _snitt(km), timer: _snitt(ti), antall: Math.min(km.length, ti.length) } : null;
+  return (_dc.base[nokkel] = r);
+}
+// Estimat fra Admin: grunnrunde + valgte avstikkere (timer)
+function _adminEstimat(rundeNavn, avstikkere) {
+  const d = _loypeDef(rundeNavn);
+  if (!d) return null;
+  const grunnSatt = d.kmEstimat != null || d.timerEstimat != null;
+  let km = grunnSatt ? (parseFloat(d.kmEstimat) || 0) : 0;
+  let timer = grunnSatt ? (parseFloat(d.timerEstimat) || 0) : 0;
+  let harAv = false;
+  (avstikkere || []).forEach(a => {
+    const e = (d.avEst || {})[a];
+    if (e && ((+e.km) > 0 || (+e.min) > 0)) { km += (+e.km) || 0; timer += ((+e.min) || 0) / 60; harAv = true; }
+  });
+  if ((!grunnSatt && !harAv) || (km <= 0 && timer <= 0)) return null;
+  return { km, timer };
+}
+// Estimat for én runde i en økt: 1) historikk for samme kombinasjon, 2) Admin-estimat, 3) lik fordeling
+function hentEstimat(rundeNavn, t) {
+  const nokkel = t ? kombinasjonsNokkel(t, rundeNavn) : rundeNavn + '|';
+  const b = beregnBaselineKomb(nokkel);
+  if (b && b.antall >= 2) return { km: b.km, timer: b.timer, kilde: 'historikk' };
+  const e = _adminEstimat(rundeNavn, t ? _avstikkereFor(t, rundeNavn) : []);
+  if (e) return { km: e.km, timer: e.timer, kilde: 'estimat' };
+  return { km: 1, timer: 1, kilde: 'lik' };
+}
+// Fordeling av en økts målte km/timer på rundene
+function fordelTur(t, diffMap) {
+  diffMap = diffMap || _diffAlle();
+  const runder = _runderITur(t);
+  const turKm = diffMap[t.id]?.kmKjort || 0;
+  const turTimer = parseFloat(t.timerBrukt) || parseFloat(t.timerBruktCalc) || 0;
+  const res = {};
+  if (runder.length <= 1) { if (runder[0]) res[runder[0]] = { km: turKm, timer: turTimer, kilde: 'målt' }; return res; }
+  const est = runder.map(r => ({ r, e: hentEstimat(r, t) }));
+  const sk = est.reduce((s, x) => s + Math.max(0, x.e.km || 0), 0);
+  const st = est.reduce((s, x) => s + Math.max(0, x.e.timer || 0), 0);
+  est.forEach(x => {
+    res[x.r] = {
+      km: sk > 0 ? turKm * Math.max(0, x.e.km || 0) / sk : turKm / runder.length,
+      timer: st > 0 ? turTimer * Math.max(0, x.e.timer || 0) / st : turTimer / runder.length,
+      kilde: x.e.kilde
+    };
+  });
+  return res;
+}
+// NIL-andel for én økt
+function nilAndel(t, diffMap) {
+  diffMap = diffMap || _diffAlle();
+  const st = nilStatus(t);
+  if (!st) return { km: 0, timer: 0, estimert: false };
+  if (st === 'hel') return { km: diffMap[t.id]?.kmKjort || 0, timer: parseFloat(t.timerBrukt) || parseFloat(t.timerBruktCalc) || 0, estimert: false };
+  const f = fordelTur(t, diffMap);
+  let km = 0, timer = 0;
+  _runderITur(t).filter(erNilRunde).forEach(r => { km += f[r]?.km || 0; timer += f[r]?.timer || 0; });
+  return { km, timer, estimert: true };
+}
+// Liste over lærte kombinasjoner for en runde (Admin)
+function kombinasjonsListeHtml(rundeNavn) {
+  const dm = _diffAlle();
+  const grupper = {};
+  turer.filter(t => t.loype === rundeNavn && tellesILaering(t)).forEach(t => {
+    const k = kombinasjonsNokkel(t, rundeNavn);
+    (grupper[k] = grupper[k] || []).push(t);
+  });
+  const nokler = Object.keys(grupper).sort((a, b) => grupper[b].length - grupper[a].length);
+  if (!nokler.length) return '<div style="font-size:12px;color:var(--text2);font-style:italic">Ingen rene kjøringer av denne runden ennå.</div>';
+  const fmt = v => v == null ? '–' : v.toFixed(1).replace('.', ',');
+  const rader = nokler.map(k => {
+    const b = beregnBaselineKomb(k);
+    const n = grupper[k].length;
+    const aktiv = b && b.antall >= 2;
+    const verdi = aktiv ? `${fmt(b.km)} km · ${_minTekst(b.timer * 60)}` : (_adminEstimat(rundeNavn, k.split('|')[1] ? k.split('|')[1].split('+') : []) ? 'bruker estimat' : 'lik fordeling');
+    return `<span${aktiv ? '' : ' class="m"'}>${kombinasjonsTekst(k)}</span><span${aktiv ? '' : ' class="m"'}>${n} ${n === 1 ? 'tur' : 'turer'}</span><span${aktiv ? '' : ' class="m"'}>${verdi}</span>`;
+  }).join('');
+  return `<div class="lr-tittel">Læring – rene kjøringer per kombinasjon</div><div class="lr">${rader}</div>`;
+}
+function _minTekst(min) {
+  min = Math.round(min || 0);
+  if (!min) return '–';
+  const h = Math.floor(min / 60), m = min % 60;
+  return h ? (m ? `${h} t ${m} min` : `${h} t`) : `${m} min`;
+}
+
+// ── Statistikk: Nærområdet / NIL ──
+function renderNilStat(liste) {
+  const el = document.getElementById('stats-nil');
+  if (!el) return;
+  const per = document.getElementById('stats-nil-periode');
+  if (per) per.textContent = '– ' + ({ sesong: 'Sesongen', uke: 'Denne uken', '7d': 'Siste 7 dager', '30d': 'Siste 30 dager', alle: 'Alle turer' }[statsFilter] || 'Valgt periode');
+  if (!loyper.some(l => l.nil)) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen runder er merket som NIL. Kryss av for «Kjøring for NIL» på runden under Admin → Runder.</p>';
+    return;
+  }
+  const dm = _diffAlle();
+  let okter = 0, hel = 0, delvis = 0, kmTot = 0, kmNil = 0, tTot = 0, tNil = 0, est = false;
+  const dager = new Set(), nilDager = new Set(), under = {};
+  liste.forEach(t => {
+    okter++;
+    if (t.dato) dager.add(t.dato);
+    kmTot += dm[t.id]?.kmKjort || 0;
+    tTot += parseFloat(t.timerBrukt) || parseFloat(t.timerBruktCalc) || 0;
+    const st = nilStatus(t);
+    if (!st) return;
+    if (t.dato) nilDager.add(t.dato);
+    if (st === 'hel') hel++; else delvis++;
+    const a = nilAndel(t, dm);
+    kmNil += a.km; tNil += a.timer; if (a.estimert) est = true;
+    // Fordel NIL-delen på undervalg (etter estimat, ellers likt)
+    const f = st === 'hel' && _runderITur(t).length === 1 ? null : fordelTur(t, dm);
+    _runderITur(t).filter(erNilRunde).forEach(r => {
+      const delKm = f ? (f[r]?.km || 0) : a.km, delT = f ? (f[r]?.timer || 0) : a.timer;
+      const av = _avstikkereFor(t, r);
+      const d = _loypeDef(r);
+      const navn = av.length ? av : ['(uten undervalg)'];
+      const vekt = navn.map(n => { const e = (d?.avEst || {})[n]; return { km: e && +e.km > 0 ? +e.km : 0, min: e && +e.min > 0 ? +e.min : 0 }; });
+      const sk = vekt.reduce((s, v) => s + v.km, 0), sm = vekt.reduce((s, v) => s + v.min, 0);
+      if (navn.length > 1) est = true;
+      navn.forEach((n, i) => {
+        const u = under[n] = under[n] || { antall: 0, km: 0, timer: 0 };
+        u.antall++;
+        u.km += sk > 0 ? delKm * vekt[i].km / sk : delKm / navn.length;
+        u.timer += sm > 0 ? delT * vekt[i].min / sm : delT / navn.length;
+      });
+    });
+  });
+  if (!okter) { el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen økter i valgt periode.</p>'; return; }
+  const pst = (a, b) => b > 0 ? Math.round(a / b * 100) : 0;
+  const f1 = v => v.toFixed(1).replace('.', ',');
+  const f0 = v => Math.round(v).toLocaleString('nb-NO');
+  const ca = est ? '≈ ' : '';
+  const nilOkter = hel + delvis;
+  const underRader = Object.keys(under).sort((a, b) => under[b].antall - under[a].antall)
+    .map(n => `<span class="n">${n}</span><span>${under[n].antall}</span><span>${ca}${f0(under[n].km)}</span><span>${ca}${f1(under[n].timer)}</span>`).join('');
+  el.innerHTML = `
+    <div class="nil-tiles">
+      <div class="nil-tile"><div class="l">Økter</div><div class="v">${nilOkter}</div><div class="s">${hel} bare NIL · ${delvis} delvis</div></div>
+      <div class="nil-tile"><div class="l">Andel av økter</div><div class="v">${pst(nilOkter, okter)} %</div><div class="s">av ${okter} økter</div></div>
+      <div class="nil-tile"><div class="l">Km</div><div class="v">${ca}${f0(kmNil)}</div><div class="s">${pst(kmNil, kmTot)} % av ${f0(kmTot)} km</div></div>
+      <div class="nil-tile"><div class="l">Timer</div><div class="v">${ca}${f1(tNil)}</div><div class="s">${pst(tNil, tTot)} % av ${f1(tTot)} t</div></div>
+    </div>
+    <div class="nil-dager">NIL kjørt på <b>${nilDager.size} av ${dager.size}</b> kjøredager (${pst(nilDager.size, dager.size)} %)</div>
+    <div class="nil-bar" role="img" aria-label="NIL ${pst(kmNil, kmTot)} prosent av km"><i style="width:${pst(kmNil, kmTot)}%"></i></div>
+    <div class="nil-leg"><span>NIL ${pst(kmNil, kmTot)} % av km</span><span>Marka ${100 - pst(kmNil, kmTot)} %</span></div>
+    ${underRader ? `<div class="nil-gr"><span class="n h">Undervalg</span><span class="h">Kjørt</span><span class="h">Km</span><span class="h">Timer</span>${underRader}</div>` : ''}
+    ${est ? '<div class="nil-note">≈ Km og timer for delvise økter og undervalg er fordelt med læring eller estimat. Økter som bare er NIL bruker målte tall.</div>' : ''}`;
 }
 function beregnDiff(turer) {
 // Returns a map of tur.id -> { kmKjort, timerBrukt }
@@ -1782,7 +2020,7 @@ const forkondTekst = t.forkond===1 ? '● Dårlig' : t.forkond===2 ? '●● Mid
 const forkondKlasse = t.forkond===1 ? 'cond-1' : t.forkond===2 ? 'cond-2' : t.forkond===3 ? 'cond-3' : '';
 return `
 <div class="trip-card">
-<div class="trip-header"><div class="trip-route">${t.loype}${t.harFeil ? ` <span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:2px;padding:1px 6px;background:#FEF2F2;color:#B91C1C;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #FECACA;vertical-align:middle">⚙ Feil</span>` : ''}</div><div style="display:flex;align-items:center;gap:8px">${_bildeThumbs(t, 3)}<div class="trip-date">${formatDato(t.dato)}</div></div></div>
+<div class="trip-header"><div class="trip-route">${t.loype}${_nilBadge(t)}${t.harFeil ? ` <span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:2px;padding:1px 6px;background:#FEF2F2;color:#B91C1C;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #FECACA;vertical-align:middle">⚙ Feil</span>` : ''}</div><div style="display:flex;align-items:center;gap:8px">${_bildeThumbs(t, 3)}<div class="trip-date">${formatDato(t.dato)}</div></div></div>
 <div class="trip-driver">👤 ${t.forer}</div>
 <div class="trip-stats" style="margin-bottom:6px">
 ${t.slutt ? `<div class="trip-stat"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>${t.slutt}</span></div>` : ''}
@@ -1894,7 +2132,7 @@ const timerVis = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc) ? (parse
 const fornavn = t.forer ? t.forer.split(' ')[0] : '–';
 return `<tr style="${idx%2===0?'background:var(--white)':'background:var(--snow)'}">
 <td style="font-family:var(--mono);font-size:12px;white-space:nowrap;color:var(--text2)">${formatDato(t.dato)}${t.redigert?'<span style="margin-left:4px;font-size:10px;color:var(--text2);background:var(--ice);border:1px solid var(--border);border-radius:3px;padding:1px 4px">✎</span>':''}</td>
-<td><div style="font-weight:700;font-size:13px;color:var(--navy);line-height:1.3">${t.loype}${t.harFeil ? ` <span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:2px;padding:1px 5px;background:#FEF2F2;color:#B91C1C;font-size:10px;font-weight:600;border-radius:6px;border:1px solid #FECACA;vertical-align:middle">⚙</span>` : ''}</div><div style="font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:6px">👤 ${fornavn}${_bildeBadge(t)}</div></td>
+<td><div style="font-weight:700;font-size:13px;color:var(--navy);line-height:1.3">${t.loype}${_nilBadge(t)}${t.harFeil ? ` <span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:2px;padding:1px 5px;background:#FEF2F2;color:#B91C1C;font-size:10px;font-weight:600;border-radius:6px;border:1px solid #FECACA;vertical-align:middle">⚙</span>` : ''}</div><div style="font-size:11px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:6px">👤 ${fornavn}${_bildeBadge(t)}</div></td>
 <td style="font-family:var(--mono);font-size:12px">${t.slutt||'–'}</td>
 <td style="font-family:var(--mono)">${kmVis}</td>
 <td style="font-family:var(--mono)">${timerVis}</td>
@@ -1925,7 +2163,7 @@ const fornavn = t.forer ? t.forer.split(' ')[0] : '–';
 const cond = t.forkond===1?'<span class="cond-badge cond-1">●</span>':t.forkond===2?'<span class="cond-badge cond-2">●●</span>':t.forkond===3?'<span class="cond-badge cond-3">●●●</span>':'';
 return `<div class="logg-kort">
 <div class="logg-kort-top">
-<div class="logg-kort-loype">${t.loype}</div>
+<div class="logg-kort-loype">${t.loype}${_nilBadge(t)}</div>
 <div class="logg-kort-dato">${formatDato(t.dato)}${t.redigert?' <span style="font-size:10px;color:var(--text2);background:var(--ice);border:1px solid var(--border);border-radius:4px;padding:1px 4px">✎</span>':''}</div>
 </div>
 <div class="logg-kort-meta">
@@ -1980,6 +2218,7 @@ _pEl('stats-forer-periode');
 _pEl('stats-runder-periode');
 
 _pEl('stats-km-periode');
+try { renderNilStat(filtrertStats); } catch(e) { console.error('NIL-statistikk:', e); }
 if (chartInst) { chartInst.destroy(); chartInst=null; }
 chartInst = new Chart(document.getElementById('chart-km'), {
 type:'bar', data:{ labels, datasets:[{ label:'Km', data, backgroundColor:'#4A9FD4', borderRadius:5 }] },
@@ -2029,37 +2268,7 @@ return `<tr>
 const loypeMap = {};
 const diffMapLoype = beregnDiff(turer);
 
-// Baseline: beregn snitt km/timer fra rene kjøringer (kun én runde).
-// Filtrerer ut turer før innstillingen 'laeringFraDato' – disse representerer
-// f.eks. gammel maskin / endret løypenett og er ikke relevante for læringen.
-function beregnBaseline(rundeNavn) {
-const reneKjøringer = turer.filter(t => t.loype === rundeNavn && tellesILaering(t));
-if (reneKjøringer.length === 0) return null;
-const kmVerdier = reneKjøringer.map(t => diffMapLoype[t.id]?.kmKjort||0).filter(v=>v>0);
-const timerVerdier = reneKjøringer.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0).filter(v=>v>0);
-if (kmVerdier.length === 0 && timerVerdier.length === 0) return null;
-return {
-km: kmVerdier.length ? kmVerdier.reduce((s,v)=>s+v,0)/kmVerdier.length : null,
-timer: timerVerdier.length ? timerVerdier.reduce((s,v)=>s+v,0)/timerVerdier.length : null,
-antall: Math.min(kmVerdier.length, timerVerdier.length)
-};
-}
-
-// Finn estimat for en runde (1c → 1b → 1a)
-function hentEstimat(rundeNavn) {
-const loype = loyper.find(l => l.navn === rundeNavn);
-const baseline = beregnBaseline(rundeNavn);
-// 1c: historikk (minst 2 rene kjøringer)
-if (baseline && baseline.antall >= 2) {
-return { km: baseline.km, timer: baseline.timer, kilde: 'historikk' };
-}
-// 1b: admin-estimat
-if (loype && (loype.kmEstimat > 1 || loype.timerEstimat > 0.5)) {
-return { km: loype.kmEstimat||1, timer: loype.timerEstimat||0.5, kilde: 'estimat' };
-}
-// 1a: lik fordeling (håndteres i fordelingsfunksjonen)
-return { km: loype?.kmEstimat||1, timer: loype?.timerEstimat||0.5, kilde: 'lik' };
-}
+// (Estimat og fordeling for kombinerte økter: se hentEstimat/fordelTur – felles for statistikk og NIL)
 
 function parseTemp(vaer) {
 if (!vaer) return null;
@@ -2074,20 +2283,7 @@ const runder = t.loype.split(' + ').map(r=>r.trim()).filter(Boolean);
 const erKombinert = runder.length > 1;
 // Beregn fordeling for kombinerte turer
 let fordeling = {};
-if (erKombinert) {
-const estimater = runder.map(r => ({ navn: r, est: hentEstimat(r) }));
-const totKm = estimater.reduce((s,e)=>s+(e.est.km||1),0);
-const totTimer = estimater.reduce((s,e)=>s+(e.est.timer||0.5),0);
-const turKm = diffMapLoype[t.id]?.kmKjort||0;
-const turTimer = parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0;
-estimater.forEach(e => {
-fordeling[e.navn] = {
-km: totKm > 0 ? turKm * (e.est.km||1) / totKm : turKm / runder.length,
-timer: totTimer > 0 ? turTimer * (e.est.timer||0.5) / totTimer : turTimer / runder.length,
-kilde: e.est.kilde
-};
-});
-}
+if (erKombinert) fordeling = fordelTur(t, diffMapLoype);
 runder.forEach(rundeNavn => {
 if (!loypeMap[rundeNavn]) loypeMap[rundeNavn]={
 turer:0,km:0,timer:0,
@@ -2942,7 +3138,8 @@ const filterLoype = loypeSel ? loypeSel.value : '';
 let eksport = filterTurer(turer);
 if (filterForer) eksport = eksport.filter(t => t.forer === filterForer);
 if (filterLoype) eksport = eksport.filter(t => t.loype === filterLoype);
-const headers = ['Dato','Fører','Løype','Slutt','Km','TimerSlutt','Diesel','AdBlue','Merknader','Maskin'];
+const headers = ['Dato','Fører','Løype','Slutt','Km','TimerSlutt','Diesel','AdBlue','Merknader','Maskin','NIL','NIL km','NIL timer'];
+const _dmNil = _diffAlle();
 const periodeLabels2 = {sesong:'Sesong',uke:'Denne uken','7d':'Siste 7 dager','30d':'Siste 30 dager',alle:'Alle'};
 const diffMapExp = beregnDiff(eksport);
 const totKmExp = eksport.reduce((s,t) => s+(diffMapExp[t.id]?.kmKjort||0),0);
@@ -2956,7 +3153,10 @@ const rows = eksport.map(t => [
 t.dato, t.forer, t.loype, t.slutt,
 t.km, t.timerSlutt,
 t.diesel==='Ja'?'Ja':'', t.adblue==='Ja'?'Ja':'',
-t.merknader, t.maskin
+t.merknader, t.maskin,
+(() => { const st = nilStatus(t); return st === 'hel' ? 'Ja' : st === 'delvis' ? 'Delvis' : ''; })(),
+(() => { const a = nilAndel(t, _dmNil); return a.km ? a.km.toFixed(1).replace('.', ',') : ''; })(),
+(() => { const a = nilAndel(t, _dmNil); return a.timer ? a.timer.toFixed(2).replace('.', ',') : ''; })()
 ]);
 // Bruk semikolon som separator for norsk Excel
 const sep = ';';
@@ -3147,11 +3347,13 @@ document.getElementById('loype-modal-snupunkter').innerHTML = '';
 document.getElementById('loype-modal-title').textContent = 'Ny hovedrunde';
 const kmEl2 = document.getElementById('loype-km-estimat');
 const timerEl2 = document.getElementById('loype-timer-estimat');
-if (kmEl2) kmEl2.value = '1';
-if (timerEl2) timerEl2.value = '0.5';
+if (kmEl2) kmEl2.value = '';
+if (timerEl2) timerEl2.value = '';
+_settLoypeNil(false);
 const bEl = document.getElementById('loype-modal-baseline');
 if (bEl) bEl.style.display = 'none';
 leggTilAvstikkerInput();
+oppdaterEstSum();
 document.getElementById('loype-modal').classList.add('open');
 }
 function redigerLoype(idx) {
@@ -3161,14 +3363,16 @@ document.getElementById('loype-navn-input').value = l.navn;
 document.getElementById('loype-modal-title').textContent = 'Rediger runde';
 const cont = document.getElementById('loype-modal-avstikkere');
 cont.innerHTML = '';
-l.avstikkere.forEach(a => leggTilAvstikkerInput(a));
+l.avstikkere.forEach(a => leggTilAvstikkerInput(a, (l.avEst || {})[a]));
+_settLoypeNil(!!l.nil);
 const scont = document.getElementById('loype-modal-snupunkter');
 scont.innerHTML = '';
 (l.snupunkter||[]).forEach(s => leggTilSnupunktInput(s));
 const kmEl = document.getElementById('loype-km-estimat');
 const timerEl = document.getElementById('loype-timer-estimat');
-if (kmEl) kmEl.value = l.kmEstimat||1;
-if (timerEl) timerEl.value = l.timerEstimat||0.5;
+if (kmEl) kmEl.value = l.kmEstimat != null ? String(l.kmEstimat).replace('.', ',') : '';
+if (timerEl) timerEl.value = l.timerEstimat != null ? Math.round(l.timerEstimat * 60) : '';
+oppdaterEstSum();
 // Vis rikt læringsinnsyn (samme som det gamle admin-kortet, men kun for denne runden)
 const baselineEl = document.getElementById('loype-modal-baseline');
 if (baselineEl) {
@@ -3182,13 +3386,43 @@ baselineEl.innerHTML = bygglaeringHtml(l.navn, { visNavn: false });
 }
 document.getElementById('loype-modal').classList.add('open');
 }
-function leggTilAvstikkerInput(verdi='') {
+function leggTilAvstikkerInput(verdi='', est) {
 const cont = document.getElementById('loype-modal-avstikkere');
 const div = document.createElement('div');
 div.className = 'avstikker-admin-row';
-div.innerHTML = `<input type="text" placeholder="Navn på avstikker…" value="${verdi}"><button type="button" onclick="this.parentElement.remove()" class="btn btn-danger btn-sm">✕</button>`;
+const km = est && est.km != null && est.km !== '' ? String(est.km).replace('.', ',') : '';
+const min = est && est.min != null && est.min !== '' ? est.min : '';
+div.innerHTML = `<input type="text" class="av-navn" placeholder="Navn på avstikker…" value="${String(verdi).replace(/"/g,'&quot;')}"><input type="text" class="av-km" inputmode="decimal" data-desimal placeholder="km" value="${km}" oninput="oppdaterEstSum()"><input type="text" class="av-min" inputmode="numeric" data-desimal placeholder="min" value="${min}" oninput="oppdaterEstSum()"><button type="button" onclick="this.parentElement.remove();oppdaterEstSum()" class="btn btn-danger btn-sm">✕</button>`;
 cont.appendChild(div);
-div.querySelector('input').focus();
+if (!verdi) div.querySelector('input').focus();
+}
+function _settLoypeNil(på) {
+const el = document.getElementById('loype-nil');
+if (el) { el.checked = !!på; el.closest('.nil-toggle')?.classList.toggle('on', !!på); }
+}
+function _lesAvstikkerRader() {
+return [...document.querySelectorAll('#loype-modal-avstikkere .avstikker-admin-row')].map(r => ({
+  navn: (r.querySelector('.av-navn')?.value || '').trim(),
+  km: r.querySelector('.av-km')?.value.trim().replace(',', '.') || '',
+  min: r.querySelector('.av-min')?.value.trim().replace(',', '.') || ''
+})).filter(a => a.navn);
+}
+// Viser hva estimatet blir for «alt kjørt» og for hver avstikker alene
+function oppdaterEstSum() {
+const el = document.getElementById('loype-est-sum');
+if (!el) return;
+const gKm = parseFloat((document.getElementById('loype-km-estimat')?.value || '').replace(',', '.')) || 0;
+const gMin = parseFloat((document.getElementById('loype-timer-estimat')?.value || '').replace(',', '.')) || 0;
+const av = _lesAvstikkerRader().filter(a => parseFloat(a.km) > 0 || parseFloat(a.min) > 0);
+const tekst = (km, min) => `ca. ${String(Math.round(km * 10) / 10).replace('.', ',')} km · ${_minTekst(min)}`;
+let h = 'Estimat for en tur = grunnrunde + avstikkerne som er kjørt. La feltene stå tomme hvis dere ikke vet.';
+if (gKm || gMin || av.length) {
+  const totKm = gKm + av.reduce((s, a) => s + (parseFloat(a.km) || 0), 0);
+  const totMin = gMin + av.reduce((s, a) => s + (parseFloat(a.min) || 0), 0);
+  h += `<br><b>${av.length ? 'Alt kjørt' : 'Grunnrunde'}:</b> ${tekst(totKm, totMin)}`;
+  if (av.length && !gKm && !gMin) h += ' &nbsp;·&nbsp; ' + av.slice(0, 3).map(a => `<b>Bare ${a.navn.toLowerCase()}:</b> ${tekst(parseFloat(a.km) || 0, parseFloat(a.min) || 0)}`).join(' &nbsp;·&nbsp; ');
+}
+el.innerHTML = h;
 }
 function leggTilSnupunktInput(verdi='') {
 const cont = document.getElementById('loype-modal-snupunkter');
@@ -3202,13 +3436,18 @@ function lukkLoypeModal() { document.getElementById('loype-modal').classList.rem
 async function lagreLoype() {
 const navn = document.getElementById('loype-navn-input').value.trim();
 if (!navn) { alert('Fyll inn navn på runden.'); return; }
-const avInputs = document.querySelectorAll('#loype-modal-avstikkere input[type=text]');
-const avstikkere = [...avInputs].map(i=>i.value.trim()).filter(Boolean);
+const avRader = _lesAvstikkerRader();
+const avstikkere = avRader.map(a => a.navn);
+const avEst = {};
+avRader.forEach(a => { if (parseFloat(a.km) > 0 || parseFloat(a.min) > 0) avEst[a.navn] = { km: parseFloat(a.km) || 0, min: parseFloat(a.min) || 0 }; });
 const snInputs = document.querySelectorAll('#loype-modal-snupunkter input[type=text]');
 const snupunkter = [...snInputs].map(i=>i.value.trim()).filter(Boolean);
-const kmEst = parseFloat(document.getElementById('loype-km-estimat')?.value)||1;
-const timerEst = parseFloat(document.getElementById('loype-timer-estimat')?.value)||0.5;
-const obj = { navn, avstikkere, snupunkter, kmEstimat: kmEst, timerEstimat: timerEst };
+const kmTxt = (document.getElementById('loype-km-estimat')?.value || '').trim().replace(',', '.');
+const minTxt = (document.getElementById('loype-timer-estimat')?.value || '').trim().replace(',', '.');
+const kmEst = kmTxt === '' ? null : (parseFloat(kmTxt) || 0);
+const timerEst = minTxt === '' ? null : (parseFloat(minTxt) || 0) / 60;
+const nil = !!document.getElementById('loype-nil')?.checked;
+const obj = { navn, avstikkere, snupunkter, kmEstimat: kmEst, timerEstimat: timerEst, nil, avEst };
 if (redigerLoypeIdx >= 0) loyper[redigerLoypeIdx] = obj;
 else loyper.push(obj);
 await lagreLoyper();
@@ -3229,7 +3468,7 @@ if (!el) return;
 if (!loyper.length) { el.innerHTML='<p style="color:var(--text2);font-size:13px;padding:4px 0">Ingen løyper lagt inn ennå. Trykk «+ Ny runde» for å starte.</p>'; return; }
 el.innerHTML = loyper.map((l,i) => {
 // Beregn baseline for denne runden
-const reneKjøringer = turer.filter(t => t.loype === l.navn && tellesILaering(t));
+const reneKjøringer = turer.filter(t => t.loype === l.navn && tellesILaering(t) && kombinasjonsNokkel(t, l.navn) === l.navn + '|');
 let diffMapAdmin = {};
 try { diffMapAdmin = beregnDiff(turer); } catch(e) {}
 const kmVerdier = reneKjøringer.map(t => diffMapAdmin[t.id]?.kmKjort||0).filter(v=>v>0);
@@ -3243,10 +3482,10 @@ const baselineHtml = brukerHistorikk
 ✓ Historikk aktiv (${antallRene} rene kjøringer): <strong>${baselineKm} km / ${baselineTimer} t</strong> – brukes i fordeling
 </div>`
 : `<div style="font-size:11px;color:#D68910;background:#FFFBF0;border:1px solid #F5CBA7;border-radius:6px;padding:5px 10px;margin-top:8px">
-⏳ Ikke nok historikk (${antallRene} av 2 nødvendige) – bruker admin-estimat
+⏳ Ikke nok rene kjøringer uten avstikkere (${antallRene} av 2) – bruker estimat eller lik fordeling
 </div>`;
 return `
-<div class="loype-admin-item"><div class="loype-admin-header"><div class="loype-admin-name">${l.navn}</div><span class="badge-km">${l.avstikkere.length} avst.</span><span class="badge-km" style="background:#FEF9E7;color:#7D6608;border-color:#F9E79F">≈${l.kmEstimat||1}km / ${l.timerEstimat||0.5}t</span><button class="btn btn-sm btn-outline" onclick="redigerLoype(${i})" style="padding:5px 10px;font-size:12px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettLoype(${i})">Slett</button></div><div class="loype-admin-body"><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Avstikkere</div><div style="margin-bottom:8px">${l.avstikkere.length ? l.avstikkere.map(a=>`<span class="badge-km" style="margin-right:5px;margin-bottom:4px">${a}</span>`).join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div><div style="font-size:11px;color:#B7770D;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Snupunkter</div><div>${(l.snupunkter||[]).length ? (l.snupunkter||[]).map(s=>'<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:#FEF5E7;color:#784212;font-weight:600;border:1px solid #F5CBA7;margin-right:5px;margin-bottom:4px">'+s+'</span>').join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div></div>${baselineHtml}
+<div class="loype-admin-item"><div class="loype-admin-header"><div class="loype-admin-name">${l.navn}${l.nil ? '<span class="nilbadge">NIL</span>' : ''}</div><span class="badge-km">${l.avstikkere.length} avst.</span>${(() => { const e = _adminEstimat(l.navn, l.avstikkere); return e ? `<span class="badge-km" style="background:#FEF9E7;color:#7D6608;border-color:#F9E79F">≈${String(Math.round(e.km*10)/10).replace('.',',')} km / ${_minTekst(e.timer*60)}</span>` : ''; })()}<button class="btn btn-sm btn-outline" onclick="redigerLoype(${i})" style="padding:5px 10px;font-size:12px">Rediger</button><button class="btn btn-sm btn-danger" onclick="slettLoype(${i})">Slett</button></div><div class="loype-admin-body"><div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Avstikkere</div><div style="margin-bottom:8px">${l.avstikkere.length ? l.avstikkere.map(a=>`<span class="badge-km" style="margin-right:5px;margin-bottom:4px">${a}</span>`).join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div><div style="font-size:11px;color:#B7770D;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px">Snupunkter</div><div>${(l.snupunkter||[]).length ? (l.snupunkter||[]).map(s=>'<span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;background:#FEF5E7;color:#784212;font-weight:600;border:1px solid #F5CBA7;margin-right:5px;margin-bottom:4px">'+s+'</span>').join('') : '<span style="font-size:12px;color:var(--text2)">Ingen</span>'}</div></div>${baselineHtml}
 </div>`;
 }).join('');
 }
@@ -4016,7 +4255,7 @@ function bygglaeringHtml(rundeNavn, options) {
   const diffMap = options.diffMap || beregnDiff(turer);
   const l = loyper.find(x => x.navn === rundeNavn);
   if (!l) return '';
-  const reneKj = turer.filter(t => t.loype === l.navn && tellesILaering(t));
+  const reneKj = turer.filter(t => t.loype === l.navn && tellesILaering(t) && kombinasjonsNokkel(t, l.navn) === l.navn + '|');
   const kmVerdier = reneKj.map(t => diffMap[t.id]?.kmKjort||0).filter(v => v > 0);
   const timerVerdier = reneKj.map(t => parseFloat(t.timerBrukt)||parseFloat(t.timerBruktCalc)||0).filter(v => v > 0);
   const antall = Math.min(kmVerdier.length, timerVerdier.length);
@@ -4026,14 +4265,15 @@ function bygglaeringHtml(rundeNavn, options) {
   const maksKm = kmVerdier.length ? Math.max(...kmVerdier) : null;
   const minT = timerVerdier.length ? Math.min(...timerVerdier) : null;
   const maksT = timerVerdier.length ? Math.max(...timerVerdier) : null;
-  const adminKm = l.kmEstimat || 1;
-  const adminTimer = l.timerEstimat || 0.5;
+  const _adm = _adminEstimat(l.navn, []);
+  const adminKm = _adm ? _adm.km : 1;
+  const adminTimer = _adm ? _adm.timer : 1;
   let brukKm, brukTimer, kildeFarge, kildeTekst;
   if (antall >= 2) {
     brukKm = snittKm; brukTimer = snittTimer;
     kildeFarge = 'background:#D5F5E3;color:#1E8449;border-color:#A9DFBF';
     kildeTekst = 'Historikk';
-  } else if (adminKm > 1 || adminTimer > 0.5) {
+  } else if (_adm) {
     brukKm = adminKm; brukTimer = adminTimer;
     kildeFarge = 'background:#FEF9E7;color:#7D6608;border-color:#F9E79F';
     kildeTekst = 'Admin-estimat';
@@ -4067,7 +4307,12 @@ function bygglaeringHtml(rundeNavn, options) {
     : '<div style="margin-top:6px;font-size:12px;color:var(--text2);font-style:italic">Ingen rene kjøringer registrert ennå – minst 2 trengs før historikk slår inn</div>';
   const aktivt = `<div style="margin-top:8px;padding:8px 10px;background:var(--ice);border-radius:6px;font-size:12px"><strong style="color:var(--navy)">Brukes nå:</strong> ${brukKm.toFixed(1)} km / ${brukTimer.toFixed(1)} t <span class="badge-km" style="margin-left:6px;${kildeFarge}">${kildeTekst}</span></div>`;
   const navnHtml = visNavn ? `<div style="font-weight:600;font-size:14px;color:var(--navy);margin-bottom:4px">${l.navn}</div>` : '';
-  return banner + navnHtml + historikk + aktivt;
+  // Runde uten grunnrunde (estimat 0 km / 0 min, f.eks. NIL): bare kombinasjonene er relevante
+  if (l.kmEstimat === 0 && l.timerEstimat === 0) {
+    return banner + navnHtml + '<div style="font-size:12px;color:var(--text2)">Ingen grunnrunde – estimatet er summen av avstikkerne som er kjørt.</div>' + kombinasjonsListeHtml(l.navn);
+  }
+  const grunnTittel = '<div class="lr-tittel" style="margin-top:0">Grunnrunde uten avstikkere</div>';
+  return banner + navnHtml + grunnTittel + historikk + aktivt + kombinasjonsListeHtml(l.navn);
 }
 function visNyForer() { redigerForerIdx=-1; document.getElementById('forer-navn-input').value=''; document.getElementById('forer-modal-title').textContent='Legg til fører'; document.getElementById('forer-modal').classList.add('open'); }
 function redigerForer(i) { redigerForerIdx=i; document.getElementById('forer-navn-input').value=forere[i]; document.getElementById('forer-modal-title').textContent='Endre fører'; document.getElementById('forer-modal').classList.add('open'); }
