@@ -241,7 +241,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="13:54">13:54</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="14:16">14:16</span>
 </div>
 
 <div class="nav">
@@ -713,30 +713,69 @@ function sesongPeriodeTekst(sesong) {
 }
 
 // ── DATA-LAST ─────────────────────────────────────────
-async function lastData() {
+// Bruk oppsett (sjåfører, scootere, innstillinger)
+function _brukConfigScooter(cfg) {
+  if (!cfg || cfg.feil) return;
+  sjaforer = cfg.forere || [];
+  scootere = cfg.scootere || [];
+  kontakter = cfg.kontakter || [];
+  innstillinger = cfg.innstillinger || {};
+  // Sesong-datoer deles med maskinloggen (samme Innstillinger-ark)
+  sesongStart = parseSesongDato(innstillinger.sesongStart);
+  sesongSlutt = parseSesongDato(innstillinger.sesongSlutt);
+  // Cache varsler-admin for kontakt-panelet (cross-abonnement-sjekk)
+  const jaCheck = (v) => String(v).toLowerCase() === 'ja';
+  window.__varslerAdmin = {
+    tillatScooterFolgeMaskinTur: jaCheck(innstillinger.varslerTillatScooterFolgeMaskinTur)
+  };
+}
+
+// ── RASK OPPSTART ──
+// Ny tur vises straks fra lagret startdata; fersk startdata (oppsett + siste km per scooter) hentes først,
+// deretter alle turer og feildata i bakgrunnen.
+const _START_CACHE_KEY = 'sf_startdata_scooter_v1';
+let _startStand = {};      // scooternavn → { siste:{dato,slutt,km}, maxKm }
+let _startFersk = false;
+let _startPromise = null;
+let _turerLastet = false;  // true når alle turer er hentet (da er turer-lista fasiten)
+function _lesStartCache() { try { const r = localStorage.getItem(_START_CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+function hentStartdata() {
+  _startPromise = (async () => {
+    const sd = await apiKall({ action: 'hentStartdataScooter' });
+    if (!sd || sd.feil || !sd.ok) throw new Error((sd && sd.feil) || 'Ugyldig startdata');
+    _brukConfigScooter(sd.config);
+    _startStand = sd.stand || {};
+    _startFersk = true;
+    try { localStorage.setItem(_START_CACHE_KEY, JSON.stringify({ ts: Date.now(), config: sd.config, stand: _startStand })); } catch(e) {}
+    renderSjaforChips();
+    renderScooterCards();
+    oppdaterKmHint();
+    return sd;
+  })();
+  return _startPromise;
+}
+async function _ventPaStartdata() {
+  if (_startFersk || _turerLastet || !_startPromise) return;
+  try { await Promise.race([_startPromise, new Promise(r => setTimeout(r, 8000))]); } catch(e) {}
+}
+
+// Henter alle turer (og som standard oppsettet på nytt). opts.utenConfig: bare turer.
+async function lastData(opts) {
+  opts = opts || {};
   try {
     const [turData, cfg] = await Promise.all([
       apiKall({ action: 'hentAlleScooter' }),
-      apiKall({ action: 'hentConfigScooter' })
+      opts.utenConfig ? Promise.resolve(null) : apiKall({ action: 'hentConfigScooter' })
     ]);
     if (turData.feil) throw new Error(turData.feil);
-    if (cfg.feil) throw new Error(cfg.feil);
+    if (cfg && cfg.feil) throw new Error(cfg.feil);
     turer = (turData.turer || []).map(mapTur);
-    sjaforer = cfg.forere || [];
-    scootere = cfg.scootere || [];
-    kontakter = cfg.kontakter || [];
-    innstillinger = cfg.innstillinger || {};
-    // Sesong-datoer deles med maskinloggen (samme Innstillinger-ark)
-    sesongStart = parseSesongDato(innstillinger.sesongStart);
-    sesongSlutt = parseSesongDato(innstillinger.sesongSlutt);
-    // Cache varsler-admin for kontakt-panelet (cross-abonnement-sjekk)
-    const jaCheck = (v) => String(v).toLowerCase() === 'ja';
-    window.__varslerAdmin = {
-      tillatScooterFolgeMaskinTur: jaCheck(innstillinger.varslerTillatScooterFolgeMaskinTur)
-    };
+    _turerLastet = true;
+    if (cfg) _brukConfigScooter(cfg);
     renderSjaforChips();
     renderScooterCards();
     renderDashboard();
+    if (document.getElementById('tab-logg')?.classList.contains('active')) renderLogg();
     oppdaterKmHint();
   } catch(e) {
     toast('Kunne ikke laste data: ' + e.message, 'err');
@@ -798,7 +837,11 @@ function velgScooter(idx) {
 }
 function sisteKmForScooter(navn) {
   const sortert = [...turer].filter(t => t.scooter === navn).sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
-  return sortert.length ? sortert[0].km : 0;
+  let km = sortert.length ? sortert[0].km : 0;
+  // Før alle turer er hentet: bruk startdata (hele historikken) hvis den er nyere
+  const ss = !_turerLastet && _startStand ? _startStand[navn] : null;
+  if (ss && ss.siste && (!sortert.length || String(ss.siste.dato) > String(sortert[0].dato))) km = ss.siste.km;
+  return km;
 }
 function oppdaterKmHint() {
   const el = document.getElementById('hint-km');
@@ -1325,6 +1368,7 @@ function fjernAlleBilder() {
 async function lagreTur() {
   if (!valgtSjafor) { toast('Velg sjåfør', 'err'); return; }
   if (!valgtScooter) { toast('Velg scooter', 'err'); return; }
+  await _ventPaStartdata();  // km-sjekken skal bruke fersk siste km-stand
   const km = parseFloat(document.getElementById('f-km').value) || 0;
   const tid = parseInt(document.getElementById('f-tid').value) || 0;
   if (km <= 0) { toast('Skriv inn km ved parkering', 'err'); return; }
@@ -2939,23 +2983,32 @@ document.addEventListener('keydown', (e) => {
 });
 
 async function initAlt() {
-  try {
-    await lastData();
-  } catch(e) {
-    console.error('Lasting feilet:', e);
-  } finally {
-    // Skjul fullskjerm-loader uansett – appen skal være brukbar selv om ett kall feilet
-    const loader = document.getElementById('center-loader');
-    if (loader) loader.classList.remove('visible');
-  }
-  // Ny økt er default-fane: sett dato + klokkeslett så bruker ikke må gjøre det manuelt
+  const loader = document.getElementById('center-loader');
+  // Ny tur er default-fane: sett dato + klokkeslett så bruker ikke må gjøre det manuelt
   const n = new Date();
   const slut = document.getElementById('f-slutt'); if (slut && !slut.value) slut.value = n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
   const dato = document.getElementById('f-dato'); if (dato && !dato.value) dato.value = _lokalDato(n);
-  // Bakgrunnsjobber som ikke skal blokkere UI
-  hentVaer();
-  hentFeilData();
+  // Steg 1: vis skjemaet straks fra lagret startdata
+  const cache = _lesStartCache();
+  if (cache && cache.config) {
+    _brukConfigScooter(cache.config);
+    _startStand = cache.stand || {};
+    renderSjaforChips();
+    renderScooterCards();
+    renderDashboard();
+    oppdaterKmHint();
+    if (loader) loader.classList.remove('visible');
+  }
+  hentVaer();  // vær går ikke via Apps Script
   setInterval(hentVaer, 30 * 60 * 1000); // Oppdater vær hvert 30. min
+  // Steg 2: fersk startdata (lite kall)
+  try { await hentStartdata(); }
+  catch(e) { console.error('Startdata feilet:', e); }
+  finally { if (loader) loader.classList.remove('visible'); }
+  // Steg 3: alle turer i bakgrunnen (oppsettet er allerede ferskt)
+  await lastData({ utenConfig: _startFersk });
+  // Steg 4: feildata
+  hentFeilData();
 }
 initAlt();
 </script>
