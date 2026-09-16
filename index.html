@@ -92,6 +92,56 @@
 .logg-kort-stat { display:flex; align-items:center; gap:3px; font-size:12px; background:var(--snow); border:1px solid var(--border); border-radius:6px; padding:3px 8px; }
 .logg-kort-stat span { font-weight:600; color:var(--navy); font-family:var(--mono); }
 .logg-kort-actions { display:flex; gap:6px; justify-content:flex-end; } .runde-kort { border:1.5px solid var(--border); border-radius:var(--radius); margin-bottom:10px; overflow:hidden; background:var(--snow); } .runde-kort-header { display:flex; align-items:center; padding:10px 14px; background:var(--white); border-bottom:1px solid var(--border); gap:10px; } .runde-nummer { width:24px; height:24px; border-radius:50%; background:var(--mid); color:white; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; } .runde-kort-body { padding:12px 14px; } .runde-kort.collapsed .runde-kort-body { display:none; } .runde-kort.collapsed { background:var(--white); } .runde-tittel { font-size:13px; font-weight:600; color:var(--navy); flex:1; }
+/* ── Bildekø (bakgrunnsopplasting) ── */
+.bk-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px 4px 6px;font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;border:0;font-family:inherit;flex-shrink:0;line-height:1.3}
+.bk-pill[hidden],.bk-pop[hidden],.bk-toast[hidden],.bk-meta[hidden],.bk-hint[hidden]{display:none!important}
+.bk-pill.up{background:rgba(74,159,212,.25);color:#DCEEFB}
+.bk-pill.done{background:rgba(39,174,96,.28);color:#C9F1D8}
+.bk-pill.err{background:rgba(230,126,34,.38);color:#FFE2C6}
+.bk-pill:focus-visible,.bk-knapp:focus-visible,.bk-lnk:focus-visible{outline:2px solid #4A9FD4;outline-offset:2px}
+.bk-dot{width:14px;height:14px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;flex-shrink:0}
+.bk-spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;display:inline-block;animation:bk-rot .9s linear infinite;flex-shrink:0;box-sizing:border-box}
+.bk-pill.up .bk-spin{border-color:rgba(140,203,242,.3);border-top-color:#8CCBF2}
+.bk-spin-m{width:12px;height:12px;border-color:rgba(45,90,142,.2);border-top-color:#2D5A8E}
+@keyframes bk-rot{to{transform:rotate(360deg)}}
+.bk-veil{position:absolute;inset:0;background:rgba(20,33,58,.42);display:flex;align-items:center;justify-content:center;pointer-events:none}
+.bk-veil .bk-spin{width:22px;height:22px;border-width:3px}
+.bk-warn{width:22px;height:22px;border-radius:50%;background:#E67E22;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.bk-vent{position:relative;display:inline-block;overflow:hidden;vertical-align:middle}
+.bk-vent img{width:100%;height:100%;object-fit:cover;display:block}
+.bk-vent .bk-spin{width:16px;height:16px;border-width:2px}
+.bk-vent .bk-warn{width:16px;height:16px;font-size:10px}
+.bk-pop{position:fixed;top:calc(env(safe-area-inset-top,0px) + 60px);right:10px;width:min(320px,calc(100vw - 20px));max-height:70vh;overflow:auto;background:#fff;color:#1A2B4A;border-radius:10px;box-shadow:0 8px 28px rgba(26,43,74,.28);border:1px solid #C8DCF0;padding:12px;z-index:2000;display:flex;flex-direction:column;gap:8px;font-size:12.5px;box-sizing:border-box}
+.bk-pop-tittel{font-size:11px;font-weight:600;color:#5A7A9A;text-transform:uppercase;letter-spacing:.05em}
+.bk-rad{display:flex;align-items:center;gap:9px}
+.bk-rad img,.bk-rad .bk-tom{width:36px;height:36px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#E8F4FD;display:block}
+.bk-rad-tekst{flex:1;min-width:0}
+.bk-rad-navn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-rad-feil{font-size:11px;color:#5A7A9A}
+.bk-st{font-size:11px;color:#5A7A9A;white-space:nowrap}
+.bk-st.ok{color:#27AE60}.bk-st.feil{color:#C0392B}
+.bk-knapper{display:flex;gap:8px;justify-content:flex-end}
+.bk-knapp{border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;border:1.5px solid #C8DCF0;background:#F5F9FF;color:#5A7A9A;cursor:pointer;font-family:inherit}
+.bk-knapp.pri{background:#2D5A8E;border-color:#2D5A8E;color:#fff}
+.bk-hint{font-size:11.5px;color:#5A7A9A;margin-top:6px;line-height:1.45}
+.bk-toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 84px);transform:translateX(-50%);background:#1A2B4A;color:#fff;font-size:13px;font-weight:500;border-radius:8px;padding:9px 14px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:2001;max-width:calc(100vw - 32px);border-left:4px solid #27AE60;box-sizing:border-box}
+.bk-toast.w{border-left-color:#E67E22}
+.bk-meta{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:12px;color:#5A7A9A;background:#E8F4FD;border-radius:8px;padding:7px 10px;margin-bottom:10px}
+.bk-meta-feil{background:#FEF5E7;color:#9A5A12}
+.bk-slow{flex-basis:100%;border:1px solid #C8DCF0;background:#fff;border-radius:8px;padding:7px 9px}
+.bk-lnk{background:none;border:0;color:#2D5A8E;font-weight:600;cursor:pointer;padding:0;font:inherit;text-decoration:underline}
+.bk-sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+.bk-sk{aspect-ratio:1;max-width:100%;border-radius:8px;background:linear-gradient(90deg,#E3ECF5,#F1F6FB,#E3ECF5);background-size:200% 100%;animation:bk-sh 1.4s linear infinite}
+@keyframes bk-sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.bk-spin{animation-duration:2.5s}.bk-sk{animation:none}}
+@media (max-width:480px){.bk-pill:not([hidden]) ~ .topbar-version{display:none}}
+@media (max-width:700px){
+.bk-pill[data-flyt]{position:fixed;top:calc(env(safe-area-inset-top,0px) + 116px);right:10px;z-index:1500;box-shadow:0 4px 14px rgba(26,43,74,.3);padding:6px 12px 6px 8px;font-size:12px}
+.bk-pill[data-flyt].up{background:#1F3F66;color:#fff}
+.bk-pill[data-flyt].err{background:#B35A12;color:#fff}
+.bk-pill[data-flyt].done{background:#1E7A45;color:#fff}
+.bk-pop.bk-pop-flyt{top:calc(env(safe-area-inset-top,0px) + 152px)}
+}
 </style></head><body>
 <div id="loading-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(255,255,255,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px">
 <div class="spinner"></div>
@@ -123,7 +173,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v16.09 10:24</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v16.09 13:54</span></div></div><nav class="nav"><button class="nav-btn active" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -381,6 +431,8 @@ const _RETRY_PAUSE_MS = [1000, 2000, 4000];
 // Drive-thumbnail i ønsket bredde (miniatyrer trenger ikke 1000–1600 px)
 function _thumb(url, w) {
   if (!url) return '';
+  // Bilde lastet opp i denne økta → bruk lokal forhåndsvisning (Drive-miniatyren er ofte ikke klar de første sekundene)
+  if (typeof _bk !== 'undefined' && _bk.lokal[url]) return _bk.lokal[url];
   return String(url).indexOf('drive.google.com/thumbnail') > -1
     ? String(url).replace(/([?&])sz=w\d+/i, '$1sz=w' + w)
     : url;
@@ -743,86 +795,360 @@ let bildeOpplasterKoe = 0;     // Antall bilder som venter på svar fra server
 let harFeilFraDenneOkta = false;  // Settes når bruker melder feil via "Rapporter feil"-knappen i Ny økt
 let _feilFraNyOkt = false;  // Midlertidig markør fra rapporterFeilFraNyOkt() → lagreNyFeil()
 
-// Filplukker: håndter én eller flere bilder, parallell (2 samtidig) for raskere gjennomføring.
-// Bruker kan fortsette å fylle ut skjemaet mens opplasting pågår i bakgrunnen.
+const BK_APP = 'maskin';
+
+// ═══════════════════════════════════════════════════════════════
+// BILDEKØ – bakgrunnsopplasting (felles for maskin og scooter)
+// Turen lagres med en gang; bildene lastes opp ett og ett og kobles
+// til turen når de er ferdige. Status vises i en pille i toppen.
+// ═══════════════════════════════════════════════════════════════
+var _bk = { ko: [], kjorer: false, forbereder: false, lokal: {}, ferdigTekst: '', ferdigTimer: null };
+// _bk.lokal: Drive-URL → lokal forhåndsvisning (dataURL) for bilder lastet opp i denne økta
+
+function _bkEsc(s) { return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function _bkSynlige() { return _bk.ko.filter(i => !i.forkastet); }
+function _bkAktive() { return _bkSynlige().filter(i => i.status === 'venter' || i.status === 'laster'); }
+function _bkFeilede() { return _bkSynlige().filter(i => i.status === 'feil'); }
+
+// Brukeren har valgt bilder i skjemaet
+function bkLeggTilFiler(filer) {
+  clearTimeout(_bk.ferdigTimer); _bk.ferdigTekst = '';
+  filer.forEach(fil => {
+    _bk.ko.push({ kid: _genUploadId(), navn: fil.name || ('bilde-' + Date.now() + '.jpg'), fil, preview: '', filId: '',
+      status: 'venter', url: '', turId: null, iSkjema: true, forkastet: false, koblet: false, feil: '' });
+  });
+  bkRender();
+  _bkForbered();
+}
+
+async function _bkLesOgKomprimer(item) {
+  const dataUrl = await new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = () => rej(new Error('Kunne ikke lese bildet'));
+    r.readAsDataURL(item.fil);
+  });
+  item.preview = await komprimerBilde(dataUrl, 1280, 0.75);
+  item.fil = null;
+}
+
+// Lager forhåndsvisning (= det som lastes opp) for ett bilde om gangen – skånsomt for mobilminnet
+async function _bkForbered() {
+  if (_bk.forbereder) return;
+  _bk.forbereder = true;
+  try {
+    let item;
+    while ((item = _bk.ko.find(i => !i.forkastet && !i.preview && i.fil && i.status === 'venter'))) {
+      try { await _bkLesOgKomprimer(item); }
+      catch (e) { item.status = 'feil'; item.feil = e.message || 'Kunne ikke lese bildet'; }
+      bkRender();
+      _bkStart();
+    }
+  } finally { _bk.forbereder = false; }
+}
+
+// Opplastingskø: ett bilde om gangen
+async function _bkStart() {
+  if (_bk.kjorer) return;
+  _bk.kjorer = true;
+  try {
+    let item;
+    while ((item = _bk.ko.find(i => !i.forkastet && i.status === 'venter' && i.preview))) {
+      item.status = 'laster'; item.feil = '';
+      bkRender(); if (item.turId) bkRerender();
+      try {
+        if (!item.url) {
+          const res = await apiKall({
+            action: 'lastOppBilde',
+            filnavn: item.navn.replace(/\.(png|heic|heif|webp|jpeg)$/i, '.jpg'),
+            base64: item.preview, mimeType: 'image/jpeg',
+            uploadId: item.kid   // samme ID ved «Prøv igjen» → ingen duplikater på Drive
+          });
+          if (res.feil) throw new Error(res.feil);
+          item.url = res.url; item.filId = res.filId || '';
+          _bk.lokal[res.url] = item.preview;
+        }
+        if (item.forkastet) {
+          // Fjernet mens den lastet opp → rydd bort fila
+          if (item.filId) apiKall({ action: 'slettBilde', bildeId: item.filId }).catch(() => {});
+        } else if (item.turId) {
+          await _bkKobleTilTur(item);
+        } else if (item.iSkjema && valgtBildeUrls.indexOf(item.url) < 0) {
+          valgtBildeUrls.push(item.url);
+        }
+        item.status = 'ferdig';
+      } catch (e) {
+        item.status = 'feil';
+        item.feil = e.message || String(e);
+      }
+      bkRender(); if (item.turId) bkRerender();
+    }
+  } finally { _bk.kjorer = false; }
+  _bkVurderFerdig();
+}
+
+async function _bkKobleTilTur(item) {
+  for (let forsok = 1; ; forsok++) {
+    const turId = item.turId;
+    if (!turId) {  // lagringen ble angret – bildet hører til skjemaet igjen
+      if (item.iSkjema && valgtBildeUrls.indexOf(item.url) < 0) valgtBildeUrls.push(item.url);
+      return;
+    }
+    const res = await apiKall({ action: 'leggTilBilder', turId: String(turId), urls: [item.url], appType: BK_APP });
+    if (!res.feil) {
+      item.koblet = true;
+      const t = turer.find(x => String(x.id) === String(turId));
+      if (t) t.bildeUrl = res.bildeUrl || [t.bildeUrl, item.url].filter(Boolean).join(',');
+      return;
+    }
+    // «Fant ikke turen» kan skje et øyeblikk mens turen lagres/redigeres → vent og prøv igjen
+    if (forsok >= 4) throw new Error('Bildet er lastet opp, men ble ikke koblet til turen (' + res.feil + ')');
+    await new Promise(r => setTimeout(r, 2000 * forsok));
+  }
+}
+
+// Kalles rett FØR turen sendes til lagring: alle ventende skjemabilder hører nå til denne turen
+function bkKnyttTilTur(turId) {
+  _bk.ko.forEach(i => {
+    if (!i.iSkjema || i.forkastet) return;
+    i.iSkjema = false;
+    if (i.status !== 'ferdig') i.turId = String(turId);
+  });
+  bkRender();
+}
+// Lagringen feilet → gi bildene tilbake til skjemaet
+function bkAngre(turId) {
+  _bk.ko.forEach(i => {
+    if (i.forkastet || String(i.turId) !== String(turId)) return;
+    i.turId = null; i.iSkjema = true;
+    if (i.status === 'feil' && i.url) { if (valgtBildeUrls.indexOf(i.url) < 0) valgtBildeUrls.push(i.url); i.status = 'ferdig'; }
+  });
+  bkRender();
+}
+function bkHarVentende(turId) {
+  return _bk.ko.some(i => !i.forkastet && String(i.turId) === String(turId) && i.status !== 'ferdig');
+}
+// Skjemaet tømmes (avbryt / ny redigering): ventende skjemabilder forkastes
+function bkNullstillSkjema() {
+  _bk.ko.forEach(i => { if (i.iSkjema) { i.iSkjema = false; i.forkastet = true; } });
+  _bk.ko = _bk.ko.filter(i => !(i.forkastet && i.status !== 'laster'));
+  bkRender();
+}
+function bkFjern(kid) {
+  const i = _bk.ko.find(x => x.kid === kid);
+  if (!i) return;
+  i.forkastet = true; i.iSkjema = false;
+  if (i.status !== 'laster') _bk.ko = _bk.ko.filter(x => x !== i);
+  bkRender();
+  _bkVurderFerdig();
+}
+function bkProvIgjen() {
+  _bkFeilede().forEach(i => { i.status = 'venter'; i.feil = ''; });
+  bkRender();
+  _bkForbered();
+  _bkStart();
+}
+function bkForkastFeilede() {
+  _bkFeilede().forEach(i => {
+    i.forkastet = true; i.iSkjema = false;
+    if (i.filId && !i.koblet) apiKall({ action: 'slettBilde', bildeId: i.filId }).catch(() => {});
+  });
+  _bk.ko = _bk.ko.filter(i => !i.forkastet);
+  bkLukkPop();
+  _bkVurderFerdig();
+  bkRerender();
+}
+
+function _bkVurderFerdig() {
+  if (_bkAktive().length || _bkFeilede().length) { bkRender(); return; }
+  const lagtTil = _bk.ko.filter(i => !i.forkastet && i.status === 'ferdig' && i.turId).length;
+  // Behold bare bilder som fortsatt hører til skjemaet og ikke er ferdige (skal ikke finnes her)
+  _bk.ko = _bk.ko.filter(i => i.status === 'laster');
+  if (lagtTil) {
+    _bk.ferdigTekst = `${lagtTil} bilde${lagtTil === 1 ? '' : 'r'} lagt til turen`;
+    bkToast('✓ ' + _bk.ferdigTekst);
+    clearTimeout(_bk.ferdigTimer);
+    _bk.ferdigTimer = setTimeout(() => { _bk.ferdigTekst = ''; bkRender(); }, 4000);
+    bkRerender();
+  }
+  bkRender();
+}
+
+// ── Visning ──
+function bkRender() {
+  _bkRenderPill();
+  _bkRenderPop();
+  bkRenderSkjema();
+}
+
+function _bkRenderPill() {
+  const el = document.getElementById('bk-pill');
+  if (!el) return;
+  const synlige = _bkSynlige(), aktive = _bkAktive(), feil = _bkFeilede();
+  if (aktive.length) {
+    const ferdig = synlige.filter(i => i.status === 'ferdig').length;
+    el.className = 'bk-pill up';
+    el.innerHTML = `<span class="bk-spin"></span>Bilder ${ferdig}/${synlige.length}`;
+    el.title = 'Bilder lastes opp – trykk for detaljer';
+    el.hidden = false;
+  } else if (feil.length) {
+    el.className = 'bk-pill err';
+    el.innerHTML = `<span class="bk-dot" style="background:#E67E22">!</span>${feil.length} bilde${feil.length === 1 ? '' : 'r'} feilet`;
+    el.title = 'Trykk for å prøve igjen';
+    el.hidden = false;
+  } else if (_bk.ferdigTekst) {
+    el.className = 'bk-pill done';
+    el.innerHTML = `<span class="bk-dot" style="background:#27AE60">✓</span>${_bk.ferdigTekst}`;
+    el.title = '';
+    el.hidden = false;
+  } else {
+    el.hidden = true;
+    bkLukkPop();
+  }
+}
+
+function _bkPopEl() {
+  let p = document.getElementById('bk-pop');
+  if (!p) {
+    p = document.createElement('div');
+    p.id = 'bk-pop'; p.className = 'bk-pop'; p.hidden = true;
+    p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', 'Bildeopplasting');
+    p.addEventListener('click', e => e.stopPropagation());
+    const pill = document.getElementById('bk-pill');
+    if (pill && pill.hasAttribute('data-flyt')) p.classList.add('bk-pop-flyt');
+    document.body.appendChild(p);
+  }
+  return p;
+}
+function bkTogglePop(e) {
+  if (e) e.stopPropagation();
+  const p = _bkPopEl();
+  p.hidden = !p.hidden;
+  _bkRenderPop();
+}
+function bkLukkPop() { const p = document.getElementById('bk-pop'); if (p) p.hidden = true; }
+document.addEventListener('click', bkLukkPop);
+
+function _bkRenderPop() {
+  const p = document.getElementById('bk-pop');
+  if (!p || p.hidden) return;
+  const synlige = _bkSynlige();
+  if (!synlige.length) { p.hidden = true; return; }
+  const statusTekst = i => i.status === 'ferdig' ? '<span class="bk-st ok">Ferdig</span>'
+    : i.status === 'laster' ? '<span class="bk-st">Laster opp …</span>'
+    : i.status === 'feil' ? '<span class="bk-st feil">Feilet</span>'
+    : `<span class="bk-st">${i.preview ? 'I kø' : 'Klargjør …'}</span>`;
+  const rader = synlige.map(i => `<div class="bk-rad">
+      ${i.preview ? `<img src="${i.preview}" alt="">` : '<span class="bk-tom"></span>'}
+      <div class="bk-rad-tekst"><div class="bk-rad-navn">${_bkEsc(i.navn)}</div>${i.status === 'feil' ? `<div class="bk-rad-feil">${_bkEsc(i.feil)}</div>` : ''}</div>
+      ${statusTekst(i)}
+    </div>`).join('');
+  const aktive = _bkAktive().length, feil = _bkFeilede().length;
+  p.innerHTML = `<div class="bk-pop-tittel">Bildeopplasting</div>${rader}`
+    + (aktive ? '<div class="bk-hint" style="margin:0">Hold appen åpen til alle bildene er ferdige.</div>' : '')
+    + (feil && !aktive ? '<div class="bk-knapper"><button type="button" class="bk-knapp" onclick="bkForkastFeilede()">Forkast</button><button type="button" class="bk-knapp pri" onclick="bkProvIgjen()">Prøv igjen</button></div>' : '');
+}
+
+// Skjemaets bilde-rutenett: ferdige bilder + ventende (med spinner / feilmerke)
+function bkRenderSkjema() {
+  const el = document.getElementById('photo-preview-grid');
+  if (!el) return;
+  const venter = _bk.ko.filter(i => i.iSkjema && !i.forkastet && i.status !== 'ferdig');
+  let hint = document.getElementById('bk-skjema-hint');
+  if (!hint) { hint = document.createElement('div'); hint.id = 'bk-skjema-hint'; hint.className = 'bk-hint'; el.insertAdjacentElement('afterend', hint); }
+  if (!valgtBildeUrls.length && !venter.length) { el.style.display = 'none'; el.innerHTML = ''; hint.hidden = true; return; }
+  el.style.display = 'flex';
+  const urlsJson = JSON.stringify(valgtBildeUrls).replace(/"/g, '&quot;');
+  const ferdige = valgtBildeUrls.map((url, i) => `<div class="photo-thumb-wrap"><img src="${_thumb(url, 240)}" decoding="async" alt="Bilde ${i + 1}" onclick="apneLightbox(${urlsJson}, ${i})"><button class="fjern-btn" onclick="fjernBildeIdx(${i})" type="button" aria-label="Fjern bilde">×</button></div>`).join('');
+  const ventende = venter.map(i => `<div class="photo-thumb-wrap">${i.preview ? `<img src="${i.preview}" alt="Bilde lastes opp">` : ''}<div class="bk-veil">${i.status === 'feil' ? `<span class="bk-warn" title="${_bkEsc(i.feil)}">!</span>` : '<span class="bk-spin"></span>'}</div><button class="fjern-btn" onclick="bkFjern('${i.kid}')" type="button" aria-label="Fjern bilde">×</button></div>`).join('');
+  el.innerHTML = ferdige + ventende;
+  const antAktive = venter.filter(i => i.status !== 'feil').length;
+  const antFeil = venter.length - antAktive;
+  if (antAktive) {
+    hint.innerHTML = `↻ ${antAktive} bilde${antAktive === 1 ? '' : 'r'} lastes opp. Du kan lagre nå – bildene kobles til turen når de er ferdige.`;
+    hint.hidden = false;
+  } else if (antFeil) {
+    hint.innerHTML = `⚠ ${antFeil} bilde${antFeil === 1 ? '' : 'r'} feilet. <button type="button" class="bk-lnk" onclick="bkProvIgjen()">Prøv igjen</button> eller fjern ${antFeil === 1 ? 'det' : 'dem'} med ×.`;
+    hint.hidden = false;
+  } else hint.hidden = true;
+}
+
+// Små miniatyrer for bilder som fortsatt lastes opp til en lagret tur (dashboard/logg)
+function bkVentendeHtml(turId, cls) {
+  return _bk.ko.filter(i => !i.forkastet && i.turId && String(i.turId) === String(turId) && i.status !== 'ferdig')
+    .map(i => `<span class="${cls} bk-vent" title="${i.status === 'feil' ? 'Opplasting feilet' : 'Lastes opp …'}">${i.preview ? `<img src="${i.preview}" alt="">` : ''}<span class="bk-veil">${i.status === 'feil' ? '<span class="bk-warn">!</span>' : '<span class="bk-spin"></span>'}</span></span>`)
+    .join('');
+}
+
+function bkToast(msg, type) {
+  let t = document.getElementById('bk-toast');
+  if (!t) { t = document.createElement('div'); t.id = 'bk-toast'; t.className = 'bk-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.toggle('w', type === 'w');
+  t.hidden = false;
+  clearTimeout(t._tm);
+  t._tm = setTimeout(() => { t.hidden = true; }, 3500);
+}
+
+// Advar hvis appen lukkes mens bilder fortsatt lastes opp
+window.addEventListener('beforeunload', e => {
+  if (_bkAktive().length) { e.preventDefault(); e.returnValue = ''; return ''; }
+});
+
+// ── Galleri: vis forrige liste med en gang, hent ny i bakgrunnen ──
+function _bkLesCache(k) { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+function _bkSkrivCache(k, data) { try { localStorage.setItem(k, JSON.stringify({ ts: Date.now(), data })); } catch (e) {} }
+function _bkHhmm(ts) { const d = new Date(ts); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function bkSkjelettHtml(n) { return `<div class="bk-sk-grid">${'<div class="bk-sk"></div>'.repeat(n)}</div>`; }
+function _bkMetaEl(el) {
+  let m = el.previousElementSibling;
+  if (!m || !m.classList.contains('bk-meta')) { m = document.createElement('div'); m.className = 'bk-meta'; el.parentNode.insertBefore(m, el); }
+  return m;
+}
+// Kjører hent() med statuslinje over galleriet. cacheTs = tidspunkt for liste som allerede vises (eller null).
+async function bkHentMedStatus(el, cacheTs, hent, provIgjenFn) {
+  const meta = _bkMetaEl(el);
+  const t0 = Date.now();
+  const tekst = cacheTs ? `Viser liste fra ${_bkHhmm(cacheTs)} · oppdaterer …` : 'Henter bilder …';
+  const tegn = () => {
+    const s = Math.round((Date.now() - t0) / 1000);
+    meta.className = 'bk-meta';
+    meta.innerHTML = `<span class="bk-spin bk-spin-m"></span><span>${tekst}${s >= 5 ? ' ' + s + ' s' : ''}</span>`
+      + (s >= 5 && !cacheTs ? '<div class="bk-slow">⏳ Mange bilder – dette kan ta opptil et halvt minutt. Du kan bruke resten av appen imens.</div>' : '');
+    meta.hidden = false;
+  };
+  tegn();
+  const iv = setInterval(tegn, 1000);
+  try {
+    const r = await hent();
+    meta.hidden = true;
+    return r;
+  } catch (e) {
+    meta.className = 'bk-meta bk-meta-feil';
+    meta.innerHTML = (cacheTs
+      ? `⚠ Fikk ikke hentet ny liste. Viser liste fra ${_bkHhmm(cacheTs)}.`
+      : `⚠ Kunne ikke hente bilder: ${_bkEsc(e.message)}`)
+      + ` <button type="button" class="bk-lnk" onclick="${provIgjenFn}()">Prøv igjen</button>`;
+    meta.hidden = false;
+    throw e;
+  } finally { clearInterval(iv); }
+}
+
+// Filplukker: velg ett eller flere bilder – de legges i bildekøen og lastes opp ett og ett
 document.addEventListener('DOMContentLoaded', () => {
   const inp = document.getElementById('photo-input');
-  if (inp) inp.addEventListener('change', async (e) => {
+  if (inp) inp.addEventListener('change', (e) => {
     const filer = Array.from(e.target.files || []);
-    if (!filer.length) return;
-    bildeOpplasterKoe += filer.length;
-    oppdaterBildeUI();
-    const kjør = async (fil) => {
-      await lastOppEttBilde(fil);
-      bildeOpplasterKoe = Math.max(0, bildeOpplasterKoe - 1);
-      oppdaterBildeUI();
-    };
-    // Kjør 2 samtidig – batch-approach
-    for (let i = 0; i < filer.length; i += 2) {
-      const batch = filer.slice(i, i + 2);
-      await Promise.all(batch.map(kjør));
-    }
+    if (filer.length) bkLeggTilFiler(filer);
     e.target.value = '';
   });
 });
-
-async function lastOppEttBilde(fil) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      try {
-        const komprimert = await komprimerBilde(ev.target.result, 1280, 0.75);
-        const uploadId = _genUploadId();
-        const res = await apiKall({
-          action: 'lastOppBilde',
-          filnavn: (fil.name || ('bilde-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
-          base64: komprimert,
-          mimeType: 'image/jpeg',
-          uploadId: uploadId
-        });
-        if (res.feil) throw new Error(res.feil);
-        valgtBildeUrls.push(res.url);
-      } catch(err) {
-        alert('Bildeopplasting feilet: ' + err.message);
-        console.error(err);
-      }
-      resolve();
-    };
-    reader.readAsDataURL(fil);
-  });
-}
-
-function oppdaterBildeUI() {
-  renderBildeGrid();
-  // Sperr lagre-knappen mens opplasting pågår
-  const btn = document.getElementById('lagre-btn');
-  const drop = document.getElementById('photo-drop');
-  if (btn) {
-    if (bildeOpplasterKoe > 0) {
-      btn.disabled = true;
-      btn.innerHTML = `<div class="spinner"></div> Vent, laster opp ${bildeOpplasterKoe} bilde${bildeOpplasterKoe===1?'':'r'}…`;
-    } else if (btn.disabled && btn.innerHTML.includes('Vent, laster opp')) {
-      // Bare gjenopprett hvis knappen ble disable-t av bildeopplasting
-      btn.disabled = false;
-      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg><span id="lagre-btn-tekst">' + (editModus ? 'Lagre endringer' : 'Lagre økt') + '</span>';
-    }
-  }
-  if (drop) {
-    drop.style.opacity = bildeOpplasterKoe > 0 ? '0.5' : '1';
-    drop.style.pointerEvents = bildeOpplasterKoe > 0 ? 'none' : 'auto';
-  }
-}
-
-function renderBildeGrid() {
-  const el = document.getElementById('photo-preview-grid');
-  if (!el) return;
-  const antLaster = bildeOpplasterKoe || 0;
-  if (!valgtBildeUrls.length && !antLaster) { el.style.display = 'none'; el.innerHTML = ''; return; }
-  el.style.display = 'flex';
-  const urlsJson = JSON.stringify(valgtBildeUrls).replace(/"/g,'&quot;');
-  const ferdige = valgtBildeUrls.map((url, i) => `<div class="photo-thumb-wrap"><img src="${_thumb(url, 240)}" loading="lazy" decoding="async" alt="Bilde ${i+1}" onclick="apneLightbox(${urlsJson}, ${i})"><button class="fjern-btn" onclick="fjernBildeIdx(${i})" type="button" aria-label="Fjern">×</button></div>`).join('');
-  const placeholders = Array(antLaster).fill(0).map(() => `<div class="photo-thumb-wrap" style="display:flex;align-items:center;justify-content:center;background:var(--ice);border:1.5px dashed var(--border)"><div class="spinner" style="border-color:rgba(15,58,95,0.2);border-top-color:var(--mid)"></div></div>`).join('');
-  el.innerHTML = ferdige + placeholders;
+function oppdaterBildeUI() { bkRenderSkjema(); }
+function renderBildeGrid() { bkRenderSkjema(); }
+// Ny visning av dashboard/logg når bilder blir ferdige
+function bkRerender() {
+  const f = document.querySelector('.section.active')?.id?.replace('tab-', '');
+  if (f === 'dashboard' || f === 'logg') renderAktivFane(f);
 }
 
 function fjernBildeIdx(i) {
@@ -831,6 +1157,7 @@ function fjernBildeIdx(i) {
 }
 
 function fjernAlleBilder() {
+  bkNullstillSkjema();
   valgtBildeUrls = [];
   renderBildeGrid();
   const inp = document.getElementById('photo-input');
@@ -848,11 +1175,12 @@ function _bildeBadge(tur) {
 // Helper: små thumbnails for dashboard (viser opptil 3 mini-bilder til høyre)
 function _bildeThumbs(tur, maks) {
   const urls = String(tur.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (!urls.length) return '';
+  const vent = bkVentendeHtml(tur.id, 'dash-thumb');
+  if (!urls.length) return vent ? `<div class="dash-thumbs">${vent}</div>` : '';
   const urlsAttr = JSON.stringify(urls).replace(/"/g,'&quot;');
   const vis = urls.slice(0, maks || 3);
   const rest = urls.length - vis.length;
-  return `<div class="dash-thumbs">${vis.map((u, i) => `<div class="dash-thumb" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${i})"><img src="${_thumb(u, 160)}" loading="lazy" decoding="async" alt="Bilde"></div>`).join('')}${rest > 0 ? `<div class="dash-thumb" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text2);cursor:pointer" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${vis.length})">+${rest}</div>` : ''}</div>`;
+  return `<div class="dash-thumbs">${vis.map((u, i) => `<div class="dash-thumb" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${i})"><img src="${_thumb(u, 160)}" loading="lazy" decoding="async" alt="Bilde"></div>`).join('')}${rest > 0 ? `<div class="dash-thumb" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text2);cursor:pointer" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${vis.length})">+${rest}</div>` : ''}${vent}</div>`;
 }
 
 // Komprimer bilde til JPEG (samme som scooter-app)
@@ -903,7 +1231,8 @@ function oppdaterLightbox() {
   const count = document.getElementById('lb-count');
   const prev = document.getElementById('lb-prev');
   const next = document.getElementById('lb-next');
-  if (img) img.src = _lbUrls[_lbIdx] || '';
+  const _lbU = _lbUrls[_lbIdx] || '';
+  if (img) img.src = _bk.lokal[_lbU] || _lbU;
   if (count) count.textContent = `${_lbIdx + 1} / ${_lbUrls.length}`;
   const flere = _lbUrls.length > 1;
   if (prev) prev.style.display = flere ? 'flex' : 'none';
@@ -1031,11 +1360,13 @@ merknader: document.getElementById('f-merknader').value.trim(),
 bildeUrl: valgtBildeUrls.join(','),
 harFeil: harFeilFraDenneOkta
 };
+bkKnyttTilTur(tur.id);  // bilder som fortsatt lastes opp, kobles til denne turen når de er ferdige
 try {
 setSyncStatus('loading', 'Sync');
 const res = await apiKall({ action: 'leggTil', tur });
 if (res.feil) throw new Error(res.feil);
 setSyncStatus('ok', 'Sync');
+if (bkHarVentende(tur.id)) bkToast('✓ Økt lagret – bildene fortsetter i bakgrunnen');
 // Send e-post-varsel i bakgrunn (fire-and-forget – blokker aldri UI)
 // Bruker samme tur-objekt, med id fra backend hvis den returnerte en.
 try {
@@ -1095,6 +1426,7 @@ if (idx2 >= 0) turer[idx2].vaer = vaerStr;
 } catch(e) { console.log('Vær-henting feilet stille:', e); }
 })();
 } catch(err) {
+bkAngre(tur.id);
 hideLoading();
 setSyncStatus('error', 'Feil ved lagring');
 alert('Kunne ikke lagre: ' + err.message);
@@ -1165,6 +1497,7 @@ document.getElementById('f-adblue').checked = t.adblue==='Ja';
 setCond(t.forkond||0);
 document.getElementById('f-merknader').value = t.merknader||'';
 // Last inn eksisterende bilder for redigering
+bkNullstillSkjema();
 valgtBildeUrls = String(t.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
 renderBildeGrid();
 oppdaterStandHint();
@@ -1256,6 +1589,8 @@ const fjernedeUrls = gamleUrls.filter(url => !valgtBildeUrls.includes(url));
 const btn = document.getElementById('lagre-btn');
 btn.disabled = true;
 showLoading('Lagrer endringer…');
+const _redId = editTurId;
+bkKnyttTilTur(_redId);
 try {
 setSyncStatus('loading', 'Sync');
 await apiKall({ action: 'slett', id: editTurId, bevareBilder: true });
@@ -1267,9 +1602,11 @@ if (m && m[1]) { try { await apiKall({ action: 'slettBilde', bildeId: m[1] }); }
 }
 setSyncStatus('ok', 'Sync');
 hideLoading();
+if (bkHarVentende(_redId)) bkToast('✓ Endringer lagret – bildene fortsetter i bakgrunnen');
 avbrytEdit();
 await hentData();
 } catch(err) {
+bkAngre(_redId);
 hideLoading();
 setSyncStatus('error', 'Feil');
 alert('Kunne ikke lagre: ' + err.message);
@@ -3038,19 +3375,36 @@ let adminMultiModus = false;
 async function lastAdminBilder() {
   const el = document.getElementById('admin-bilder');
   const status = document.getElementById('admin-bilder-status');
-  el.innerHTML = '<p style="font-size:13px;color:var(--text2)">Laster bilder og diskstatus…</p>';
-  try {
-    // Ett kall: bildeliste + diskstatus fra samme (cachede) filliste
-    const resBilder = await apiKall({ action: 'hentAlleBilder', medDiskStatus: true });
-    const resStatus = resBilder.diskStatus || { ok: false };
-    if (!resBilder.ok) { el.innerHTML = '<p style="color:var(--danger)">Feil: ' + (resBilder.feil || 'ukjent') + '</p>'; return; }
-    adminBilderCache = resBilder.bilder || [];
-    adminDiskStatus = resStatus.ok ? resStatus : null;
-    adminValgteBilder.clear();
-    adminMultiModus = false;
-    status.textContent = adminBilderCache.length + ' bilder · ' + resBilder.totalStorrelseMb + ' MB';
+  if (!el) return;
+  if (window._adminBilderLaster) return;
+  window._adminBilderLaster = true;
+  const visData = (d) => {
+    adminBilderCache = d.bilder || [];
+    adminDiskStatus = d.disk || null;
+    // Behold eventuelle valg som fortsatt finnes
+    const ider = new Set(adminBilderCache.map(b => b.id));
+    [...adminValgteBilder].forEach(id => { if (!ider.has(id)) adminValgteBilder.delete(id); });
+    if (status) status.textContent = adminBilderCache.length + ' bilder · ' + (d.totalMb ?? '–') + ' MB';
     renderAdminBilder();
-  } catch(e) { el.innerHTML = '<p style="color:var(--danger)">Feil: ' + e.message + '</p>'; }
+  };
+  const cache = _bkLesCache('sf_admin_bilder_v1');
+  if (cache && cache.data) visData(cache.data);
+  else el.innerHTML = bkSkjelettHtml(9);
+  try {
+    const resBilder = await bkHentMedStatus(el, cache ? cache.ts : null, async () => {
+      // Ett kall: bildeliste + diskstatus fra samme (cachede) filliste
+      const r = await apiKall({ action: 'hentAlleBilder', medDiskStatus: true });
+      if (!r.ok) throw new Error(r.feil || 'ukjent feil');
+      return r;
+    }, 'lastAdminBilder');
+    const data = { bilder: resBilder.bilder || [], disk: (resBilder.diskStatus && resBilder.diskStatus.ok) ? resBilder.diskStatus : null, totalMb: resBilder.totalStorrelseMb };
+    _bkSkrivCache('sf_admin_bilder_v1', data);
+    visData(data);
+  } catch(e) {
+    if (!cache) el.innerHTML = '';
+  } finally {
+    window._adminBilderLaster = false;
+  }
 }
 
 function renderAdminBilder() {
