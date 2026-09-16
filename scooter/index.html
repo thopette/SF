@@ -198,6 +198,33 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
 /* Bilder til høyre i tur-lista */
 .log-item.har-bilder{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+.okt{padding:12px 14px;border-bottom:1px solid var(--border)}
+.okt:last-child{border-bottom:0}
+.okt-hode{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.okt-hoyre{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.okt-dato{font-size:13px;font-weight:700;color:var(--navy)}
+.okt-ant{font-size:11px;font-weight:700;color:var(--mid);background:#EEF5FC;border-radius:10px;padding:2px 8px;white-space:nowrap}
+.okt-ant.en{color:var(--text2);background:var(--ice)}
+.okt-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;margin-top:4px}
+.okt-body{font-size:12px;color:var(--text2);line-height:1.4;margin-top:2px;overflow-wrap:anywhere}
+.okt-body b{color:var(--text)}
+.okt-til{font-weight:600;color:#8A5300}
+.okt-rader{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.okt-rad{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px;color:var(--text)}
+.okt-rad .nv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.okt-rad .sc{color:var(--text2)}
+.okt-rad .t{font-family:var(--mono);font-size:11px;color:var(--text2);white-space:nowrap}
+.okt-rad .ik{font-size:12px;text-align:center}
+.okt-merker{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;align-items:center;font-size:11px;color:var(--text2)}
+.okt-merker b{color:var(--text)}
+.okt-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#8A5300;background:#FFF4E1;border:1px solid #F5D5A0;border-radius:10px;padding:2px 8px;white-space:nowrap}
+.okt-live i{width:7px;height:7px;border-radius:50%;background:#E67E22;display:inline-block;animation:oktpuls 1.4s ease-in-out infinite}
+@keyframes oktpuls{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.okt-live i{animation:none}}
+.okt-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.bryter{display:flex;background:var(--ice);border-radius:8px;padding:3px;gap:3px;margin:10px 12px}
+.bryter button{flex:1;border:0;border-radius:6px;padding:8px;font:600 12px var(--sans);background:transparent;color:var(--text2);cursor:pointer}
+.bryter button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .log-bilder{display:flex;gap:4px;align-items:flex-start}
 .log-bilder .log-thumb{width:52px;height:52px;border-radius:8px;position:relative}
 .log-bilder .mer{position:absolute;inset:0;background:rgba(15,30,50,.55);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:8px}
@@ -269,7 +296,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="16:18">16:18</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="17:05">17:05</span>
 </div>
 
 <div class="nav">
@@ -284,14 +311,14 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
 <div id="tab-dashboard" class="tab-content">
   <div class="stat-grid" id="stat-grid">
-    <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Turer denne sesongen</div></div>
-    <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Timer i bruk</div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Økter denne sesongen</div><div class="okt-sub" id="stat-turer-sub"></div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Scootertimer</div><div class="okt-sub" id="stat-km-sub"></div></div>
     <div class="stat-box"><div class="stat-value" id="stat-fore">–</div><div class="stat-label">Snitt føreforhold</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-sno">–</div><div class="stat-label">Snø høyere strøk (sist)</div></div>
   </div>
   <div class="nil-sum" id="nil-sum" hidden></div>
   <div class="card">
-    <div class="card-header">Siste turer</div>
+    <div class="card-header">Siste økter</div>
     <div id="siste-turer"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
   </div>
   <div class="card">
@@ -365,7 +392,8 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
 <div id="tab-logg" class="tab-content">
   <div class="card">
-    <div class="card-header">Alle turer</div>
+    <div class="card-header">Logg</div>
+    <div class="bryter" id="logg-bryter"><button type="button" data-m="okt" onclick="settLoggModus('okt')">Per økt</button><button type="button" data-m="scooter" onclick="settLoggModus('scooter')">Per scooter</button></div>
     <div id="logg-liste"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
   </div>
 </div>
@@ -824,7 +852,7 @@ function mapTur(t) {
     dato: t.Dato ? String(t.Dato).substring(0,10) : '',
     sjafor: t['Sjåfør'] || t.Sjafor,
     scooter: t.Scooter,
-    slutt: t.Slutt,
+    slutt: _normTid(t.Slutt),
     km: parseFloat(t.Km) || 0,
     tidBrukt: parseFloat(t.TidBrukt) || 0,
     beskrivelse: t.Beskrivelse || '',
@@ -1546,7 +1574,7 @@ async function lagreTur() {
     // Oppdater lokalt med en gang – ingen ventetid på full ny henting
     try {
       const lokal = {
-        id: String(res.id || tur.id), dato: tur.dato, sjafor: tur.sjafor, scooter: tur.scooter, slutt: tur.slutt,
+        id: String(res.id || tur.id), dato: tur.dato, sjafor: tur.sjafor, scooter: tur.scooter, slutt: _normTid(tur.slutt),
         km: parseFloat(tur.km) || 0, tidBrukt: parseFloat(tur.tidBrukt) || 0, beskrivelse: tur.beskrivelse || '',
         snoLav: tur.snoLav, snoHoy: tur.snoHoy, foreforhold: parseInt(tur.foreforhold) || 0,
         merknaderSki: tur.merknaderSki || '', bildeUrl: tur.bildeUrl || '', vaer: tur.vaer || '',
@@ -1590,7 +1618,7 @@ function startRedigerTur(id) {
   renderScooterCards();
   // Fyll form-feltene
   document.getElementById('f-dato').value = t.dato || '';
-  document.getElementById('f-slutt').value = t.slutt || '';
+  document.getElementById('f-slutt').value = _normTid(t.slutt);
   document.getElementById('f-km').value = t.km || '';
   document.getElementById('f-tid').value = t.tidBrukt || '';
   document.getElementById('f-beskrivelse').value = t.beskrivelse || '';
@@ -1668,12 +1696,144 @@ function _settNkValg(nil, bensin) {
   });
 }
 
+// ── ØKTER ─────────────────────────────────────────────
+// Scooterturer samme dag med sluttid innenfor grensen (kjedet, ulik scooter) = én økt.
+// Regnes ut ved hver visning – ingenting lagres.
+function oktGrense() { return parseInt(innstillinger && innstillinger.oktMinutter, 10) || 30; }
+function _normTid(v) {
+  if (!v) return '';
+  const s = String(v);
+  // ISO fra Sheets (1899-12-30T13:05:00.000Z) → lokal tid
+  if (/^\d{4}-\d{2}-\d{2}T/.test(s)) {
+    const d = new Date(s);
+    return isNaN(d) ? '' : String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  const m = s.match(/(\d{1,2})[:.](\d{2})/);
+  return m ? m[1].padStart(2, '0') + ':' + m[2] : '';
+}
+function _tidMin(v) { const t = _normTid(v); return t ? parseInt(t.slice(0, 2), 10) * 60 + parseInt(t.slice(3), 10) : null; }
+function _iDag() { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0'); }
+
+function grupperOkter(liste) {
+  const grense = oktGrense();
+  const perDato = {};
+  liste.forEach(t => { (perDato[t.dato || ''] = perDato[t.dato || ''] || []).push(t); });
+  const okter = [];
+  Object.keys(perDato).forEach(dato => {
+    const dag = perDato[dato];
+    const medTid = dag.filter(t => _tidMin(t.slutt) !== null).sort((a, b) => _tidMin(a.slutt) - _tidMin(b.slutt));
+    let cur = null;
+    medTid.forEach(t => {
+      const m = _tidMin(t.slutt);
+      if (cur && m - cur.sisteMin <= grense && !cur.turer.some(x => x.scooter === t.scooter)) {
+        cur.turer.push(t); cur.sisteMin = m;
+      } else {
+        cur = { dato, forsteMin: m, sisteMin: m, turer: [t] };
+        okter.push(cur);
+      }
+    });
+    dag.filter(t => _tidMin(t.slutt) === null).forEach(t => okter.push({ dato, forsteMin: null, sisteMin: null, turer: [t] }));
+  });
+  okter.forEach(o => {
+    o.id = o.turer.map(t => t.id).join('_');
+    o.nil = o.turer.some(t => t.nil);
+    o.scooterMin = o.turer.reduce((s, t) => s + (t.tidBrukt || 0), 0);
+    o.loypeMin = Math.max(0, ...o.turer.map(t => t.tidBrukt || 0));
+    o.sortNokkel = o.dato + ' ' + (o.sisteMin === null ? '' : String(o.sisteMin).padStart(4, '0'));
+  });
+  return okter.sort((a, b) => b.sortNokkel.localeCompare(a.sortNokkel));
+}
+
+// Minutter igjen før økta lukkes (null = lukket)
+function oktApenMin(o) {
+  if (o.sisteMin === null || o.dato !== _iDag()) return null;
+  const n = new Date();
+  const igjen = o.sisteMin + oktGrense() - (n.getHours() * 60 + n.getMinutes());
+  return igjen > 0 ? igjen : null;
+}
+
+function _oktStatsTekst(okter, turListe) {
+  const scooterMin = okter.reduce((s, o) => s + o.scooterMin, 0);
+  const loypeMin = okter.reduce((s, o) => s + o.loypeMin, 0);
+  const snitt = okter.length ? turListe.length / okter.length : 0;
+  return { scooterMin, loypeMin, snitt };
+}
+const _komma = (x, d = 1) => x.toFixed(d).replace('.', ',');
+
+function renderOktKort(o) {
+  const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const turerSortert = [...o.turer].sort((a, b) => (_tidMin(a.slutt) ?? 0) - (_tidMin(b.slutt) ?? 0));
+  const flere = o.turer.length > 1;
+  const apen = oktApenMin(o);
+  const tid = o.forsteMin === null ? '' : ' · ' + _normTid(turerSortert[0].slutt);
+  // Tekster fra alle – navn foran når flere har skrevet
+  const tekster = (felt) => {
+    const sett = [];
+    turerSortert.forEach(t => { const v = (t[felt] || '').trim(); if (v && !sett.some(x => x.v === v)) sett.push({ v, navn: t.sjafor }); });
+    return sett;
+  };
+  const beskr = tekster('beskrivelse');
+  const merkn = tekster('merknaderSki');
+  const visNavn = beskr.length + merkn.length > 1 && flere;
+  const tekstHtml = (x, pre) => `<div class="okt-body">${pre || ''}${visNavn && x.navn ? `<b>${esc(x.navn.split(' ')[0])}:</b> ` : ''}${esc(x.v).replace(/\n/g, '<br>')}</div>`;
+  const tekstBlokk = beskr.map(x => tekstHtml(x)).join('') + merkn.map(x => tekstHtml(x, '<span class="okt-til">Til skiløpere:</span> ')).join('');
+  // Bilder fra alle
+  const urls = [];
+  turerSortert.forEach(t => String(t.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean).forEach(u => { if (!urls.includes(u)) urls.push(u); }));
+  const vent = turerSortert.map(t => bkVentendeHtml(t.id, 'log-thumb')).join('');
+  let bilder = '';
+  if (urls.length || vent) {
+    const uj = JSON.stringify(urls).replace(/"/g, '&quot;');
+    const vis = urls.slice(0, vent ? 1 : 2);
+    const rest = urls.length - vis.length;
+    bilder = `<div class="log-bilder">${vis.map((u, i) => `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${uj}, ${i})"><img src="${_thumb(u, 120)}" loading="lazy" decoding="async" alt="">${i === vis.length - 1 && rest > 0 ? `<span class="mer">+${rest}</span>` : ''}</span>`).join('')}${vent}</div>`;
+  }
+  const rader = turerSortert.map(t => `<div class="okt-rad"><span class="ik">🛷</span><span class="nv"><b>${esc(t.sjafor)}</b> <span class="sc">· ${esc(t.scooter)}</span></span><span class="t">${t.bensin ? '<span title="Fylte bensin">⛽</span> ' : ''}${t.tidBrukt ? _minTilTekst(t.tidBrukt) : '–'}</span></div>`).join('');
+  const fore = turerSortert.map(t => t.foreforhold).filter(Boolean);
+  const snoT = turerSortert.find(t => t.snoLav || t.snoHoy);
+  const info = [];
+  if (o.loypeMin) info.push(`Tid i løypa <b>${_minTilTekst(o.loypeMin)}</b>`);
+  if (flere && o.scooterMin) info.push(`scootertimer <b>${_minTilTekst(o.scooterMin)}</b>`);
+  if (fore.length) info.push(`føre <b>${Math.round(fore.reduce((s, v) => s + v, 0) / fore.length)}/5</b>`);
+  if (snoT) info.push(`snø ${snoT.snoLav || '–'}/${snoT.snoHoy || '–'} cm`);
+  const merker = (o.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '')
+    + (o.turer.some(t => t.harFeil) ? '<span title="Feil rapportert" style="display:inline-flex;align-items:center;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>' : '');
+  return `<div class="okt" data-okt="${o.id}">
+    <div class="okt-hode"><span class="okt-dato">${formaterDatoKort(o.dato)}${tid}</span><span class="okt-hoyre">${apen ? `<span class="okt-live" title="Nye registreringer innen ${oktGrense()} min legges i denne økta"><i></i>Åpen for flere · ${apen} min</span>` : ''}<span class="okt-ant${flere ? '' : ' en'}">${o.turer.length} scooter${flere ? 'e' : ''}</span></span></div>
+    ${tekstBlokk || bilder ? `<div class="okt-grid"><div>${tekstBlokk}</div>${bilder}</div>` : ''}
+    <div class="okt-rader">${rader}</div>
+    ${merker || info.length ? `<div class="okt-merker">${merker}${info.length ? `<span>${info.join(' · ')}</span>` : ''}</div>` : ''}
+  </div>`;
+}
+
+// Oppdater «Åpen for flere»-nedtellingen hvert minutt (kun når noe er åpent)
+setInterval(() => {
+  try {
+    if (document.hidden || !document.querySelector('.okt-live')) return;
+    const aktiv = document.querySelector('.tab-content.active')?.id;
+    if (aktiv === 'tab-dashboard') renderDashboard();
+    else if (aktiv === 'tab-logg') renderLogg();
+  } catch (e) {}
+}, 60000);
+
+let _loggModus = 'okt';
+try { _loggModus = localStorage.getItem('sf_scooter_loggmodus') || 'okt'; } catch (e) {}
+function settLoggModus(m) {
+  _loggModus = m;
+  try { localStorage.setItem('sf_scooter_loggmodus', m); } catch (e) {}
+  renderLogg();
+}
+
 // ── DASHBOARD ─────────────────────────────────────────
 function renderDashboard() {
   renderScooterpark();
-  document.getElementById('stat-turer').textContent = turer.length;
-  const totMin = turer.reduce((s,t) => s + (t.tidBrukt || 0), 0);
-  document.getElementById('stat-km').textContent = (totMin / 60).toFixed(1).replace('.', ',') + ' t';
+  const okter = grupperOkter(turer);
+  const os = _oktStatsTekst(okter, turer);
+  document.getElementById('stat-turer').textContent = okter.length;
+  document.getElementById('stat-turer-sub').textContent = turer.length ? `${turer.length} scooterturer · snitt ${_komma(os.snitt)}` : '';
+  const totMin = os.scooterMin;
+  document.getElementById('stat-km').textContent = _komma(totMin / 60) + ' t';
+  document.getElementById('stat-km-sub').textContent = os.loypeMin ? `${_komma(os.loypeMin / 60)} t i løypa` : '';
   const foreVerdier = turer.map(t => t.foreforhold).filter(v => v > 0);
   const snittFore = foreVerdier.length ? (foreVerdier.reduce((s,v)=>s+v,0)/foreVerdier.length).toFixed(1) : '–';
   document.getElementById('stat-fore').textContent = snittFore;
@@ -1683,11 +1843,11 @@ function renderDashboard() {
   // Nærområdet / NIL – andel av kjøringen
   const nilEl = document.getElementById('nil-sum');
   if (nilEl) {
-    const nilTurer = turer.filter(t => t.nil);
-    const nilMin = nilTurer.reduce((s2, t) => s2 + (t.tidBrukt || 0), 0);
+    const nilOkter = okter.filter(o => o.nil);
+    const nilMin = nilOkter.reduce((s2, o) => s2 + o.scooterMin, 0);
     const andel = totMin > 0 ? Math.round(nilMin / totMin * 100) : 0;
-    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilTurer.length} ${nilTurer.length === 1 ? 'tur' : 'turer'} · ${_minTilTekst(nilMin)}</b> (${andel} % av tiden)</span>`;
-    nilEl.hidden = !nilTurer.length;
+    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilOkter.length} ${nilOkter.length === 1 ? 'økt' : 'økter'} · ${_komma(nilMin / 60)} scootertimer</b> (${andel} %)</span>`;
+    nilEl.hidden = !nilOkter.length;
   }
 
   // Siste 5 turer
@@ -1698,7 +1858,7 @@ function renderDashboard() {
     document.getElementById('graf-sjafor').innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen data ennå.</p>';
     return;
   }
-  el.innerHTML = sortert.slice(0, 5).map(renderTurItem).join('');
+  el.innerHTML = okter.slice(0, 5).map(renderOktKort).join('');
   renderGrafFore();
   renderGrafSjafor();
 }
@@ -1950,9 +2110,15 @@ function formaterTid(min) {
 // ── LOGG ──────────────────────────────────────────────
 function renderLogg() {
   const el = document.getElementById('logg-liste');
+  document.querySelectorAll('#logg-bryter button').forEach(b => b.classList.toggle('on', b.dataset.m === _loggModus));
   const sortert = [...turer].sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
   if (!sortert.length) {
     el.innerHTML = '<p style="padding:14px;font-size:13px;color:var(--text2)">Ingen turer registrert ennå.</p>';
+    return;
+  }
+  if (_loggModus !== 'scooter') {
+    el.innerHTML = grupperOkter(turer).map(renderOktKort).join('')
+      + '<p style="padding:10px 14px;font-size:11px;color:var(--text2);text-align:center">Rediger eller slett under «Per scooter».</p>';
     return;
   }
 
@@ -2763,15 +2929,15 @@ function renderStats() {
 }
 
 function renderStatsTotaler(t) {
-  const totTid = t.reduce((s,x) => s + (x.tidBrukt || 0), 0);
+  const okter = grupperOkter(t);
+  const os = _oktStatsTekst(okter, t);
   const dager = new Set(t.map(x => x.dato).filter(Boolean)).size;
-  const snitt = t.length ? totTid / t.length : 0;
   const el = document.getElementById('stats-totaler');
   el.innerHTML = `
-    <div class="stat-box"><div class="stat-value">${t.length}</div><div class="stat-label">Turer</div></div>
-    <div class="stat-box"><div class="stat-value">${_minTilTekst(snitt)}</div><div class="stat-label">Snitt per tur</div></div>
-    <div class="stat-box"><div class="stat-value">${(totTid/60).toFixed(1)}</div><div class="stat-label">Timer i bruk</div></div>
-    <div class="stat-box"><div class="stat-value">${dager}</div><div class="stat-label">Aktive dager</div></div>`;
+    <div class="stat-box"><div class="stat-value">${okter.length}</div><div class="stat-label">Økter</div><div class="okt-sub">${t.length} scooterturer · ${dager} dager</div></div>
+    <div class="stat-box"><div class="stat-value">${_komma(os.snitt)}</div><div class="stat-label">Scootere per økt</div><div class="okt-sub">snitt</div></div>
+    <div class="stat-box"><div class="stat-value">${_komma(os.scooterMin / 60)} t</div><div class="stat-label">Scootertimer</div><div class="okt-sub">brukes i NIL-rapport</div></div>
+    <div class="stat-box"><div class="stat-value">${_komma(os.loypeMin / 60)} t</div><div class="stat-label">Tid i løypa</div><div class="okt-sub">lengste tid per økt</div></div>`;
 }
 
 function renderStatsSjafor(t) {
