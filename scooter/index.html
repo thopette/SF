@@ -190,7 +190,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   </button>
 
   <div style="flex:1"></div>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="15.09" data-tid="13:12">13:12</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="10:24">10:24</span>
 </div>
 
 <div class="nav">
@@ -481,50 +481,88 @@ function _genUploadId() {
 // Hybrid GET/POST strategi:
 // GET brukes for lese-operasjoner (unngår Apps Script sin POST→302→404-redirect-bug)
 // POST brukes for skrive-operasjoner og store payloads (bilder)
+// Tidsgrenser per type kall: vanlige kall feiler raskt, bildekall får tiden de trenger.
+const _TREGE_ACTIONS = ['lastOppBilde','hentAlleBilder','listAlleBilder','hentDiskStatus','sjekkDiskOgSendVarsel',
+  'nullstillHeleBildearkivet','ryddOppSlettedeBildeReferanser','slettFlereBilder','slettFlereItems','slettAltData',
+  'hentRyddedata','regnUtDiffPaNytt'];
+// Skrive-kall som trygt kan sendes på nytt (backend gjenkjenner duplikater)
+const _IDEMPOTENTE_SKRIV = ['lastOppBilde','leggTil','leggTilScooter','oppdaterVaer','oppdaterVaerScooter','oppdaterScooterTur'];
+function _timeoutFor(body) {
+  if (_TREGE_ACTIONS.indexOf(body.action) > -1) return 90000;
+  if ((body.action === 'hentAlle' || body.action === 'hentAlleScooter') && !body.fraDato) return 45000;
+  return 25000;
+}
+const _RETRY_PAUSE_MS = [1000, 2000, 4000];
+// Drive-thumbnail i ønsket bredde (miniatyrer trenger ikke 1000–1600 px)
+function _thumb(url, w) {
+  if (!url) return '';
+  return String(url).indexOf('drive.google.com/thumbnail') > -1
+    ? String(url).replace(/([?&])sz=w\d+/i, '$1sz=w' + w)
+    : url;
+}
+// Dagens dato i lokal tid (toISOString gir UTC → feil dato mellom kl. 00 og 02)
+function _lokalDato(d) {
+  d = d || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
 async function apiKall(body, forsokNr) {
   forsokNr = forsokNr || 1;
   startSpinner();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), _timeoutFor(body));
+  const bodyStr = JSON.stringify(body);
+  const brukGet = bodyStr.length < 1500 && !body.tur && !body.base64 && !body.forere && !body.loyper && !body.maskiner && !body.innstillinger && !body.feil && !body.service && !body.kontakt && !body.scootere && !body.items && !body.bildeIds;
+  const kanPrøveIgjen = brukGet || _IDEMPOTENTE_SKRIV.indexOf(body.action) > -1;
+  const nyttForsøk = async (grunn) => {
+    console.warn(`${grunn} – prøver igjen (forsøk ${forsokNr + 1}/4)…`);
+    try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/4)…`, ''); } catch(_) {}
+    await new Promise(r => setTimeout(r, _RETRY_PAUSE_MS[forsokNr - 1] || 4000));
+    return apiKall(body, forsokNr + 1);
+  };
   try {
-    const bodyStr = JSON.stringify(body);
-    const brukGet = bodyStr.length < 1500 && !body.tur && !body.base64 && !body.forere && !body.loyper && !body.maskiner && !body.innstillinger && !body.feil && !body.service && !body.kontakt && !body.scootere && !body.items && !body.bildeIds;
     let res;
-    if (brukGet) {
-      const url = scriptUrl + '?data=' + encodeURIComponent(bodyStr);
-      res = await fetch(url, {
-        method: 'GET', redirect: 'follow',
-        cache: 'no-store',
-        credentials: 'omit'
-      });
-    } else {
-      res = await fetch(scriptUrl, {
-        method: 'POST', redirect: 'follow',
-        headers: {'Content-Type':'text/plain;charset=utf-8'},
-        body: bodyStr,
-        cache: 'no-store',
-        credentials: 'omit'
-      });
+    try {
+      if (brukGet) {
+        // Send data som URL-parameter – GET-response går ikke gjennom 302-redirect
+        res = await fetch(scriptUrl + '?data=' + encodeURIComponent(bodyStr), {
+          method: 'GET', redirect: 'follow', signal: controller.signal, cache: 'no-store', credentials: 'omit'
+        });
+      } else {
+        res = await fetch(scriptUrl, {
+          method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: bodyStr, signal: controller.signal, cache: 'no-store', credentials: 'omit'
+        });
+      }
+    } catch(nettFeil) {
+      clearTimeout(timeout);
+      const erTimeout = nettFeil.name === 'AbortError';
+      // Nettverksfeil: prøv igjen for lese-kall og trygge skrive-kall. Tidsavbrudd på trege kall prøves ikke igjen.
+      if (kanPrøveIgjen && forsokNr < 4 && !(erTimeout && _TREGE_ACTIONS.indexOf(body.action) > -1)) {
+        return nyttForsøk(erTimeout ? 'Tidsavbrudd' : 'Nettverksfeil');
+      }
+      if (erTimeout) throw new Error('Tidsfrist utløpt – sjekk nettforbindelsen og prøv igjen.');
+      throw nettFeil;
     }
     const txt = await res.text();
-    try {
-      return JSON.parse(txt);
-    } catch(e) {
+    clearTimeout(timeout);
+    try { return JSON.parse(txt); }
+    catch(e) {
       console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}, ${brukGet ? 'GET' : 'POST'}). Første 500 tegn:`, txt.substring(0, 500));
       console.error('HTTP status:', res.status, 'Response length:', txt.length);
-      if (forsokNr < 4) {
-        try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/4)…`, ''); } catch(_) {}
-        await new Promise(r => setTimeout(r, 200 * Math.pow(2, forsokNr - 1)));
-        stopSpinner();
-        return apiKall(body, forsokNr + 1);
-      }
+      if (forsokNr < 4) return nyttForsøk('Ugyldig svar');
       const erLoginSide = txt.includes('accounts.google.com');
       throw new Error(erLoginSide
         ? 'Apps Script krever re-autorisering. Åpne script-editoren og godkjenn tilgang.'
         : `Server svarte ikke etter 4 forsøk (HTTP ${res.status}). Prøv igjen om et øyeblikk.`);
     }
+  } catch(e) {
+    clearTimeout(timeout);
+    throw e;
   } finally {
     stopSpinner();
   }
 }
+
 
 function toast(melding, type) {
   const el = document.getElementById('toast');
@@ -547,7 +585,7 @@ function visTab(id) {
     const n = new Date();
     document.getElementById('f-slutt').value = n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
     if (!document.getElementById('f-dato').value) {
-      document.getElementById('f-dato').value = n.toISOString().substring(0,10);
+      document.getElementById('f-dato').value = _lokalDato(n);
     }
     oppdaterKmHint();
   }
@@ -695,7 +733,7 @@ function renderScooterCards() {
   el.innerHTML = aktive.map((s,i) => {
     const sisteKm = sisteKmForScooter(s.navn);
     const meta = sisteKm > 0 ? sisteKm + ' km' : (s.kmStart||0) + ' km';
-    const bildeHtml = s.bildeUrl ? `<img src="${s.bildeUrl}" alt="">` : '';
+    const bildeHtml = s.bildeUrl ? `<img src="${_thumb(s.bildeUrl, 400)}" decoding="async" alt="">` : '';
     return `<div class="pick-card${valgtScooter && valgtScooter.navn===s.navn?' selected':''}" onclick="velgScooter(${i})"><div class="pick-img">${bildeHtml}</div><div class="pick-name">${s.navn}</div><div class="pick-meta">${meta}</div></div>`;
   }).join('');
 }
@@ -799,7 +837,7 @@ async function lastOppEttTurBilde(fil) {
     const reader = new FileReader();
     reader.onload = async (ev) => {
       try {
-        const komprimert = await komprimerBilde(ev.target.result, 1600, 0.82);
+        const komprimert = await komprimerBilde(ev.target.result, 1280, 0.75);
         const uploadId = _genUploadId();
         const res = await apiKall({
           action: 'lastOppBilde',
@@ -848,7 +886,7 @@ async function lastOppScooterBilde(fil) {
       document.getElementById('scooter-bilde-preview').style.display = 'block';
       toast('Komprimerer og laster opp…', '');
       try {
-        const komprimert = await komprimerBilde(dataUrl, 1600, 0.82);
+        const komprimert = await komprimerBilde(dataUrl, 1280, 0.75);
         const uploadId = _genUploadId();
         const res = await apiKall({
           action: 'lastOppBilde',
@@ -885,7 +923,7 @@ function renderPhotoGrid() {
   const urlsJson = JSON.stringify(valgtBildeUrls).replace(/"/g,'&quot;');
   const ferdige = valgtBildeUrls.map((url, i) => `
     <div class="photo-thumb-wrap">
-      <img src="${url}" alt="Bilde ${i+1}" onclick="apneLightbox(${urlsJson}, ${i})">
+      <img src="${_thumb(url, 240)}" loading="lazy" decoding="async" alt="Bilde ${i+1}" onclick="apneLightbox(${urlsJson}, ${i})">
       <button class="fjern-btn" onclick="fjernBildeIdx(${i})" type="button" aria-label="Fjern bilde">×</button>
     </div>
   `).join('');
@@ -974,6 +1012,7 @@ async function lagreTur() {
     }
   }
   const tur = {
+    id: Date.now().toString(),  // Klient-ID: gjør retry trygt (backend avviser duplikater)
     dato: document.getElementById('f-dato').value,
     slutt: document.getElementById('f-slutt').value,
     sjafor: valgtSjafor,
@@ -1021,8 +1060,28 @@ async function lagreTur() {
     }
     toast(redigererTurId ? 'Tur oppdatert ✓' : 'Tur lagret ✓', 'ok');
     const varRedigering = !!redigererTurId;
+    // Oppdater lokalt med en gang – ingen ventetid på full ny henting
+    try {
+      const lokal = {
+        id: String(res.id || tur.id), dato: tur.dato, sjafor: tur.sjafor, scooter: tur.scooter, slutt: tur.slutt,
+        km: parseFloat(tur.km) || 0, tidBrukt: parseFloat(tur.tidBrukt) || 0, beskrivelse: tur.beskrivelse || '',
+        snoLav: tur.snoLav, snoHoy: tur.snoHoy, foreforhold: parseInt(tur.foreforhold) || 0,
+        merknaderSki: tur.merknaderSki || '', bildeUrl: tur.bildeUrl || '', vaer: tur.vaer || '',
+        redigert: !!redigererTurId,
+        kmPerTur: res.kmPerTur !== undefined && res.kmPerTur !== '' ? parseFloat(res.kmPerTur) || null : null,
+        harFeil: tur.harFeil === true
+      };
+      if (tur.harFeil === undefined) delete lokal.harFeil;  // redigering: behold eksisterende feil-flagg
+      const idx = turer.findIndex(t => t.id === lokal.id);
+      if (idx >= 0) { if (lokal.kmPerTur === null) lokal.kmPerTur = turer[idx].kmPerTur; turer[idx] = Object.assign({}, turer[idx], lokal); }
+      else turer.unshift(lokal);
+      renderDashboard();
+      oppdaterKmHint();
+    } catch(e) { console.log('Lokal oppdatering feilet:', e); }
     avbrytRediger();  // Nullstiller state og form
-    await lastData();
+    // Én stille synk mot Sheets litt senere (etter varselkallet)
+    clearTimeout(window._synkEtterLagring);
+    window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData(); }, 8000);
     // Nye turer → gå til Dashboard (bruker ser den øverst). Redigering → gå til Logg (finner der de var).
     visTab(varRedigering ? 'logg' : 'dashboard');
   } catch(e) {
@@ -1263,7 +1322,7 @@ function renderTurItem(t) {
   if (bildeUrls.length) {
     const urlsJson = JSON.stringify(bildeUrls).replace(/"/g,'&quot;');
     const thumbs = bildeUrls.map((u, i) =>
-      `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${urlsJson}, ${i})"><img src="${u}" alt=""></span>`
+      `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${urlsJson}, ${i})"><img src="${_thumb(u, 120)}" loading="lazy" decoding="async" alt=""></span>`
     ).join('');
     stats.push(`<span class="log-thumbs">${thumbs}</span>`);
   }
@@ -1509,7 +1568,7 @@ function renderGalleriKort(b) {
   return `
     <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--snow)">
       <div style="width:100%;aspect-ratio:1;background:#e5e7eb;cursor:pointer;position:relative" onclick="apneLightbox(${urls}, 0)">
-        <img src="${b.thumbnailUrl}" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
+        <img src="${b.thumbnailUrl}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
         ${typeBadge}
       </div>
       <div style="padding:6px 8px;font-size:11px;color:var(--text2);line-height:1.4">
@@ -1526,7 +1585,7 @@ function renderGalleriKort(b) {
 async function slettBildeAdmin(filId, navn) {
   if (!confirm(`Slette bildet «${navn}»?\n\nBildet fjernes fra Drive OG fra alle turer det er tilknyttet.`)) return;
   try {
-    const res = await apiKall({ action: 'slettBilde', filId });
+    const res = await apiKall({ action: 'slettBilde', bildeId: filId });
     if (res.feil) throw new Error(res.feil);
     toast('Bilde slettet ✓', 'ok');
     await lastData();  // Oppfrisker turer så referanser er borte
@@ -1541,7 +1600,7 @@ function renderAdmin() {
   const scEl = document.getElementById('admin-scootere');
   const scootereHtml = scootere.map((s,i) => {
     const bildeHtml = s.bildeUrl
-      ? `<img src="${s.bildeUrl}" alt="" style="width:100%;height:100%;object-fit:cover">`
+      ? `<img src="${_thumb(s.bildeUrl, 200)}" loading="lazy" decoding="async" alt="" style="width:100%;height:100%;object-fit:cover">`
       : '';
     return `<div style="border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;display:flex;gap:12px;align-items:center">
       <div style="width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--ice),var(--border));flex-shrink:0;overflow:hidden">${bildeHtml}</div>
@@ -1826,9 +1885,9 @@ async function settFeilStatusScooter(id, status) {
     const f = feilData.find(x => String(x.id) === String(id));
     if (f) {
       f.status = status;
-      f.statusDato = new Date().toISOString().split('T')[0];
+      f.statusDato = _lokalDato();
       if (notat) {
-        const now = new Date().toISOString().split('T')[0];
+        const now = _lokalDato();
         const entry = now + ' [' + status + (forer ? ' – ' + forer : '') + ']: ' + notat;
         f.notatLogg = f.notatLogg ? f.notatLogg + '\n' + entry : entry;
       }
@@ -2536,7 +2595,7 @@ async function initAlt() {
   // Ny økt er default-fane: sett dato + klokkeslett så bruker ikke må gjøre det manuelt
   const n = new Date();
   const slut = document.getElementById('f-slutt'); if (slut && !slut.value) slut.value = n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
-  const dato = document.getElementById('f-dato'); if (dato && !dato.value) dato.value = n.toISOString().substring(0,10);
+  const dato = document.getElementById('f-dato'); if (dato && !dato.value) dato.value = _lokalDato(n);
   // Bakgrunnsjobber som ikke skal blokkere UI
   hentVaer();
   hentFeilData();
