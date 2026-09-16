@@ -181,6 +181,20 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .bk-pill[data-flyt].done{background:#1E7A45;color:#fff}
 .bk-pop.bk-pop-flyt{top:calc(env(safe-area-inset-top,0px) + 152px)}
 }
+
+/* Nærområdet/NIL og bensin */
+.nk-grid{display:flex;flex-direction:column;gap:8px}
+.field label.nk{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--border);border-radius:10px;background:var(--white);cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;margin:0}
+.nk input{width:22px;height:22px;accent-color:var(--mid);flex-shrink:0;margin:0}
+.nk b{display:block;font-size:15px;font-weight:700;color:var(--text)}
+.nk small{display:block;font-size:12px;color:var(--text2);line-height:1.35;margin-top:1px}
+.field label.nk.on{border-color:var(--mid);background:#EEF5FC}
+.nk .ik{font-size:20px;width:26px;text-align:center;flex-shrink:0}
+.b-nil{display:inline-flex;align-items:center;padding:2px 8px;background:#E0F4F1;color:#0B6B5C;font-size:11px;font-weight:700;border-radius:10px;border:1px solid #A9DDD4}
+.b-fuel{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;background:#FFF4E1;color:#8B5A00;font-size:11px;font-weight:700;border-radius:10px;border:1px solid #F5D5A0}
+.nil-sum{margin:0 0 12px;padding:10px 14px;background:#E0F4F1;border:1px solid #A9DDD4;border-radius:10px;color:#0B6B5C;font-size:13px;display:flex;justify-content:space-between;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
+.nil-sum[hidden]{display:none}
+.nil-sum b{font-size:15px}
 </style></head><body>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
@@ -241,7 +255,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="14:16">14:16</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="15:12">15:12</span>
 </div>
 
 <div class="nav">
@@ -261,6 +275,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <div class="stat-box"><div class="stat-value" id="stat-fore">–</div><div class="stat-label">Snitt føreforhold</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-sno">–</div><div class="stat-label">Snø høyere strøk (sist)</div></div>
   </div>
+  <div class="nil-sum" id="nil-sum" hidden></div>
   <div class="card">
     <div class="card-header">Siste turer</div>
     <div id="siste-turer"><p style="padding:14px;font-size:13px;color:var(--text2)">Laster…</p></div>
@@ -296,6 +311,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
         <div class="field"><label>Sluttidspunkt</label><div class="time-with-now"><input type="time" id="f-slutt" style="padding-right:56px"><button class="now-btn" onclick="event.preventDefault(); document.getElementById('f-slutt').value = new Date().toTimeString().slice(0,5)">Nå</button></div></div>
         <div class="field"><label>Dato</label><input type="date" id="f-dato"></div>
       </div>
+      <div class="field"><label>Kjøring</label><div class="nk-grid">
+        <label class="nk" for="f-nil"><input type="checkbox" id="f-nil" onchange="this.closest('.nk').classList.toggle('on', this.checked)"><div><b>Nærområdet / NIL</b><small>Labbeløype, lysløypa eller annen kjøring i nærområdet for idrettslaget</small></div></label>
+        <label class="nk" for="f-bensin"><input type="checkbox" id="f-bensin" onchange="this.closest('.nk').classList.toggle('on', this.checked)"><span class="ik" aria-hidden="true">⛽</span><div><b>Fylte bensin</b><small>ved parkering</small></div></label>
+      </div></div>
 
       <div class="optional-section">
         <div class="optional-header expanded" onclick="toggleOptional()">
@@ -801,6 +820,8 @@ function mapTur(t) {
     vaer: t.Vaer || '',
     redigert: String(t.Registrert || '').includes('[redigert]'),
     kmPerTur: t.KmPerTur !== '' ? parseFloat(t.KmPerTur) || null : null,
+    nil: String(t.NIL || '') === 'Ja',
+    bensin: String(t.Bensin || '') === 'Ja',
     harFeil: (t.HarFeil === 'Ja' || t.HarFeil === true)
   };
 }
@@ -1409,6 +1430,8 @@ async function lagreTur() {
     snoHoy: document.getElementById('f-sno-hoy').value || '',
     foreforhold: foreBtn ? foreBtn.dataset.val : '',
     merknaderSki: document.getElementById('f-merknader-ski').value.trim(),
+    nil: document.getElementById('f-nil').checked ? 'Ja' : '',
+    bensin: document.getElementById('f-bensin').checked ? 'Ja' : '',
     // Komma-separert liste av URL-er – bakoverkompatibel med gammel "én URL"-modell
     bildeUrl: valgtBildeUrls.join(','),
     vaer: vaerStreng,
@@ -1453,6 +1476,7 @@ async function lagreTur() {
         snoLav: tur.snoLav, snoHoy: tur.snoHoy, foreforhold: parseInt(tur.foreforhold) || 0,
         merknaderSki: tur.merknaderSki || '', bildeUrl: tur.bildeUrl || '', vaer: tur.vaer || '',
         redigert: !!redigererTurId,
+        nil: tur.nil === 'Ja', bensin: tur.bensin === 'Ja',
         kmPerTur: res.kmPerTur !== undefined && res.kmPerTur !== '' ? parseFloat(res.kmPerTur) || null : null,
         harFeil: tur.harFeil === true
       };
@@ -1501,6 +1525,7 @@ function startRedigerTur(id) {
   document.querySelectorAll('#fore-rating .rating-btn').forEach(b => {
     b.classList.toggle('selected', parseInt(b.dataset.val) === t.foreforhold);
   });
+  _settNkValg(t.nil, t.bensin);
   // Bilder – bakoverkompatibelt: gammel enkelt-URL og ny komma-separert liste
   bkNullstillSkjema();
   valgtBildeUrls = (t.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -1557,8 +1582,15 @@ function resetSkjema() {
   document.getElementById('f-sno-hoy').value = '';
   document.getElementById('f-merknader-ski').value = '';
   document.querySelectorAll('#fore-rating .rating-btn').forEach(b => b.classList.remove('selected'));
+  _settNkValg(false, false);
   fjernAlleBilder();
   oppdaterKmHint();
+}
+function _settNkValg(nil, bensin) {
+  [['f-nil', nil], ['f-bensin', bensin]].forEach(([id, v]) => {
+    const el = document.getElementById(id);
+    if (el) { el.checked = !!v; el.closest('.nk')?.classList.toggle('on', !!v); }
+  });
 }
 
 // ── DASHBOARD ─────────────────────────────────────────
@@ -1573,6 +1605,15 @@ function renderDashboard() {
   const sortert = [...turer].sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
   const sisteSnoHoy = sortert.find(t => t.snoHoy);
   document.getElementById('stat-sno').textContent = sisteSnoHoy ? sisteSnoHoy.snoHoy + ' cm' : '–';
+  // Nærområdet / NIL – andel av kjøringen
+  const nilEl = document.getElementById('nil-sum');
+  if (nilEl) {
+    const nilTurer = turer.filter(t => t.nil);
+    const nilKm = nilTurer.reduce((s2, t) => s2 + (t.kmPerTur || 0), 0);
+    const andel = totKm > 0 ? Math.round(nilKm / totKm * 100) : 0;
+    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilTurer.length} ${nilTurer.length === 1 ? 'tur' : 'turer'} · ${nilKm.toFixed(0)} km</b> (${andel} % av km)</span>`;
+    nilEl.hidden = !nilTurer.length;
+  }
 
   // Siste 5 turer
   const el = document.getElementById('siste-turer');
@@ -1718,7 +1759,7 @@ function renderTurItem(t) {
   const feilBadge = t.harFeil
     ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>`
     : '';
-  return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${feilBadge}${stats.join('')}</div></div>`;
+  return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div></div>`;
 }
 
 // ── SCOOTERPARK-WIDGET (Alt A: kortrekke med mini-sparklines) ──
