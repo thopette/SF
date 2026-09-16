@@ -195,6 +195,20 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .nil-sum{margin:0 0 12px;padding:10px 14px;background:#E0F4F1;border:1px solid #A9DDD4;border-radius:10px;color:#0B6B5C;font-size:13px;display:flex;justify-content:space-between;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
 .nil-sum[hidden]{display:none}
 .nil-sum b{font-size:15px}
+
+/* Bilder til høyre i tur-lista */
+.log-item.har-bilder{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+.log-bilder{display:flex;gap:4px;align-items:flex-start}
+.log-bilder .log-thumb{width:52px;height:52px;border-radius:8px;position:relative}
+.log-bilder .mer{position:absolute;inset:0;background:rgba(15,30,50,.55);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:8px}
+/* Scooterbilde i admin */
+.sb-status{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border-radius:8px;font-size:13px;line-height:1.35}
+.sb-status[hidden]{display:none}
+.sb-status.laster{background:#EEF5FC;color:#1F4E79}
+.sb-status.ok{background:#E4F4E8;color:#1E5A2E}
+.sb-status.feil{background:#FDECEC;color:#8A1C12}
+.sb-status .bk-spin{border-color:rgba(31,78,121,.25);border-top-color:#1F4E79}
+.sb-fjern{background:none;border:0;color:var(--text2);font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 0;margin-top:4px}
 </style></head><body>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
@@ -255,7 +269,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="15:12">15:12</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="15:49">15:49</span>
 </div>
 
 <div class="nav">
@@ -445,14 +459,16 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
           <div style="margin-top:4px;font-size:12px">Trykk for å velge bilde</div>
         </div>
         <input type="file" id="scooter-bilde-input" accept="image/*" style="display:none">
-        <div id="scooter-bilde-preview" class="photo-preview" style="display:none"><img id="scooter-bilde-img"></div>
+        <div id="scooter-bilde-preview" class="photo-preview" style="display:none"><img id="scooter-bilde-img" alt="Bilde av scooteren"></div>
+        <div id="scooter-bilde-status" class="sb-status" hidden role="status"></div>
+        <button type="button" id="scooter-bilde-fjern" class="sb-fjern" hidden onclick="fjernScooterBilde()">Fjern bilde</button>
       </div>
       <div class="field"><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="scooter-aktiv" style="width:auto" checked><span style="text-transform:none;letter-spacing:normal">Aktiv (vises i valg)</span></label></div>
       <div style="display:flex;justify-content:space-between;gap:8px;margin-top:16px">
         <button class="btn btn-danger" id="scooter-slett-btn" onclick="slettScooterModal()" style="display:none">Slett</button>
         <div style="flex:1"></div>
         <button class="btn btn-outline" onclick="lukkScooterModal()">Avbryt</button>
-        <button class="btn btn-primary" onclick="lagreScooterModal()">Lagre</button>
+        <button class="btn btn-primary" id="scooter-lagre-btn" onclick="lagreScooterModal()">Lagre</button>
       </div>
     </div>
   </div>
@@ -967,36 +983,76 @@ function oppdaterLagreKnapp() {
   btn.innerHTML = redigererTurId ? 'Lagre endringer' : 'Lagre tur';
 }
 
+// ── Scooterbilde (admin) ──
+// Nytt bilde lastes opp med en gang og vises lokalt. «Lagre» venter på opplastingen.
+// Etter lagring slettes det gamle bildet fra Drive; avbrytes endringen, slettes det nye.
+let _sbOpplasting = null;     // Promise mens et bilde lastes opp
+let _sbOpprinnelig = '';      // URL scooteren hadde da vinduet ble åpnet
+let _sbNyeOpplastet = [];     // URL-er lastet opp i denne redigeringen (kandidater for opprydding)
+function _sbFilId(url) { const m = String(url || '').match(/[?&]id=([a-zA-Z0-9_-]+)/); return m ? m[1] : ''; }
+function _sbSlettStille(url) {
+  const id = _sbFilId(url);
+  if (!id) return;
+  // Ikke slett hvis bildet fortsatt brukes av en scooter eller tur
+  if (scootere.some(s => s.bildeUrl && _sbFilId(s.bildeUrl) === id)) return;
+  if (turer.some(t => String(t.bildeUrl || '').indexOf(id) > -1)) return;
+  apiKall({ action: 'slettBilde', bildeId: id }).catch(e => console.log('Opprydding av bilde feilet:', e));
+}
+function _sbStatus(type, tekst) {
+  const el = document.getElementById('scooter-bilde-status');
+  if (!el) return;
+  if (!type) { el.hidden = true; return; }
+  el.className = 'sb-status ' + type;
+  el.innerHTML = (type === 'laster' ? '<span class="bk-spin"></span>' : type === 'ok' ? '✓' : '⚠') + '<span>' + tekst + '</span>';
+  el.hidden = false;
+}
+function _sbOppdaterKnapper() {
+  const btn = document.getElementById('scooter-lagre-btn');
+  if (btn && !btn.dataset.lagrer) btn.textContent = _sbOpplasting ? 'Lagre (venter …)' : 'Lagre';
+  const fj = document.getElementById('scooter-bilde-fjern');
+  if (fj) fj.hidden = !scooterBildeUrl || !!_sbOpplasting;
+}
+function fjernScooterBilde() {
+  scooterBildeUrl = '';
+  document.getElementById('scooter-bilde-preview').style.display = 'none';
+  _sbStatus('ok', 'Bildet fjernes når du trykker Lagre.');
+  _sbOppdaterKnapper();
+}
 async function lastOppScooterBilde(fil) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      const dataUrl = ev.target.result;
-      document.getElementById('scooter-bilde-img').src = dataUrl;
-      document.getElementById('scooter-bilde-preview').style.display = 'block';
-      toast('Komprimerer og laster opp…', '');
-      try {
-        const komprimert = await komprimerBilde(dataUrl, 1280, 0.75);
-        const uploadId = _genUploadId();
-        const res = await apiKall({
-          action: 'lastOppBilde',
-          filnavn: (fil.name || ('scooter-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
-          base64: komprimert,
-          mimeType: 'image/jpeg',
-          uploadId: uploadId
-        });
-        if (res.feil) throw new Error(res.feil);
-        scooterBildeUrl = res.url;
-        document.getElementById('scooter-bilde-img').src = res.url;
-        toast('Bilde lastet opp ✓', 'ok');
-      } catch(err) {
-        toast('Bildeopplasting feilet: ' + err.message, 'err');
-        console.error('Bildeopplasting feilet:', err);
-      }
-      resolve();
-    };
-    reader.readAsDataURL(fil);
-  });
+  const jobb = (async () => {
+    const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = () => rej(new Error('Kunne ikke lese bildet')); r.readAsDataURL(fil); });
+    const komprimert = await komprimerBilde(dataUrl, 1280, 0.75);
+    document.getElementById('scooter-bilde-img').src = komprimert;
+    document.getElementById('scooter-bilde-preview').style.display = 'block';
+    _sbStatus('laster', 'Laster opp bildet … Du kan trykke Lagre – det lagres når opplastingen er ferdig.');
+    const res = await apiKall({
+      action: 'lastOppBilde',
+      filnavn: (fil.name || ('scooter-' + Date.now())).replace(/\.(png|heic|heif|webp)$/i, '.jpg'),
+      base64: komprimert, mimeType: 'image/jpeg', uploadId: _genUploadId()
+    });
+    if (res.feil) throw new Error(res.feil);
+    _bk.lokal[res.url] = komprimert;     // vis lokal kopi til Drive-miniatyren er klar
+    // Et tidligere opplastet (men ikke lagret) bilde i samme redigering er ikke lenger aktuelt
+    _sbNyeOpplastet.filter(u => u !== res.url).forEach(_sbSlettStille);
+    _sbNyeOpplastet = [res.url];
+    scooterBildeUrl = res.url;
+    return res.url;
+  })();
+  _sbOpplasting = jobb;
+  _sbOppdaterKnapper();
+  try {
+    await jobb;
+    _sbStatus('ok', 'Bildet er lastet opp. Trykk Lagre for å bruke det.');
+  } catch (err) {
+    console.error('Bildeopplasting feilet:', err);
+    _sbStatus('feil', 'Opplasting feilet: ' + err.message + ' Velg bildet på nytt.');
+    // Vis bildet scooteren faktisk har
+    if (scooterBildeUrl) document.getElementById('scooter-bilde-img').src = _thumb(scooterBildeUrl, 800);
+    else document.getElementById('scooter-bilde-preview').style.display = 'none';
+  } finally {
+    if (_sbOpplasting === jobb) _sbOpplasting = null;
+    _sbOppdaterKnapper();
+  }
 }
 
 const BK_APP = 'scooter';
@@ -1746,20 +1802,24 @@ function renderTurItem(t) {
   if (t.foreforhold) stats.push(`<span>Føre <strong>${t.foreforhold}/5</strong></span>`);
   if (t.snoLav || t.snoHoy) stats.push(`<span>Snø ${t.snoLav||'–'}/${t.snoHoy||'–'} cm</span>`);
   // Thumbnails – klikkbare, åpner lightbox med hele lista
+  // Bilder vises i egen kolonne til høyre (maks 2 miniatyrer, «+N» på den siste)
   const bildeUrls = (t.bildeUrl || '').split(',').map(s => s.trim()).filter(Boolean);
   const ventThumbs = bkVentendeHtml(t.id, 'log-thumb');
+  let bilderHtml = '';
   if (bildeUrls.length || ventThumbs) {
     const urlsJson = JSON.stringify(bildeUrls).replace(/"/g,'&quot;');
-    const thumbs = bildeUrls.map((u, i) =>
-      `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${urlsJson}, ${i})"><img src="${_thumb(u, 120)}" loading="lazy" decoding="async" alt=""></span>`
+    const vis = bildeUrls.slice(0, ventThumbs ? 1 : 2);
+    const rest = bildeUrls.length - vis.length;
+    const thumbs = vis.map((u, i) =>
+      `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${urlsJson}, ${i})"><img src="${_thumb(u, 120)}" loading="lazy" decoding="async" alt="">${i === vis.length - 1 && rest > 0 ? `<span class="mer">+${rest}</span>` : ''}</span>`
     ).join('') + ventThumbs;
-    stats.push(`<span class="log-thumbs">${thumbs}</span>`);
+    bilderHtml = `<div class="log-bilder">${thumbs}</div>`;
   }
   // Feil-badge: viser at bruker meldte en feil under denne turen
   const feilBadge = t.harFeil
     ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>`
     : '';
-  return `<div class="log-item"><div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div></div>`;
+  return `<div class="log-item${bilderHtml ? ' har-bilder' : ''}">${bilderHtml ? '<div>' : ''}<div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div>${bilderHtml ? '</div>' + bilderHtml : ''}</div>`;
 }
 
 // ── SCOOTERPARK-WIDGET (Alt A: kortrekke med mini-sparklines) ──
@@ -2077,17 +2137,39 @@ function visScooterModal(idx) {
     document.getElementById('scooter-slett-btn').style.display = 'inline-flex';
   }
   document.getElementById('scooter-bilde-input').value = '';
+  if (scooterBildeUrl) document.getElementById('scooter-bilde-img').src = _thumb(scooterBildeUrl, 800);
+  _sbOpprinnelig = scooterBildeUrl;
+  _sbNyeOpplastet = [];
+  _sbOpplasting = null;
+  _sbStatus(null);
+  _sbOppdaterKnapper();
   document.getElementById('scooter-modal').classList.add('open');
 }
-function lukkScooterModal() {
+function lukkScooterModal(etterLagring) {
   document.getElementById('scooter-modal').classList.remove('open');
+  if (!etterLagring) {
+    // Avbrutt: bilder lastet opp i denne redigeringen brukes ikke → rydd bort
+    const pågår = _sbOpplasting;
+    const rydd = () => { _sbNyeOpplastet.forEach(_sbSlettStille); _sbNyeOpplastet = []; };
+    if (pågår) pågår.then(rydd, () => {}); else rydd();
+  }
 }
 async function lagreScooterModal() {
   const navn = document.getElementById('scooter-navn').value.trim();
   if (!navn) { toast('Skriv inn navn', 'err'); return; }
+  const btn = document.getElementById('scooter-lagre-btn');
+  if (btn.dataset.lagrer) return;
+  btn.dataset.lagrer = '1'; btn.disabled = true;
+  // Vent på bilde som fortsatt lastes opp
+  if (_sbOpplasting) {
+    btn.innerHTML = '<span class="bk-spin" style="border-color:rgba(255,255,255,.35);border-top-color:#fff;margin-right:6px;vertical-align:-2px"></span>Venter på bilde …';
+    try { await _sbOpplasting; } catch(e) {}
+  }
+  btn.innerHTML = '<span class="bk-spin" style="border-color:rgba(255,255,255,.35);border-top-color:#fff;margin-right:6px;vertical-align:-2px"></span>Lagrer …';
   const km = parseFloat(document.getElementById('scooter-km-start').value) || 0;
   const aktiv = document.getElementById('scooter-aktiv').checked;
   const bildeUrl = scooterBildeUrl;
+  const gammelUrl = _sbOpprinnelig;
 
   if (redigerScooterIdx === -1) {
     scootere.push({ navn, kmStart: km, aktiv, bildeUrl });
@@ -2097,22 +2179,31 @@ async function lagreScooterModal() {
   try {
     const res = await apiKall({ action: 'lagreScootere', scootere: scootere });
     if (res.feil) throw new Error(res.feil);
-    toast('Lagret ✓', 'ok');
-    lukkScooterModal();
+    toast(bildeUrl !== gammelUrl ? 'Lagret ✓ – nytt bilde er i bruk' : 'Lagret ✓', 'ok');
+    // Det gamle bildet er erstattet/fjernet → slett det fra Drive
+    _sbNyeOpplastet = [];
+    if (gammelUrl && gammelUrl !== bildeUrl) _sbSlettStille(gammelUrl);
+    try { localStorage.removeItem(_START_CACHE_KEY); } catch(e) {}
+    lukkScooterModal(true);
     renderAdmin();
     renderScooterCards();
   } catch(e) {
     toast('Feil: ' + e.message, 'err');
+  } finally {
+    delete btn.dataset.lagrer; btn.disabled = false;
+    _sbOppdaterKnapper();
   }
 }
 async function slettScooterModal() {
   if (redigerScooterIdx === -1) return;
   if (!confirm('Slette ' + scootere[redigerScooterIdx].navn + '?')) return;
+  const slettetBilde = scootere[redigerScooterIdx].bildeUrl;
   scootere.splice(redigerScooterIdx, 1);
   try {
     const res = await apiKall({ action: 'lagreScootere', scootere: scootere });
     if (res.feil) throw new Error(res.feil);
     toast('Slettet ✓', 'ok');
+    if (slettetBilde) _sbSlettStille(slettetBilde);
     lukkScooterModal();
     renderAdmin();
     renderScooterCards();
