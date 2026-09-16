@@ -269,7 +269,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="15:49">15:49</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="16:18">16:18</span>
 </div>
 
 <div class="nav">
@@ -285,7 +285,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div id="tab-dashboard" class="tab-content">
   <div class="stat-grid" id="stat-grid">
     <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Turer denne sesongen</div></div>
-    <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Totalt kjørt</div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Timer i bruk</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-fore">–</div><div class="stat-label">Snitt føreforhold</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-sno">–</div><div class="stat-label">Snø høyere strøk (sist)</div></div>
   </div>
@@ -318,7 +318,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
       <div class="field"><label>Sjåfør</label><div class="chip-row" id="sjafor-chips"></div></div>
       <div class="field"><label>Scooter</label><div class="pick-row" id="scooter-cards"></div></div>
       <div class="form-grid">
-        <div class="field"><label>Km ved parkering</label><input type="number" id="f-km" inputmode="numeric" placeholder="km"><div class="hint" id="hint-km"></div></div>
+        <div class="field"><label>Km-stand ved parkering</label><input type="number" id="f-km" inputmode="numeric" placeholder="km"><div class="hint" id="hint-km"></div></div>
         <div class="field"><label>Tid brukt (min)</label><input type="number" id="f-tid" inputmode="numeric" placeholder="min"><div class="hint" id="hint-tid"></div></div>
       </div>
       <div class="form-grid">
@@ -872,6 +872,29 @@ function velgScooter(idx) {
   renderScooterCards();
   oppdaterKmHint();
 }
+// Km brukt i en periode ut fra km-telleren (inkluderer all bruk, også ulogget SF-kjøring)
+function kmTellerBruk(navn, fraDato, tilDato) {
+  const avl = turer.filter(t => t.scooter === navn && (parseFloat(t.km) || 0) > 0)
+    .map(t => ({ d: t.dato || '', km: parseFloat(t.km) }))
+    .sort((a, b) => a.d.localeCompare(b.d));
+  const iPer = avl.filter(x => (!fraDato || x.d >= fraDato) && (!tilDato || x.d <= tilDato));
+  if (!iPer.length) return 0;
+  const maks = Math.max(...iPer.map(x => x.km));
+  const før = avl.filter(x => fraDato && x.d < fraDato);
+  let start;
+  if (før.length) start = Math.max(...før.map(x => x.km));
+  else {
+    const s = scootere.find(x => x.navn === navn);
+    const kmStart = s ? parseFloat(s.kmStart) || 0 : 0;
+    start = kmStart > 0 && kmStart <= Math.min(...iPer.map(x => x.km)) ? kmStart : Math.min(...iPer.map(x => x.km));
+  }
+  return Math.max(0, maks - start);
+}
+function _minTilTekst(min) {
+  min = Math.round(min || 0);
+  const h = Math.floor(min / 60), m = min % 60;
+  return h ? (m ? `${h} t ${m} min` : `${h} t`) : `${m} min`;
+}
 function sisteKmForScooter(navn) {
   const sortert = [...turer].filter(t => t.scooter === navn).sort((a,b) => (b.dato+' '+(b.slutt||'')).localeCompare(a.dato+' '+(a.slutt||'')));
   let km = sortert.length ? sortert[0].km : 0;
@@ -895,14 +918,10 @@ function oppdaterKmHint() {
       el.style.color = '#C0392B';
       el.style.fontWeight = '600';
       el.innerHTML = `⚠️ Lavere enn forrige (${ref}) – differanse ${diff.toFixed(1)} km`;
-    } else if (kmNy > 0 && diff > 0) {
-      el.style.color = '';
-      el.style.fontWeight = '';
-      el.innerHTML = `Sist: <strong>${ref}</strong> · +${diff.toFixed(1)} km`;
     } else {
       el.style.color = '';
       el.style.fontWeight = '';
-      el.innerHTML = `Sist: <strong>${ref}</strong>`;
+      el.innerHTML = `Sist avlest: <strong>${ref}</strong>`;
     }
   } else {
     el.innerHTML = '';
@@ -1653,8 +1672,8 @@ function _settNkValg(nil, bensin) {
 function renderDashboard() {
   renderScooterpark();
   document.getElementById('stat-turer').textContent = turer.length;
-  const totKm = turer.reduce((s,t) => s + (t.kmPerTur || 0), 0);
-  document.getElementById('stat-km').textContent = totKm.toFixed(0) + ' km';
+  const totMin = turer.reduce((s,t) => s + (t.tidBrukt || 0), 0);
+  document.getElementById('stat-km').textContent = (totMin / 60).toFixed(1).replace('.', ',') + ' t';
   const foreVerdier = turer.map(t => t.foreforhold).filter(v => v > 0);
   const snittFore = foreVerdier.length ? (foreVerdier.reduce((s,v)=>s+v,0)/foreVerdier.length).toFixed(1) : '–';
   document.getElementById('stat-fore').textContent = snittFore;
@@ -1665,9 +1684,9 @@ function renderDashboard() {
   const nilEl = document.getElementById('nil-sum');
   if (nilEl) {
     const nilTurer = turer.filter(t => t.nil);
-    const nilKm = nilTurer.reduce((s2, t) => s2 + (t.kmPerTur || 0), 0);
-    const andel = totKm > 0 ? Math.round(nilKm / totKm * 100) : 0;
-    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilTurer.length} ${nilTurer.length === 1 ? 'tur' : 'turer'} · ${nilKm.toFixed(0)} km</b> (${andel} % av km)</span>`;
+    const nilMin = nilTurer.reduce((s2, t) => s2 + (t.tidBrukt || 0), 0);
+    const andel = totMin > 0 ? Math.round(nilMin / totMin * 100) : 0;
+    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilTurer.length} ${nilTurer.length === 1 ? 'tur' : 'turer'} · ${_minTilTekst(nilMin)}</b> (${andel} % av tiden)</span>`;
     nilEl.hidden = !nilTurer.length;
   }
 
@@ -1796,9 +1815,8 @@ function renderGrafSjafor() {
 function renderTurItem(t) {
   const datoKort = formaterDatoKort(t.dato);
   const tidStr = t.tidBrukt > 0 ? formaterTid(t.tidBrukt) : '';
-  const kmStr = t.kmPerTur ? `<strong>${t.kmPerTur.toFixed(0)} km</strong>` : '';
   const stats = [];
-  if (kmStr || tidStr) stats.push(`<span>${kmStr}${kmStr&&tidStr?' · ':''}${tidStr}</span>`);
+  if (tidStr) stats.push(`<span><strong>${tidStr}</strong></span>`);
   if (t.foreforhold) stats.push(`<span>Føre <strong>${t.foreforhold}/5</strong></span>`);
   if (t.snoLav || t.snoHoy) stats.push(`<span>Snø ${t.snoLav||'–'}/${t.snoHoy||'–'} cm</span>`);
   // Thumbnails – klikkbare, åpner lightbox med hele lista
@@ -1841,12 +1859,13 @@ function renderScooterpark() {
     // Nåværende km: høyeste km-verdi observert (fallback: kmStart)
     const kmVerdier = scooterTurer.map(t => parseFloat(t.km) || 0).filter(v => v > 0);
     const naKm = kmVerdier.length ? Math.max(...kmVerdier) : (parseFloat(s.kmStart) || 0);
-    // Km siste uke = sum av kmPerTur for turer siste 7 dager
+    // Km siste uke = økning på km-telleren (all bruk, også ulogget)
     const turerSiste7 = scooterTurer.filter(t => {
       const d = new Date(t.dato);
       return d >= grense7d;
     });
-    const kmSiste7 = turerSiste7.reduce((sum, t) => sum + (parseFloat(t.kmPerTur) || 0), 0);
+    const d7 = grense7d.getFullYear() + '-' + String(grense7d.getMonth() + 1).padStart(2, '0') + '-' + String(grense7d.getDate()).padStart(2, '0');
+    const kmSiste7 = kmTellerBruk(s.navn, d7);
     // Sparkline: km-stand over tid siste 30 dager (bruk sluttkm på hver tur, sorter kronologisk)
     const turerSiste30 = scooterTurer.filter(t => new Date(t.dato) >= grense30d)
       .sort((a, b) => (a.dato + ' ' + (a.slutt || '')).localeCompare(b.dato + ' ' + (b.slutt || '')));
@@ -1875,7 +1894,7 @@ function renderScooterpark() {
     const sparkline = _byggSparkline(r.punkter, r.inaktiv);
     const undertekst = r.inaktiv
       ? '<span style="font-style:italic">Ikke kjørt siste 7d</span>'
-      : `+${r.kmSiste7.toFixed(0)} km siste uke · ${r.antTurerSiste7} tur${r.antTurerSiste7 === 1 ? '' : 'er'}`;
+      : `${r.antTurerSiste7} tur${r.antTurerSiste7 === 1 ? '' : 'er'} siste uke${r.kmSiste7 > 0 ? ` · km-teller +${r.kmSiste7.toFixed(0)}` : ''}`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;${borderStyle};${dempet}">
       <div style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;${ikonBg}">🛷</div>
       <div style="flex:1;min-width:0">
@@ -2744,13 +2763,13 @@ function renderStats() {
 }
 
 function renderStatsTotaler(t) {
-  const totKm = t.reduce((s,x) => s + (x.kmPerTur || 0), 0);
   const totTid = t.reduce((s,x) => s + (x.tidBrukt || 0), 0);
   const dager = new Set(t.map(x => x.dato).filter(Boolean)).size;
+  const snitt = t.length ? totTid / t.length : 0;
   const el = document.getElementById('stats-totaler');
   el.innerHTML = `
     <div class="stat-box"><div class="stat-value">${t.length}</div><div class="stat-label">Turer</div></div>
-    <div class="stat-box"><div class="stat-value">${totKm.toFixed(0)}</div><div class="stat-label">Km totalt</div></div>
+    <div class="stat-box"><div class="stat-value">${_minTilTekst(snitt)}</div><div class="stat-label">Snitt per tur</div></div>
     <div class="stat-box"><div class="stat-value">${(totTid/60).toFixed(1)}</div><div class="stat-label">Timer i bruk</div></div>
     <div class="stat-box"><div class="stat-value">${dager}</div><div class="stat-label">Aktive dager</div></div>`;
 }
@@ -2761,9 +2780,8 @@ function renderStatsSjafor(t) {
   const per = {};
   t.forEach(x => {
     const n = x.sjafor || 'Ukjent';
-    if (!per[n]) per[n] = { turer: 0, km: 0, tid: 0, siste: '' };
+    if (!per[n]) per[n] = { turer: 0, tid: 0, siste: '' };
     per[n].turer++;
-    per[n].km += x.kmPerTur || 0;
     per[n].tid += x.tidBrukt || 0;
     if (!per[n].siste || x.dato > per[n].siste) per[n].siste = x.dato;
   });
@@ -2773,18 +2791,16 @@ function renderStatsSjafor(t) {
       <thead><tr style="text-align:left;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">
         <th style="padding:8px 6px;font-weight:600">Sjåfør</th>
         <th style="padding:8px 6px;font-weight:600;text-align:right">Turer</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right">Km</th>
         <th style="padding:8px 6px;font-weight:600;text-align:right">Timer</th>
-        <th style="padding:8px 6px;font-weight:600;text-align:right">Snitt km/tur</th>
+        <th style="padding:8px 6px;font-weight:600;text-align:right">Snitt/tur</th>
         <th style="padding:8px 6px;font-weight:600;text-align:right;white-space:nowrap">Siste tur</th>
       </tr></thead>
       <tbody>${rader.map(([n,d]) => `
         <tr style="border-top:1px solid var(--border)">
           <td style="padding:8px 6px;font-weight:500;color:var(--navy)">${n}</td>
           <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.turer}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.km.toFixed(0)}</td>
           <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${(d.tid/60).toFixed(1)}</td>
-          <td style="padding:8px 6px;text-align:right;font-family:var(--mono)">${d.turer > 0 ? (d.km/d.turer).toFixed(1) : '–'}</td>
+          <td style="padding:8px 6px;text-align:right;font-family:var(--mono);white-space:nowrap">${d.turer > 0 ? _minTilTekst(d.tid/d.turer) : '–'}</td>
           <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
         </tr>`).join('')}</tbody>
     </table>`;
@@ -2822,12 +2838,15 @@ function renderScooterOversikt(t, filter) {
     if (!x.scooter) return;
     if (!per[x.scooter]) per[x.scooter] = { navn: x.scooter, aktiv: false, kmStart: 0, turer: 0, kmTotalt: 0, sisteKm: null, sisteDato: null };
     per[x.scooter].turer++;
-    per[x.scooter].kmTotalt += (parseFloat(x.kmPerTur) || 0);
+    per[x.scooter].tid = (per[x.scooter].tid || 0) + (x.tidBrukt || 0);
     const km = parseFloat(x.km);
     if (km > 0 && (per[x.scooter].sisteKm === null || km > per[x.scooter].sisteKm)) per[x.scooter].sisteKm = km;
     if (!per[x.scooter].sisteDato || x.dato > per[x.scooter].sisteDato) per[x.scooter].sisteDato = x.dato;
   });
 
+  // Km brukt i perioden fra km-telleren (all bruk)
+  const datoer = t.map(x => x.dato).filter(Boolean).sort();
+  Object.values(per).forEach(p => { p.kmTotalt = datoer.length ? kmTellerBruk(p.navn, datoer[0], datoer[datoer.length - 1]) : 0; });
   // Sorter: aktive først (etter km-totalt desc), deretter inaktive
   const alle = Object.values(per).sort((a,b) => {
     if (a.aktiv !== b.aktiv) return a.aktiv ? -1 : 1;
@@ -2866,6 +2885,7 @@ function renderScooterOversikt(t, filter) {
         <div style="text-align:center;min-width:60px">
           <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${s.sisteKm !== null ? s.sisteKm : '–'}</div>
           <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Km-stand</div>
+          ${s.kmTotalt > 0 ? `<div style="font-size:10px;color:var(--text2);margin-top:1px;white-space:nowrap" title="Økning på km-telleren i perioden – all bruk">+${Math.round(s.kmTotalt)} i perioden</div>` : ''}
         </div>
         <div style="text-align:center;min-width:50px">
           <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${s.turer}</div>
@@ -3024,8 +3044,6 @@ function renderStatsFore(t) {
 function renderStatsHighlights(t) {
   const el = document.getElementById('stats-highlights');
   if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
-  // Lengste enkelttur
-  const lengste = [...t].sort((a,b) => (b.kmPerTur || 0) - (a.kmPerTur || 0))[0];
   // Mest aktive dag
   const perDag = {};
   t.forEach(x => { perDag[x.dato] = (perDag[x.dato] || 0) + 1; });
@@ -3052,7 +3070,6 @@ function renderStatsHighlights(t) {
     </div>`;
 
   el.innerHTML =
-    H('🏁', 'Lengste enkelttur', `${(lengste.kmPerTur || 0).toFixed(1)} km`, `${lengste.sjafor} · ${formaterDatoKort(lengste.dato)} · ${lengste.scooter}`) +
     H('⏱️', 'Lengste tur i tid', `${Math.floor((lengstTid.tidBrukt || 0)/60)}t ${(lengstTid.tidBrukt || 0)%60}m`, `${lengstTid.sjafor} · ${formaterDatoKort(lengstTid.dato)}`) +
     H('📅', 'Mest aktive dag', `${bestDag[1]} tur${bestDag[1]===1?'':'er'}`, `${formaterDatoKort(bestDag[0])}`) +
     H('👑', 'Mest aktive sjåfør', bestSjafor[0], `${bestSjafor[1]} tur${bestSjafor[1]===1?'':'er'}`) +
