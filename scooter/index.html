@@ -296,7 +296,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="17:05">17:05</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="17:40">17:40</span>
 </div>
 
 <div class="nav">
@@ -353,7 +353,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
         <div class="field"><label>Dato</label><input type="date" id="f-dato"></div>
       </div>
       <div class="field"><label>Kjøring</label><div class="nk-grid">
-        <label class="nk" for="f-nil"><input type="checkbox" id="f-nil" onchange="this.closest('.nk').classList.toggle('on', this.checked)"><div><b>Nærområdet / NIL</b><small>Labbeløype, lysløypa eller annen kjøring i nærområdet for idrettslaget</small></div></label>
+        <label class="nk" for="f-nil"><input type="checkbox" id="f-nil" onchange="this.closest('.nk').classList.toggle('on', this.checked)"><div><b>Kjørte (også) i nærområdet / for NIL</b><small>Kryss av selv om turen også gikk i marka – labbeløype, lysløypa o.l.</small></div></label>
         <label class="nk" for="f-bensin"><input type="checkbox" id="f-bensin" onchange="this.closest('.nk').classList.toggle('on', this.checked)"><span class="ik" aria-hidden="true">⛽</span><div><b>Fylte bensin</b><small>ved parkering</small></div></label>
       </div></div>
 
@@ -1796,7 +1796,7 @@ function renderOktKort(o) {
   if (flere && o.scooterMin) info.push(`scootertimer <b>${_minTilTekst(o.scooterMin)}</b>`);
   if (fore.length) info.push(`føre <b>${Math.round(fore.reduce((s, v) => s + v, 0) / fore.length)}/5</b>`);
   if (snoT) info.push(`snø ${snoT.snoLav || '–'}/${snoT.snoHoy || '–'} cm`);
-  const merker = (o.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '')
+  const merker = (o.nil ? '<span class="b-nil" title="Kjørt (også) i nærområdet / for NIL">NIL</span>' : '')
     + (o.turer.some(t => t.harFeil) ? '<span title="Feil rapportert" style="display:inline-flex;align-items:center;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>' : '');
   return `<div class="okt" data-okt="${o.id}">
     <div class="okt-hode"><span class="okt-dato">${formaterDatoKort(o.dato)}${tid}</span><span class="okt-hoyre">${apen ? `<span class="okt-live" title="Nye registreringer innen ${oktGrense()} min legges i denne økta"><i></i>Åpen for flere · ${apen} min</span>` : ''}<span class="okt-ant${flere ? '' : ' en'}">${o.turer.length} scooter${flere ? 'e' : ''}</span></span></div>
@@ -1843,10 +1843,10 @@ function renderDashboard() {
   // Nærområdet / NIL – andel av kjøringen
   const nilEl = document.getElementById('nil-sum');
   if (nilEl) {
+    // Bare antall økter – en avkrysning sier ikke hvor lenge de var i nærområdet
     const nilOkter = okter.filter(o => o.nil);
-    const nilMin = nilOkter.reduce((s2, o) => s2 + o.scooterMin, 0);
-    const andel = totMin > 0 ? Math.round(nilMin / totMin * 100) : 0;
-    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilOkter.length} ${nilOkter.length === 1 ? 'økt' : 'økter'} · ${_komma(nilMin / 60)} scootertimer</b> (${andel} %)</span>`;
+    const kunMarka = okter.length - nilOkter.length;
+    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilOkter.length} av ${okter.length} økter</b> · ${kunMarka} kun i marka</span>`;
     nilEl.hidden = !nilOkter.length;
   }
 
@@ -2936,7 +2936,7 @@ function renderStatsTotaler(t) {
   el.innerHTML = `
     <div class="stat-box"><div class="stat-value">${okter.length}</div><div class="stat-label">Økter</div><div class="okt-sub">${t.length} scooterturer · ${dager} dager</div></div>
     <div class="stat-box"><div class="stat-value">${_komma(os.snitt)}</div><div class="stat-label">Scootere per økt</div><div class="okt-sub">snitt</div></div>
-    <div class="stat-box"><div class="stat-value">${_komma(os.scooterMin / 60)} t</div><div class="stat-label">Scootertimer</div><div class="okt-sub">brukes i NIL-rapport</div></div>
+    <div class="stat-box"><div class="stat-value">${_komma(os.scooterMin / 60)} t</div><div class="stat-label">Scootertimer</div><div class="okt-sub">alle scootere samlet</div></div>
     <div class="stat-box"><div class="stat-value">${_komma(os.loypeMin / 60)} t</div><div class="stat-label">Tid i løypa</div><div class="okt-sub">lengste tid per økt</div></div>`;
 }
 
