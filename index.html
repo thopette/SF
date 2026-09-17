@@ -10,7 +10,7 @@
   .topbar-version-desktop { display: inline !important; }
 
 } .topbar-titles h1 { font-size: 17px; font-weight: 600; color: #fff; } .topbar-sub { font-size: 11px; color: rgba(255,255,255,0.5); }  
- @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} } .nav { display: flex; background: var(--white); border-bottom: 1.5px solid var(--border); position: sticky; top: 56px; z-index: 99; overflow-x: auto; } .nav::-webkit-scrollbar { display: none; } .nav-btn { flex: 1; min-width: 80px; padding: 12px 6px 10px; border: none; background: transparent; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; border-bottom: 2.5px solid transparent; transition: all 0.15s; } .nav-btn.active { color: var(--mid); border-bottom-color: var(--accent); } .nav-btn svg { width: 18px; height: 18px; } .section { display: none; padding: 16px; max-width: 900px; margin: 0 auto; } .section.active { display: block; } .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; } .card-header { background: linear-gradient(135deg, var(--navy) 0%, var(--mid) 100%); color: white; padding: 12px 16px; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; } .card-body { padding: 16px; } .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .form-grid.three { grid-template-columns: 1fr 1fr 1fr; } .form-grid.full { grid-template-columns: 1fr; } .field { margin-bottom: 0; } .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; } .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: var(--sans); font-size: 14px; color: var(--text); background: var(--snow); transition: border-color 0.15s; -webkit-appearance: none; } .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: var(--white); } .field textarea { resize: vertical; min-height: 70px; } .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 10px; position: relative; } .divider::before { content: attr(data-label); position: absolute; top: -9px; left: 0; background: var(--white); padding: 0 8px 0 0; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; } .btn { padding: 11px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 500; font-size: 14px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; } .btn-primary { background: var(--mid); color: white; } .btn-primary:active { background: var(--navy); transform: scale(0.98); } .btn-primary:disabled { background: #aaa; cursor: not-allowed; } .btn-danger { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; font-size: 12px; padding: 6px 10px; } .btn-outline { background: transparent; color: var(--mid); border: 1.5px solid var(--mid); } .btn-sm { padding: 7px 12px; font-size: 12px; } .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; align-items: center; } .toast { font-size: 13px; color: var(--success); display: none; align-items: center; gap: 5px; font-weight: 500; } .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; } @media (min-width: 600px) { .metrics { grid-template-columns: repeat(4, 1fr); } } .metric { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); } .metric-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; } .metric-value { font-size: 26px; font-weight: 600; color: var(--navy); font-family: var(--mono); line-height: 1; } .metric-sub { font-size: 11px; color: var(--text2); margin-top: 3px; } .trip-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); margin-bottom: 10px; } .trip-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; } .trip-route { font-size: 15px; font-weight: 600; color: var(--navy); } .trip-date { font-size: 12px; color: var(--text2); font-family: var(--mono); } .trip-driver { font-size: 13px; color: var(--mid); font-weight: 500; margin-bottom: 8px; } .trip-stats { display: flex; gap: 8px; flex-wrap: wrap; } .trip-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text2); background: var(--snow); border-radius: 6px; padding: 4px 8px; border: 1px solid var(--border); } .trip-stat span { font-weight: 600; color: var(--navy); font-family: var(--mono); font-size: 13px; } .trip-note { margin-top: 8px; font-size: 12px; color: var(--text2); font-style: italic; border-left: 2px solid var(--accent); padding-left: 8px; } .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 580px; table-layout: auto; } th { padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1.5px solid var(--border); background: var(--snow); white-space: nowrap; } td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; } tr:last-child td { border-bottom: none; } tr:hover td { background: var(--ice); } .chart-container { position: relative; width: 100%; height: 200px; } .empty { text-align: center; padding: 40px 20px; color: var(--text2); } .empty-icon { font-size: 36px; margin-bottom: 12px; } .empty p { font-size: 14px; line-height: 1.6; } .loading-overlay { display: none; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: var(--text2); font-size: 13px; } .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--mid); border-radius: 50%; animation: spin 0.7s linear infinite; }
+ @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} } .nav { display: flex; background: var(--white); border-bottom: 1.5px solid var(--border); position: sticky; top: 56px; z-index: 99; overflow-x: auto; } .nav::-webkit-scrollbar { display: none; } .nav-btn { flex: 1; min-width: 80px; padding: 12px 6px 10px; border: none; background: transparent; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; border-bottom: 2.5px solid transparent; transition: all 0.15s; } .nav-btn.active { color: var(--mid); border-bottom-color: var(--accent); } .nav-btn svg { width: 18px; height: 18px; } .section { display: none; padding: 16px; max-width: 900px; margin: 0 auto; } .section.active { display: block; } .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; } .card-header { background: linear-gradient(135deg, var(--navy) 0%, var(--mid) 100%); color: white; padding: 12px 16px; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; } .card-body { padding: 16px; } .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .form-grid.three { grid-template-columns: 1fr 1fr 1fr; } .form-grid.full { grid-template-columns: 1fr; } .field { margin-bottom: 0; } .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; } .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: var(--sans); font-size: 14px; color: var(--text); background: var(--snow); transition: border-color 0.15s; -webkit-appearance: none; } .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: var(--white); } .field textarea { resize: vertical; min-height: 70px; } .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 10px; position: relative; } .divider::before { content: attr(data-label); position: absolute; top: -9px; left: 0; background: var(--white); padding: 0 8px 0 0; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; } .btn { padding: 11px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 500; font-size: 14px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; } .btn-primary { background: var(--mid); color: white; } .btn-primary:active { background: var(--navy); transform: scale(0.98); } .btn-primary:disabled { background: #aaa; cursor: not-allowed; } .btn-danger { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; font-size: 12px; padding: 6px 10px; } .btn-outline { background: transparent; color: var(--mid); border: 1.5px solid var(--mid); } .btn-sm { padding: 7px 12px; font-size: 12px; } .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; align-items: center; } .toast { font-size: 13px; color: var(--success); display: none; align-items: center; gap: 5px; font-weight: 500; } .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; } @media (min-width: 600px) { .metrics { grid-template-columns: repeat(4, 1fr); } } .metric { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); } .metric-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; } .forer-chips { display:flex; flex-wrap:wrap; gap:8px; } .forer-chip { padding:10px 16px; border-radius:22px; border:2px solid var(--border); background:var(--white); font-family:var(--sans); font-size:15px; font-weight:500; color:var(--text); cursor:pointer; user-select:none; -webkit-user-select:none; min-height:44px; } .forer-chip.valgt { background:var(--mid); color:#fff; border-color:var(--mid); } .forer-chip:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .metric-value.tekst { font-size:17px; font-family:var(--sans); line-height:1.25; } .metric-value { font-size: 26px; font-weight: 600; color: var(--navy); font-family: var(--mono); line-height: 1; } .metric-sub { font-size: 11px; color: var(--text2); margin-top: 3px; } .trip-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); margin-bottom: 10px; } .trip-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; } .trip-route { font-size: 15px; font-weight: 600; color: var(--navy); } .trip-date { font-size: 12px; color: var(--text2); font-family: var(--mono); } .trip-driver { font-size: 13px; color: var(--mid); font-weight: 500; margin-bottom: 8px; } .trip-stats { display: flex; gap: 8px; flex-wrap: wrap; } .trip-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text2); background: var(--snow); border-radius: 6px; padding: 4px 8px; border: 1px solid var(--border); } .trip-stat span { font-weight: 600; color: var(--navy); font-family: var(--mono); font-size: 13px; } .trip-note { margin-top: 8px; font-size: 12px; color: var(--text2); font-style: italic; border-left: 2px solid var(--accent); padding-left: 8px; } .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 580px; table-layout: auto; } th { padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1.5px solid var(--border); background: var(--snow); white-space: nowrap; } td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; } tr:last-child td { border-bottom: none; } tr:hover td { background: var(--ice); } .chart-container { position: relative; width: 100%; height: 200px; } .empty { text-align: center; padding: 40px 20px; color: var(--text2); } .empty-icon { font-size: 36px; margin-bottom: 12px; } .empty p { font-size: 14px; line-height: 1.6; } .loading-overlay { display: none; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: var(--text2); font-size: 13px; } .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--mid); border-radius: 50%; animation: spin 0.7s linear infinite; }
 .photo-drop { border:2px dashed var(--border); border-radius:10px; padding:14px; text-align:center; color:var(--text2); background:var(--snow); cursor:pointer; }
 .photo-drop:hover { border-color:var(--mid); }
 .photo-preview-grid { margin-top:8px; display:none; flex-wrap:wrap; gap:8px; }
@@ -204,7 +204,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v16.09 17:05</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v17.09 10:46</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -222,7 +222,7 @@ Løypestatus – denne uken
 <div id="edit-advarsel" style="display:none;background:#FFFBF0;border:1px solid #F5CBA7;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#7D6608;line-height:1.5">
 ⚠️ <strong>Merk:</strong> Km-stand og timerteller er kumulative. Endrer du disse, blir <em>ikke</em> de avledede tallene (km kjørt, maskintimer) på etterfølgende økter oppdatert automatisk. Bruk <em>«Regn ut på nytt»</em> i Admin-fanen etter redigering hvis dette er nødvendig.
 </div>
-<div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div><div class="field"><label>Fører</label><select id="f-forer"><option value="">Velg fører…</option></select></div></div><div style="margin-top:12px">
+<div class="form-grid two"><div class="field"><label>Dato</label><input type="date" id="f-dato"></div></div><div class="field" style="margin-top:12px"><label>Fører</label><input type="hidden" id="f-forer"><div class="forer-chips" id="forer-chips" role="radiogroup" aria-label="Fører"></div></div><div style="margin-top:12px">
 <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Runder kjørt denne økten <span id="runder-valgt-count" style="color:var(--mid);font-weight:700"></span></label>
 <div id="runder-grid" style="display:flex;flex-direction:column;gap:8px"></div>
 </div><hr class="divider" data-label="Tid og stand" style="margin-top:16px"><div style="display:grid;grid-template-columns:1fr;gap:10px"><div class="field"><label>Slutt (kl.)</label><input type="time" id="f-slutt"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label>Km-stand ved slutt</label><input type="text" inputmode="decimal" data-desimal autocomplete="off" id="f-km" placeholder="0.0"><div id="hint-km" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div><div class="field"><label>Timerteller ved slutt</label><input type="text" inputmode="decimal" data-desimal autocomplete="off" id="f-timer-slutt" placeholder="0.0"><div id="hint-timer" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-diesel" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte diesel</span></label><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-adblue" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte AdBlue</span></label></div><hr class="divider" data-label="Føreforhold" style="margin-top:16px"><div class="field" style="margin-bottom:12px"><label>Føreforhold</label><div class="cond-bar" id="cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setCond(1)"><div class="cond-dots"><div class="dot"></div></div>
@@ -899,8 +899,7 @@ async function _ventPaStartdata() {
 function _skjemaLaster(på) {
   const grid = document.getElementById('runder-grid');
   if (på && grid && !loyper.length) grid.innerHTML = '<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><div class="spinner" style="border-color:rgba(15,58,95,0.2);border-top-color:var(--mid)"></div>Laster runder …</div>';
-  const sel = document.getElementById('f-forer');
-  if (på && sel && !forere.length) sel.innerHTML = '<option value="">Laster førere …</option>';
+  if (på && !forere.length) renderForerChips();
   if (!på) { oppdaterForerSelect(); if (document.getElementById('tab-ny').classList.contains('active')) byggRundeGrid(); }
 }
 // Siste og høyeste stand for en maskin. Før full historikk er lastet, slås 14-dagers-data sammen med startdata.
@@ -1689,6 +1688,7 @@ apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'maskin' })
 .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
 } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
 ['f-forer','f-slutt','f-km','f-timer-slutt','f-merknader'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+renderForerChips();
 nullstillRunder();
 harFeilFraDenneOkta = false;  // Nullstill feil-flagg etter lagring
 document.getElementById('f-diesel').checked=false;
@@ -1776,6 +1776,7 @@ nullstillRunder();
 ['f-forer','f-slutt','f-km','f-timer-slutt','f-merknader'].forEach(id => {
 const el = document.getElementById(id); if(el) el.value='';
 });
+renderForerChips();
 document.getElementById('f-diesel').checked = false;
 document.getElementById('f-adblue').checked = false;
 setCond(0);
@@ -1794,9 +1795,11 @@ if (!t) return;
 editTurId = id;
 settEditModus(true);
 showTab('ny');
+nullstillRunder();  // start med blanke runder – rutenettet beholder ellers valg fra før
 // Fyll inn felt
 document.getElementById('f-dato').value = t.dato||'';
 document.getElementById('f-forer').value = t.forer||'';
+renderForerChips();
 document.getElementById('f-slutt').value = t.slutt||'';
 document.getElementById('f-km').value = t.km||'';
 document.getElementById('f-timer-slutt').value = t.timerSlutt||'';
@@ -1961,9 +1964,32 @@ hintKm.innerHTML = '';
 hintTimer.innerHTML = '';
 }
 }
+// Fører som trykkbare knapper i Ny økt (verdien ligger i det skjulte feltet #f-forer)
+function renderForerChips() {
+const el = document.getElementById('forer-chips');
+const inp = document.getElementById('f-forer');
+if (!el || !inp) return;
+const valgt = inp.value;
+const liste = forere.slice();
+if (valgt && !liste.includes(valgt)) liste.push(valgt);  // redigering av tur med fører som ikke lenger er i lista
+window._forerChipListe = liste;
+if (!liste.length) {
+el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><div class="spinner" style="border-color:rgba(15,58,95,0.2);border-top-color:var(--mid)"></div>Laster førere …</div>';
+return;
+}
+el.innerHTML = liste.map((f, i) => `<button type="button" class="forer-chip${f === valgt ? ' valgt' : ''}" role="radio" aria-checked="${f === valgt}" onclick="velgForer(${i})">${String(f).replace(/</g,'&lt;')}</button>`).join('');
+}
+function velgForer(i) {
+const navn = (window._forerChipListe || [])[i];
+const inp = document.getElementById('f-forer');
+if (!inp || navn === undefined) return;
+inp.value = inp.value === navn ? '' : navn;
+renderForerChips();
+}
 function oppdaterForerSelect() {
+renderForerChips();
 const opts = forere.map(f=>`<option value="${f}">${f}</option>`).join('');
-['f-forer','edit-forer'].forEach(id => {
+['edit-forer'].forEach(id => {
 const el = document.getElementById(id);
 if (!el) return;
 // Bevar tidligere valg gjennom re-render (unngår at brukeren "hopper ut av" et select)
@@ -1977,6 +2003,15 @@ el.value = tidligereValg;
 });
 }
 // ── DASHBOARD ──
+// «siden 12. sep» – eldste dato blant turene (for «Siste 5»)
+function _sidenTekst(liste) {
+const datoer = liste.map(t => String(t.dato || '').substring(0, 10)).filter(Boolean).sort();
+if (!datoer.length) return '–';
+const [y, m, d] = datoer[0].split('-').map(Number);
+const mnd = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][m - 1] || '';
+const iAar = y === new Date().getFullYear();
+return 'siden ' + d + '. ' + mnd + (iAar ? '' : ' ' + y);
+}
 function renderDashboard() {
 // Apply dash filter
 const _prev = loggFilter;
@@ -1993,7 +2028,9 @@ const totalKm = filtrertDash.reduce((s,t) => s + (diffMapAlle[t.id]?.kmKjort||0)
 const diffMapDash = diffMapAlle;
 const filterLabels = {'5':'Siste 5 turer',sesong:'Sesongen',uke:'Denne uken',alle:'Totalt'};
 document.getElementById('dash-metrics').innerHTML = `
-<div class="metric"><div class="metric-label">Turer – ${filterLabels[dashFilter]}</div><div class="metric-value">${filtrertDash.length}${dashFilter === '5' ? ' 🤦' : ''}</div></div><div class="metric"><div class="metric-label">Km kjørt</div><div class="metric-value">${totalKm.toFixed(1)}</div><div class="metric-sub">kilometer</div></div><div class="metric"><div class="metric-label">Maskintimer</div><div class="metric-value">${totalTimer.toFixed(1)}</div><div class="metric-sub">timer</div></div><div class="metric"><div class="metric-label">Diesel / AdBlue</div><div class="metric-value">${dieselTurer} / ${adBlueTurer}</div><div class="metric-sub">påfyllinger</div></div>
+${dashFilter === '5'
+  ? `<div class="metric"><div class="metric-label">Siste ${filtrertDash.length || 5} turer</div><div class="metric-value tekst">${_sidenTekst(filtrertDash)}</div></div>`
+  : `<div class="metric"><div class="metric-label">Turer – ${filterLabels[dashFilter]}</div><div class="metric-value">${filtrertDash.length}</div></div>`}<div class="metric"><div class="metric-label">Km kjørt</div><div class="metric-value">${totalKm.toFixed(1)}</div><div class="metric-sub">kilometer</div></div><div class="metric"><div class="metric-label">Maskintimer</div><div class="metric-value">${totalTimer.toFixed(1)}</div><div class="metric-sub">timer</div></div><div class="metric"><div class="metric-label">Diesel / AdBlue</div><div class="metric-value">${dieselTurer} / ${adBlueTurer}</div><div class="metric-sub">påfyllinger</div></div>
 `;
 // Update card label
 const labelMap = {'5':'Siste 5 turer',sesong:'Sesongen',uke:'Denne uken',alle:'Alle turer'};
@@ -3189,9 +3226,45 @@ return '<button type="button" class="snupunkt-btn" onclick="event.stopPropagatio
 function lagSettAktivKnapp(idx) {
 return '<button class="btn btn-sm btn-outline" onclick="settAktivMaskin(' + idx + ')" style="font-size:11px;padding:5px 10px">Sett aktiv</button>';
 }
+// Rundene bygges bare på nytt når oppsettet faktisk er endret, og valgene (runder, avstikkere,
+// snupunkt) tas vare på – ellers nullstilles skjemaet når ferske data kommer mens brukeren fyller ut.
+let _rundeGridSig = '';
+function _escAttr(v) { return String(v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+function _lesRundeTilstand(grid) {
+const st = {};
+grid.querySelectorAll('.runde-valg-kort.aktiv').forEach(k => {
+st[k.dataset.navn] = {
+avst: [...k.querySelectorAll('.avstikker-item input:checked')].map(cb => cb.dataset.navn),
+snudde: !!k.querySelector('input[id$="-snupunkt"]:checked'),
+sn: (k.querySelector('.snupunkt-btn.selected') || {}).textContent || ''
+};
+});
+return st;
+}
+function _settRundeTilstand(st) {
+loyper.forEach((l, i) => {
+const v = st[l.navn];
+if (!v) return;
+toggleRundeValg(i);
+(l.avstikkere || []).forEach((a, ai) => {
+if (!v.avst.includes(a)) return;
+const cb = document.getElementById('rv' + i + '-avst-' + ai);
+if (cb) { cb.checked = true; toggleAvstikkerStyle(cb); }
+});
+if (v.snudde) {
+const cb = document.getElementById('rv' + i + '-snupunkt');
+if (cb) { cb.checked = true; oppdaterRVSnupunktUI(i); }
+if (v.sn) document.querySelectorAll('#rv' + i + '-snupunkt-panel .snupunkt-btn').forEach(b => { if (b.textContent === v.sn) b.classList.add('selected'); });
+}
+});
+}
 function byggRundeGrid() {
 const grid = document.getElementById('runder-grid');
 if (!grid) return;
+const sig = JSON.stringify(loyper.map(l => [l.navn, l.avstikkere, l.snupunkter]));
+if (sig === _rundeGridSig && grid.querySelector('.runde-valg-kort')) { oppdaterRundeNummer(); return; }
+const tilstand = _lesRundeTilstand(grid);
+_rundeGridSig = sig;
 if (!loyper.length) {
 grid.innerHTML = '<p style="font-size:13px;color:var(--text2)">Ingen runder definert. Legg til i Admin.</p>';
 return;
@@ -3202,7 +3275,7 @@ if (l.avstikkere.length) {
 avst = '<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:8px 0 6px">Avstikkere</div>';
 avst += l.avstikkere.map(function(a, ai) {
 return '<label class="avstikker-item" style="margin-bottom:6px" onclick="event.stopPropagation()">' +
-'<input type="checkbox" id="rv' + i + '-avst-' + ai + '" onchange="toggleAvstikkerStyle(this)">' +
+'<input type="checkbox" id="rv' + i + '-avst-' + ai + '" data-navn="' + _escAttr(a) + '" onchange="toggleAvstikkerStyle(this)">' +
 '<span class="avstikker-label">' + a + '</span></label>';
 }).join('');
 }
@@ -3215,7 +3288,7 @@ var snupunktPanel = '<div style="margin-top:8px" onclick="event.stopPropagation(
 '<div id="rv' + i + '-snupunkt-panel" style="display:none;margin-top:5px;padding:10px 12px;border:1.5px solid #F39C12;border-radius:8px;background:#FFFBF0">' +
 lagSnupunktKnapper(l.snupunkter||[], i) +
 '</div></div>';
-return '<div class="runde-valg-kort" id="runde-valg-' + i + '" onclick="toggleRundeValg(' + i + ')">' +
+return '<div class="runde-valg-kort" id="runde-valg-' + i + '" data-navn="' + _escAttr(l.navn) + '" onclick="toggleRundeValg(' + i + ')">' +
 '<div class="runde-valg-header">' +
 '<div class="runde-valg-nr" id="runde-nr-' + i + '">–</div>' +
 '<div class="runde-valg-navn">' + l.navn + '</div>' +
@@ -3227,6 +3300,7 @@ avst +
 snupunktPanel +
 '</div></div>';
 }).join('');
+_settRundeTilstand(tilstand);
 oppdaterRundeNummer();
 }
 function toggleRundeValg(i) {
@@ -3281,6 +3355,7 @@ btns.forEach(b => b.classList.remove('selected'));
 }
 function toggleRVSnupunkt(i, e) {
 e.stopPropagation();
+e.preventDefault();  // hindrer at label-klikket også slår av/på boksen (dobbel veksling)
 const cb = document.getElementById('rv'+i+'-snupunkt');
 if (!cb) return;
 cb.checked = !cb.checked;
