@@ -222,6 +222,11 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 @keyframes oktpuls{50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.okt-live i{animation:none}}
 .okt-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.seksjon{display:flex;align-items:center;gap:10px;margin:22px 2px 10px;font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--navy)}
+.seksjon:first-child{margin-top:4px}
+.seksjon::after{content:'';flex:1;height:1px;background:var(--border)}
+.seksjon small{font-weight:500;letter-spacing:0;text-transform:none;color:var(--text2);font-size:11px}
+.stat-grid.to{grid-template-columns:1fr 1fr}
 .bryter{display:flex;background:var(--ice);border-radius:8px;padding:3px;gap:3px;margin:10px 12px}
 .bryter button{flex:1;border:0;border-radius:6px;padding:8px;font:600 12px var(--sans);background:transparent;color:var(--text2);cursor:pointer}
 .bryter button.on{background:#fff;color:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -296,7 +301,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="17.09" data-tid="08:25">08:25</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="17.09" data-tid="10:20">10:20</span>
 </div>
 
 <div class="nav">
@@ -310,9 +315,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div class="content">
 
 <div id="tab-dashboard" class="tab-content">
+  <div class="seksjon">Økter <small>det laget har kjørt</small></div>
   <div class="stat-grid" id="stat-grid">
-    <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Økter denne sesongen</div><div class="okt-sub" id="stat-turer-sub"></div></div>
-    <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Scootertimer</div><div class="okt-sub" id="stat-km-sub"></div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Sum økter denne sesongen</div><div class="okt-sub" id="stat-turer-sub"></div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-km">–</div><div class="stat-label">Sum tid økter</div><div class="okt-sub" id="stat-km-sub"></div></div>
     <div class="stat-box"><div class="stat-value" id="stat-fore">–</div><div class="stat-label">Snitt føreforhold</div></div>
     <div class="stat-box"><div class="stat-value" id="stat-sno">–</div><div class="stat-label">Snø høyere strøk (sist)</div></div>
   </div>
@@ -324,6 +330,11 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <div class="card">
     <div class="card-header">Føreforhold gjennom sesongen</div>
     <div id="graf-fore" style="padding:14px"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
+  </div>
+  <div class="seksjon">Scootere og sjåfører <small>bruk av utstyr og folk</small></div>
+  <div class="stat-grid to" id="stat-grid-scooter">
+    <div class="stat-box"><div class="stat-value" id="stat-sc-turer">–</div><div class="stat-label">Totalt scooterturer</div><div class="okt-sub" id="stat-sc-turer-sub"></div></div>
+    <div class="stat-box"><div class="stat-value" id="stat-sc-tid">–</div><div class="stat-label">Totalt scootertimer</div><div class="okt-sub" id="stat-sc-tid-sub"></div></div>
   </div>
   <div class="card">
     <div class="card-header">Turer per sjåfør</div>
@@ -409,25 +420,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     </div>
   </div>
 
-  <!-- Totaler -->
+  <div class="seksjon">Økter <small>det laget har kjørt</small></div>
   <div class="card">
-    <div class="card-header">Totaler</div>
+    <div class="card-header">Økter</div>
     <div id="stats-totaler" class="stat-grid" style="padding:14px"></div>
-  </div>
-
-  <!-- Per sjåfør -->
-  <div class="card">
-    <div class="card-header">Per sjåfør</div>
-    <div id="stats-sjafor" style="padding:0 14px 14px"></div>
-  </div>
-
-  <!-- Scooter-oversikt (Alt B – kompakt med utvidbar detalj) -->
-  <div class="card">
-    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <span>Scootere</span>
-      <button id="stats-vis-inaktive-btn" onclick="toggleVisInaktiveScootere()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1.5px solid var(--border);background:white;color:var(--text2);cursor:pointer;font-weight:500">👁 Vis inaktive</button>
-    </div>
-    <div id="stats-scooter-oversikt" style="padding:14px"></div>
   </div>
 
   <!-- Aktivitet over tid -->
@@ -452,6 +448,27 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <div class="card">
     <div class="card-header">Høydepunkter</div>
     <div id="stats-highlights" style="padding:14px"></div>
+  </div>
+
+  <div class="seksjon">Scootere og sjåfører <small>bruk av utstyr og folk</small></div>
+  <div class="card">
+    <div class="card-header">Scooterbruk</div>
+    <div id="stats-scooterbruk" class="stat-grid to" style="padding:14px"></div>
+    <div id="stats-highlights-sc" style="padding:0 14px 6px"></div>
+  </div>
+
+  <!-- Per sjåfør -->
+  <div class="card">
+    <div class="card-header">Per sjåfør</div>
+    <div id="stats-sjafor" style="padding:0 14px 14px"></div>
+  </div>
+
+  <div class="card" id="stats-scooter-kort">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <span>Scootere</span>
+      <button id="stats-vis-inaktive-btn" onclick="toggleVisInaktiveScootere()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1.5px solid var(--border);background:white;color:var(--text2);cursor:pointer;font-weight:500">👁 Vis inaktive</button>
+    </div>
+    <div id="stats-scooter-oversikt" style="padding:14px"></div>
   </div>
 </div>
 
@@ -1792,7 +1809,7 @@ function renderOktKort(o) {
   const fore = turerSortert.map(t => t.foreforhold).filter(Boolean);
   const snoT = turerSortert.find(t => t.snoLav || t.snoHoy);
   const info = [];
-  if (o.loypeMin) info.push(`Tid i løypa <b>${_minTilTekst(o.loypeMin)}</b>`);
+  if (o.loypeMin) info.push(`Tid økt <b>${_minTilTekst(o.loypeMin)}</b>`);
   if (flere && o.scooterMin) info.push(`scootertimer <b>${_minTilTekst(o.scooterMin)}</b>`);
   if (fore.length) info.push(`føre <b>${Math.round(fore.reduce((s, v) => s + v, 0) / fore.length)}/5</b>`);
   if (snoT) info.push(`snø ${snoT.snoLav || '–'}/${snoT.snoHoy || '–'} cm`);
@@ -1829,11 +1846,16 @@ function renderDashboard() {
   renderScooterpark();
   const okter = grupperOkter(turer);
   const os = _oktStatsTekst(okter, turer);
+  const dagerD = new Set(turer.map(x => x.dato).filter(Boolean)).size;
   document.getElementById('stat-turer').textContent = okter.length;
-  document.getElementById('stat-turer-sub').textContent = turer.length ? `${turer.length} scooterturer · snitt ${_komma(os.snitt)}` : '';
-  const totMin = os.scooterMin;
-  document.getElementById('stat-km').textContent = _komma(totMin / 60) + ' t';
-  document.getElementById('stat-km-sub').textContent = os.loypeMin ? `${_komma(os.loypeMin / 60)} t i løypa` : '';
+  document.getElementById('stat-turer-sub').textContent = okter.length ? `${dagerD} ${dagerD === 1 ? 'dag' : 'dager'} · snitt ${_komma(os.snitt)} scootere` : '';
+  document.getElementById('stat-km').textContent = _komma(os.loypeMin / 60) + ' t';
+  document.getElementById('stat-km-sub').textContent = okter.length ? `snitt ${_minTilTekst(os.loypeMin / okter.length)} per økt` : '';
+  // Scootere og sjåfører
+  document.getElementById('stat-sc-turer').textContent = turer.length;
+  document.getElementById('stat-sc-turer-sub').textContent = turer.length ? `${new Set(turer.map(x => x.sjafor).filter(Boolean)).size} sjåfører · ${new Set(turer.map(x => x.scooter).filter(Boolean)).size} scootere` : '';
+  document.getElementById('stat-sc-tid').textContent = _komma(os.scooterMin / 60) + ' t';
+  document.getElementById('stat-sc-tid-sub').textContent = turer.length ? `snitt ${_minTilTekst(os.scooterMin / turer.length)} per tur` : '';
   const foreVerdier = turer.map(t => t.foreforhold).filter(v => v > 0);
   const snittFore = foreVerdier.length ? (foreVerdier.reduce((s,v)=>s+v,0)/foreVerdier.length).toFixed(1) : '–';
   document.getElementById('stat-fore').textContent = snittFore;
@@ -2931,19 +2953,18 @@ function renderStatsTotaler(t) {
   const okter = grupperOkter(t);
   const os = _oktStatsTekst(okter, t);
   const dager = new Set(t.map(x => x.dato).filter(Boolean)).size;
-  // Kombinerte økter = flere scootere samtidig. Tid i løypa = lengste registrerte tid i økta.
-  const komb = okter.filter(o => o.turer.length > 1);
-  const kombTurer = komb.reduce((s2, o) => s2 + o.turer.length, 0);
-  const kombLoype = komb.reduce((s2, o) => s2 + o.loypeMin, 0);
-  const kombScooter = komb.reduce((s2, o) => s2 + o.scooterMin, 0);
-  const el = document.getElementById('stats-totaler');
-  el.innerHTML = `
-    <div class="stat-box"><div class="stat-value">${okter.length}</div><div class="stat-label">Økter</div><div class="okt-sub">${t.length} scooterturer · ${dager} dager</div></div>
+  const nil = okter.filter(o => o.nil).length;
+  const snittOkt = okter.length ? os.loypeMin / okter.length : 0;
+  document.getElementById('stats-totaler').innerHTML = `
+    <div class="stat-box"><div class="stat-value">${okter.length}</div><div class="stat-label">Sum økter</div><div class="okt-sub">${dager} ${dager === 1 ? 'dag' : 'dager'}</div></div>
+    <div class="stat-box"><div class="stat-value">${_komma(os.loypeMin / 60)} t</div><div class="stat-label">Sum tid økter</div><div class="okt-sub">snitt ${_minTilTekst(snittOkt)} per økt</div></div>
     <div class="stat-box"><div class="stat-value">${_komma(os.snitt)}</div><div class="stat-label">Scootere per økt</div><div class="okt-sub">snitt</div></div>
-    <div class="stat-box"><div class="stat-value">${_komma(os.scooterMin / 60)} t</div><div class="stat-label">Scootertimer</div><div class="okt-sub">snitt ${_minTilTekst(okter.length ? os.scooterMin / okter.length : 0)} per økt</div></div>
-    <div class="stat-box"><div class="stat-value">${_komma(os.loypeMin / 60)} t</div><div class="stat-label">Tid i løypa</div><div class="okt-sub">snitt ${_minTilTekst(okter.length ? os.loypeMin / okter.length : 0)} per økt</div></div>
-    <div class="stat-box"><div class="stat-value">${komb.length}</div><div class="stat-label">Kombinerte økter</div><div class="okt-sub">${komb.length ? `snitt ${_komma(kombTurer / komb.length)} scootere` : 'ingen økter med flere scootere'}</div></div>
-    <div class="stat-box"><div class="stat-value">${komb.length ? _minTilTekst(kombLoype / komb.length) : '–'}</div><div class="stat-label">Tid per kombinert økt</div><div class="okt-sub">${komb.length ? `${_minTilTekst(kombScooter / komb.length)} alle sjåfører` : '&nbsp;'}</div></div>`;
+    <div class="stat-box"><div class="stat-value">${nil} av ${okter.length}</div><div class="stat-label">Nærområdet / NIL</div><div class="okt-sub">økter</div></div>`;
+  const sjaforer = new Set(t.map(x => x.sjafor).filter(Boolean)).size;
+  const sc = new Set(t.map(x => x.scooter).filter(Boolean)).size;
+  document.getElementById('stats-scooterbruk').innerHTML = `
+    <div class="stat-box"><div class="stat-value">${t.length}</div><div class="stat-label">Totalt scooterturer</div><div class="okt-sub">${sjaforer} sjåfører · ${sc} scootere</div></div>
+    <div class="stat-box"><div class="stat-value">${_komma(os.scooterMin / 60)} t</div><div class="stat-label">Totalt scootertimer</div><div class="okt-sub">snitt ${_minTilTekst(t.length ? os.scooterMin / t.length : 0)} per tur</div></div>`;
 }
 
 function renderStatsSjafor(t) {
@@ -3121,7 +3142,7 @@ function renderStatsAktivitet(t, sesong) {
   if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
   // Grupper etter måned
   const perMnd = {};
-  t.forEach(x => {
+  grupperOkter(t).map(o => o.turer[0]).forEach(x => {
     const d = new Date(x.dato);
     if (isNaN(d.getTime())) return;
     const k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
@@ -3142,7 +3163,7 @@ function renderStatsAktivitet(t, sesong) {
     const x = pad.l + i * (barW + gap) + gap/2;
     const y = pad.t + ih - h;
     const [yr, mnd] = k.split('-');
-    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="#4A9FD4" rx="2"><title>${mndNavn[parseInt(mnd)-1]} ${yr}: ${n} tur${n===1?'':'er'}</title></rect><text x="${(x+barW/2).toFixed(1)}" y="${H-15}" text-anchor="middle" font-size="10" fill="#6b7280">${mndNavn[parseInt(mnd)-1]}</text><text x="${(x+barW/2).toFixed(1)}" y="${H-4}" text-anchor="middle" font-size="8" fill="#9ca3af">${yr.slice(-2)}</text><text x="${(x+barW/2).toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" font-size="10" fill="#0F3A5F" font-weight="600" font-family="ui-monospace,monospace">${n}</text></g>`;
+    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="#4A9FD4" rx="2"><title>${mndNavn[parseInt(mnd)-1]} ${yr}: ${n} økt${n===1?'':'er'}</title></rect><text x="${(x+barW/2).toFixed(1)}" y="${H-15}" text-anchor="middle" font-size="10" fill="#6b7280">${mndNavn[parseInt(mnd)-1]}</text><text x="${(x+barW/2).toFixed(1)}" y="${H-4}" text-anchor="middle" font-size="8" fill="#9ca3af">${yr.slice(-2)}</text><text x="${(x+barW/2).toFixed(1)}" y="${(y-3).toFixed(1)}" text-anchor="middle" font-size="10" fill="#0F3A5F" font-weight="600" font-family="ui-monospace,monospace">${n}</text></g>`;
   }).join('');
 
   el.innerHTML = `
@@ -3150,7 +3171,7 @@ function renderStatsAktivitet(t, sesong) {
       <line x1="${pad.l}" y1="${pad.t+ih}" x2="${W-pad.r}" y2="${pad.t+ih}" stroke="#e5e7eb"/>
       ${barer}
     </svg>
-    <div style="text-align:center;font-size:11px;color:var(--text2);margin-top:4px">Antall turer per måned</div>`;
+    <div style="text-align:center;font-size:11px;color:var(--text2);margin-top:4px">Antall økter per måned</div>`;
 }
 
 function renderStatsVaer(t) {
@@ -3215,10 +3236,16 @@ function renderStatsFore(t) {
 
 function renderStatsHighlights(t) {
   const el = document.getElementById('stats-highlights');
-  if (!t.length) { el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>'; return; }
+  if (!t.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--text2);text-align:center">Ingen data</p>';
+    const sc0 = document.getElementById('stats-highlights-sc'); if (sc0) sc0.innerHTML = '';
+    return;
+  }
   // Mest aktive dag
+  const oktene = grupperOkter(t);
   const perDag = {};
-  t.forEach(x => { perDag[x.dato] = (perDag[x.dato] || 0) + 1; });
+  oktene.forEach(o => { perDag[o.dato] = (perDag[o.dato] || 0) + 1; });
+  const lengstOkt = [...oktene].sort((a, b) => b.loypeMin - a.loypeMin)[0];
   const bestDag = Object.entries(perDag).sort((a,b) => b[1] - a[1])[0];
   // Mest aktive sjåfør
   const perSjafor = {};
@@ -3242,8 +3269,10 @@ function renderStatsHighlights(t) {
     </div>`;
 
   el.innerHTML =
-    H('⏱️', 'Lengste tur i tid', `${Math.floor((lengstTid.tidBrukt || 0)/60)}t ${(lengstTid.tidBrukt || 0)%60}m`, `${lengstTid.sjafor} · ${formaterDatoKort(lengstTid.dato)}`) +
-    H('📅', 'Mest aktive dag', `${bestDag[1]} tur${bestDag[1]===1?'':'er'}`, `${formaterDatoKort(bestDag[0])}`) +
+    H('⏱️', 'Lengste økt', _minTilTekst(lengstOkt.loypeMin), `${formaterDatoKort(lengstOkt.dato)} · ${lengstOkt.turer.map(x => (x.sjafor || '').split(' ')[0]).join(', ')}`) +
+    H('📅', 'Mest aktive dag', `${bestDag[1]} økt${bestDag[1]===1?'':'er'}`, `${formaterDatoKort(bestDag[0])}`);
+  const scEl = document.getElementById('stats-highlights-sc');
+  if (scEl) scEl.innerHTML =
     H('👑', 'Mest aktive sjåfør', bestSjafor[0], `${bestSjafor[1]} tur${bestSjafor[1]===1?'':'er'}`) +
     H('🛷', 'Mest brukte scooter', bestScooter[0], `${bestScooter[1]} tur${bestScooter[1]===1?'':'er'}`);
 }
