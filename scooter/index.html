@@ -296,7 +296,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="17.09" data-tid="08:10">08:10</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="17.09" data-tid="08:25">08:25</span>
 </div>
 
 <div class="nav">
@@ -2931,12 +2931,19 @@ function renderStatsTotaler(t) {
   const okter = grupperOkter(t);
   const os = _oktStatsTekst(okter, t);
   const dager = new Set(t.map(x => x.dato).filter(Boolean)).size;
+  // Kombinerte økter = flere scootere samtidig. Tid i løypa = lengste registrerte tid i økta.
+  const komb = okter.filter(o => o.turer.length > 1);
+  const kombTurer = komb.reduce((s2, o) => s2 + o.turer.length, 0);
+  const kombLoype = komb.reduce((s2, o) => s2 + o.loypeMin, 0);
+  const kombScooter = komb.reduce((s2, o) => s2 + o.scooterMin, 0);
   const el = document.getElementById('stats-totaler');
   el.innerHTML = `
     <div class="stat-box"><div class="stat-value">${okter.length}</div><div class="stat-label">Økter</div><div class="okt-sub">${t.length} scooterturer · ${dager} dager</div></div>
     <div class="stat-box"><div class="stat-value">${_komma(os.snitt)}</div><div class="stat-label">Scootere per økt</div><div class="okt-sub">snitt</div></div>
-    <div class="stat-box"><div class="stat-value">${_komma(os.scooterMin / 60)} t</div><div class="stat-label">Scootertimer</div><div class="okt-sub">alle scootere samlet</div></div>
-    <div class="stat-box"><div class="stat-value">${_komma(os.loypeMin / 60)} t</div><div class="stat-label">Tid i løypa</div><div class="okt-sub">lengste tid per økt</div></div>`;
+    <div class="stat-box"><div class="stat-value">${_komma(os.scooterMin / 60)} t</div><div class="stat-label">Scootertimer</div><div class="okt-sub">snitt ${_minTilTekst(okter.length ? os.scooterMin / okter.length : 0)} per økt</div></div>
+    <div class="stat-box"><div class="stat-value">${_komma(os.loypeMin / 60)} t</div><div class="stat-label">Tid i løypa</div><div class="okt-sub">snitt ${_minTilTekst(okter.length ? os.loypeMin / okter.length : 0)} per økt</div></div>
+    <div class="stat-box"><div class="stat-value">${komb.length}</div><div class="stat-label">Kombinerte økter</div><div class="okt-sub">${komb.length ? `snitt ${_komma(kombTurer / komb.length)} scootere` : 'ingen økter med flere scootere'}</div></div>
+    <div class="stat-box"><div class="stat-value">${komb.length ? _minTilTekst(kombLoype / komb.length) : '–'}</div><div class="stat-label">Tid per kombinert økt</div><div class="okt-sub">${komb.length ? `${_minTilTekst(kombScooter / komb.length)} alle sjåfører` : '&nbsp;'}</div></div>`;
 }
 
 function renderStatsSjafor(t) {
