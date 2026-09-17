@@ -12,6 +12,16 @@
 } .topbar-titles h1 { font-size: 17px; font-weight: 600; color: #fff; } .topbar-sub { font-size: 11px; color: rgba(255,255,255,0.5); }  
  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} } .nav { display: flex; background: var(--white); border-bottom: 1.5px solid var(--border); position: sticky; top: 56px; z-index: 99; overflow-x: auto; } .nav::-webkit-scrollbar { display: none; } .nav-btn { flex: 1; min-width: 80px; padding: 12px 6px 10px; border: none; background: transparent; font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text2); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; border-bottom: 2.5px solid transparent; transition: all 0.15s; } .nav-btn.active { color: var(--mid); border-bottom-color: var(--accent); } .nav-btn svg { width: 18px; height: 18px; } .section { display: none; padding: 16px; max-width: 900px; margin: 0 auto; } .section.active { display: block; } .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 14px; overflow: hidden; } .card-header { background: linear-gradient(135deg, var(--navy) 0%, var(--mid) 100%); color: white; padding: 12px 16px; font-weight: 600; font-size: 13px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; } .card-body { padding: 16px; } .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .form-grid.three { grid-template-columns: 1fr 1fr 1fr; } .form-grid.full { grid-template-columns: 1fr; } .field { margin-bottom: 0; } .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; } .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: var(--sans); font-size: 14px; color: var(--text); background: var(--snow); transition: border-color 0.15s; -webkit-appearance: none; } .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); background: var(--white); } .field textarea { resize: vertical; min-height: 70px; } .divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 10px; position: relative; } .divider::before { content: attr(data-label); position: absolute; top: -9px; left: 0; background: var(--white); padding: 0 8px 0 0; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; } .btn { padding: 11px 20px; border-radius: 8px; border: none; cursor: pointer; font-family: var(--sans); font-weight: 500; font-size: 14px; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; } .btn-primary { background: var(--mid); color: white; } .btn-primary:active { background: var(--navy); transform: scale(0.98); } .btn-primary:disabled { background: #aaa; cursor: not-allowed; } .btn-danger { background: #FEF2F2; color: var(--danger); border: 1px solid #FECACA; font-size: 12px; padding: 6px 10px; } .btn-outline { background: transparent; color: var(--mid); border: 1.5px solid var(--mid); } .btn-sm { padding: 7px 12px; font-size: 12px; } .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; align-items: center; } .toast { font-size: 13px; color: var(--success); display: none; align-items: center; gap: 5px; font-weight: 500; } .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; } @media (min-width: 600px) { .metrics { grid-template-columns: repeat(4, 1fr); } } .metric { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); } .metric-label { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; } .forer-chips { display:flex; flex-wrap:wrap; gap:8px; } .forer-chip { padding:10px 16px; border-radius:22px; border:2px solid var(--border); background:var(--white); font-family:var(--sans); font-size:15px; font-weight:500; color:var(--text); cursor:pointer; user-select:none; -webkit-user-select:none; min-height:44px; } .forer-chip.valgt { background:var(--mid); color:#fff; border-color:var(--mid); } .forer-chip:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .metric-value.tekst { font-size:17px; font-family:var(--sans); line-height:1.25; } .rek-liste { display:flex; flex-direction:column; } .rek-rad { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 10px; padding:10px 0; border-bottom:1px solid var(--border); } .rek-rad:last-child { border-bottom:0; } .rek-lbl { font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; } .rek-verdi { grid-row:span 2; align-self:center; font-family:var(--mono); font-size:20px; font-weight:600; color:var(--navy); white-space:nowrap; } .rek-verdi small { font-size:12px; color:var(--text2); font-weight:500; } .rek-hvem { font-size:13px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .rek-hvem span { color:var(--text2); }
 .fs-kort { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; background:var(--white); } .fs-hode { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--snow); border-bottom:1px solid var(--border); } .fs-ini { width:30px; height:30px; border-radius:50%; background:var(--mid); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0; } .fs-navn { font-weight:600; font-size:14px; color:var(--navy); flex:1; min-width:0; } .fs-ant { font-family:var(--mono); font-size:12px; color:var(--text2); white-space:nowrap; } .fs-grid { display:grid; grid-template-columns:repeat(3,1fr); } .fs-celle { padding:10px 12px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); min-width:0; } .fs-celle:nth-child(3n) { border-right:0; } .fs-v { font-family:var(--mono); font-size:17px; font-weight:600; color:var(--navy); white-space:nowrap; } .fs-v.fart { color:var(--mid); } .fs-l { font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; margin-top:2px; } .fs-s { font-size:11px; color:var(--text2); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .fs-fot { padding:8px 14px; font-size:12px; color:var(--text2); display:flex; gap:14px; flex-wrap:wrap; } .fs-krone { color:#B7770D; font-weight:600; }
+.fg-chips { display:flex; gap:6px; overflow-x:auto; padding:2px 0 10px; scrollbar-width:none; } .fg-chips::-webkit-scrollbar { display:none; } .fg-chip { flex-shrink:0; padding:7px 14px; border-radius:18px; border:1.5px solid var(--border); background:var(--white); font-family:var(--sans); font-size:13px; font-weight:500; color:var(--text2); cursor:pointer; } .fg-chip.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+.fg-blokk { border:1px solid var(--border); border-radius:var(--radius); padding:12px; margin-bottom:12px; background:var(--white); }
+.fg-maal { display:flex; flex-wrap:wrap; gap:4px; background:var(--ice); border-radius:8px; padding:3px; margin-bottom:12px; } .fg-maal button { flex:1 1 30%; border:0; border-radius:6px; padding:7px 4px; font-family:var(--sans); font-size:12px; font-weight:600; background:transparent; color:var(--text2); cursor:pointer; } .fg-maal button.on { background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(26,43,74,.12); }
+.fg-hero { margin:2px 2px 12px; } .fg-hero-v { font-family:var(--mono); font-size:32px; font-weight:600; color:var(--navy); line-height:1.1; } .fg-hero-v small { font-size:14px; color:var(--text2); } .fg-hero-t { font-size:12px; color:var(--text2); margin-top:3px; } .fg-hero-t b { color:var(--navy); }
+.fg-lb { display:flex; flex-direction:column; gap:2px; } .fg-rad { display:grid; grid-template-columns:78px minmax(0,1fr) 46px; grid-template-areas:'n s v' '. u .'; align-items:center; column-gap:8px; padding:6px 4px; border:0; border-radius:6px; background:transparent; font-family:var(--sans); text-align:left; cursor:pointer; transition:opacity .15s; } .fg-rad:hover, .fg-rad.valgt { background:var(--ice); } .fg-rad.dim { opacity:.4; } .fg-navn { grid-area:n; font-size:13px; font-weight:500; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .fg-stjerne { color:#B7770D; margin-right:3px; } .fg-spor { grid-area:s; height:12px; } .fg-bar { display:block; height:100%; background:var(--accent); border-radius:0 4px 4px 0; } .fg-rad.leder .fg-bar { background:var(--mid); } .fg-v { grid-area:v; text-align:right; font-family:var(--mono); font-size:13px; font-weight:600; color:var(--navy); font-variant-numeric:tabular-nums; } .fg-sub { grid-area:u; font-size:10.5px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+.fg-tittel { font-size:12px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:.4px; margin:0 2px 8px; } .fg-tittel span { font-weight:500; text-transform:none; letter-spacing:0; color:var(--text2); }
+.fg-svg { width:100%; height:auto; display:block; } .fg-grid { stroke:#E3EDF7; stroke-width:1; } .fg-grid.base { stroke:var(--border); } .fg-akse { font-size:9.5px; fill:var(--text2); font-family:var(--mono); } .fg-prikk { fill:var(--mid); stroke:#fff; stroke-width:2; cursor:pointer; } .fg-prikk.av { fill:#C9D6E4; } .fg-prikk:hover { stroke:var(--navy); } .fg-snitt { stroke:#B7770D; stroke-width:1.5; stroke-dasharray:4 3; } .fg-snitt-t { font-size:10px; fill:#8A5300; font-family:var(--mono); font-weight:600; }
+.fg-forkl { display:flex; flex-wrap:wrap; gap:4px 14px; font-size:11.5px; color:var(--text2); margin:6px 2px 0; } .fg-forkl b { color:var(--navy); font-family:var(--mono); } .fg-dot { display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--mid); margin-right:5px; vertical-align:-1px; } .fg-dot.av { background:#C9D6E4; } .fg-strek { display:inline-block; width:16px; border-top:2px dashed #B7770D; margin-right:5px; vertical-align:3px; }
+.fg-noekkel { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; } .fg-celle { background:var(--snow); border-radius:8px; padding:8px 10px; min-width:0; } .fg-cv { font-family:var(--mono); font-size:17px; font-weight:600; color:var(--navy); white-space:nowrap; } .fg-cv.fart { color:var(--mid); } .fg-cl { font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:.4px; margin-top:2px; }
+.fg-tip { position:fixed; z-index:300; background:var(--navy); color:#fff; font-size:12px; line-height:1.4; padding:6px 9px; border-radius:6px; pointer-events:none; box-shadow:0 4px 14px rgba(0,0,0,.2); }
 .metric-value { font-size: 26px; font-weight: 600; color: var(--navy); font-family: var(--mono); line-height: 1; } .metric-sub { font-size: 11px; color: var(--text2); margin-top: 3px; } .trip-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px; box-shadow: var(--shadow); margin-bottom: 10px; } .trip-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; } .trip-route { font-size: 15px; font-weight: 600; color: var(--navy); } .trip-date { font-size: 12px; color: var(--text2); font-family: var(--mono); } .trip-driver { font-size: 13px; color: var(--mid); font-weight: 500; margin-bottom: 8px; } .trip-stats { display: flex; gap: 8px; flex-wrap: wrap; } .trip-stat { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text2); background: var(--snow); border-radius: 6px; padding: 4px 8px; border: 1px solid var(--border); } .trip-stat span { font-weight: 600; color: var(--navy); font-family: var(--mono); font-size: 13px; } .trip-note { margin-top: 8px; font-size: 12px; color: var(--text2); font-style: italic; border-left: 2px solid var(--accent); padding-left: 8px; } .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 580px; table-layout: auto; } th { padding: 10px 12px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1.5px solid var(--border); background: var(--snow); white-space: nowrap; } td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; } tr:last-child td { border-bottom: none; } tr:hover td { background: var(--ice); } .chart-container { position: relative; width: 100%; height: 200px; } .empty { text-align: center; padding: 40px 20px; color: var(--text2); } .empty-icon { font-size: 36px; margin-bottom: 12px; } .empty p { font-size: 14px; line-height: 1.6; } .loading-overlay { display: none; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: var(--text2); font-size: 13px; } .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--mid); border-radius: 50%; animation: spin 0.7s linear infinite; }
 .photo-drop { border:2px dashed var(--border); border-radius:10px; padding:14px; text-align:center; color:var(--text2); background:var(--snow); cursor:pointer; }
 .photo-drop:hover { border-color:var(--mid); }
@@ -206,7 +216,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v17.09 11:18</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v17.09 12:05</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -218,7 +228,7 @@ Statistikk
 Admin
 </button></nav><div class="section" id="tab-dashboard"><div class="filter-bar"><button class="filter-btn active" id="dash-filter-5" onclick="setDashFilter('5')">Siste 5</button><button class="filter-btn" id="dash-filter-uke" onclick="setDashFilter('uke')">Denne uken</button><button class="filter-btn" id="dash-filter-sesong" onclick="setDashFilter('sesong')">Sesong</button><button class="filter-btn" id="dash-filter-alle" onclick="setDashFilter('alle')">Alle</button><button onclick="showTab('logg')" style="margin-left:auto;display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Full logg</button></div><div class="metrics" id="dash-metrics"></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Løypestatus – denne uken
-</div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header">Sesongens rekorder</div><div class="card-body" style="padding:4px 16px"><div id="dash-rekorder" class="rek-liste"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section active" id="tab-ny"><div class="card"><div class="card-header" id="ny-okt-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+</div><div class="card-body"><div id="dash-loype-status" class="loype-grid"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="dash-recent-label">Siste 5 turer</span></div><div class="card-body"><div class="loading-overlay" id="dash-loading"><div class="spinner"></div> Henter data…</div><div id="dash-recent"></div></div></div></div><div class="section active" id="tab-ny"><div class="card"><div class="card-header" id="ny-okt-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 <span id="ny-okt-tittel">Registrer ny kjøreøkt</span>
 </div><div class="card-body">
 <div id="edit-advarsel" style="display:none;background:#FFFBF0;border:1px solid #F5CBA7;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#7D6608;line-height:1.5">
@@ -242,14 +252,12 @@ Bra
 <div class="logg-mobil" id="logg-mobil"></div>
 <div id="logg-empty" class="empty" style="display:none"><div class="empty-icon">📋</div><p>Ingen turer ennå.<br>Gå til «Ny økt» for å starte.</p></div></div></div><div class="section" id="tab-statistikk"><div class="filter-bar" id="stats-filter-bar"><button class="filter-btn active" id="stats-filter-sesong" onclick="setStatsFilter('sesong')">Sesong</button><button class="filter-btn" id="stats-filter-uke" onclick="setStatsFilter('uke')">Denne uken</button><button class="filter-btn" id="stats-filter-7d" onclick="setStatsFilter('7d')">Siste 7 dager</button><button class="filter-btn" id="stats-filter-30d" onclick="setStatsFilter('30d')">Siste 30 dager</button><button class="filter-btn" id="stats-filter-alle" onclick="setStatsFilter('alle')">Alle</button></div><div class="card" id="stats-nil-kort"><div class="card-header">Nærområdet / NIL <span id="stats-nil-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span></div><div class="card-body" id="stats-nil"></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
 Km kjørt per måned <span id="stats-km-periode" style="font-size:10px;font-weight:400;opacity:0.7"></span>
-<span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Rekorder <span id="stats-rekord-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span></div><div class="card-body" style="padding:4px 16px"><div id="stats-rekorder" class="rek-liste"></div></div></div><div class="card"><div class="card-header">Per fører <span id="stats-forer-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span></div><div class="card-body" style="padding:12px"><div id="stats-forer"></div><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
+<span id="stats-sesong-label" style="margin-left:auto;font-size:11px;opacity:0.75;font-weight:400"></span></div><div class="card-body"><div class="chart-container"><canvas id="chart-km" role="img" aria-label="Km kjørt per måned"></canvas></div></div></div><div class="card"><div class="card-header">Førere og rekorder <span id="stats-forer-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span></div><div class="card-body" style="padding:12px"><div id="stats-forer"></div><div id="stats-forer-empty" class="empty" style="display:none"><p>Ingen data</p></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M3 12l9-9 9 9M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
 Runder – statistikk <span id="stats-runder-periode" style="margin-left:6px;font-size:10px;font-weight:400;opacity:0.7"></span>
 </div><div class="card-body" id="stats-loype-container"><div id="stats-loype-empty" class="empty" style="display:none"><p>Ingen data</p></div><div id="stats-loype-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:12px"></div><div id="stats-loype-panel" style="display:none;border:1.5px solid var(--accent);border-radius:var(--radius);background:var(--ice);padding:16px;margin-top:4px"></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
 Maskiner
 <button type="button" id="stats-vis-inaktive-btn" onclick="toggleVisInaktiveMaskiner()" style="margin-left:auto;padding:4px 10px;font-size:11px;border-radius:6px;border:1.5px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:white;cursor:pointer;font-weight:500">👁 Vis inaktive</button>
-</div><div class="card-body" id="stats-maskiner-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-Km og timer per tur – denne sesongen
-</div><div class="card-body" id="stats-sjaforer-kort"></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+</div><div class="card-body" id="stats-maskiner-innhold"><p style="color:var(--text2);font-size:13px">Laster…</p></div></div></div><div class="section" id="tab-admin"><div id="admin-lock"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
 Admin – logg inn
 </div><div class="card-body"><div class="admin-pin-overlay"><p style="font-size:14px;color:var(--text2);text-align:center">Skriv inn PIN-kode for å få tilgang til adminpanelet.</p><div class="pin-dots" id="pin-dots"><div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div></div><input class="field input pin-input" id="pin-input" type="password" maxlength="4" inputmode="numeric" placeholder="••••" oninput="sjekkPin()"><p id="pin-feil" style="font-size:12px;color:var(--danger);display:none">Feil PIN. Prøv igjen.</p></div></div></div></div><div id="admin-panel" style="display:none"><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
 Førere
@@ -2082,6 +2090,117 @@ return `<div class="fs-kort"><div class="fs-hode"><div class="fs-ini">${_fornavn
 + `</div></div>`;
 }).join('');
 }
+// ── FØRERGRAFER (Statistikk) ──
+// Topplister med valgbar måling, fart per tur og nøkkeltall for valgt fører.
+const _FS_MAAL = [
+{ k:'snittFart', l:'Snittfart', hero:'Høyest snittfart', enhet:'km/t', v:s => s.snittFart, d:1, sub:s => `${s.fartKm.toFixed(0)} km på ${s.fartTimer.toFixed(1)} t` },
+{ k:'lengstKm', l:'Lengste tur', enhet:'km', v:s => s.lengstKm ? s.lengstKm.km : null, tur:s => s.lengstKm, d:1 },
+{ k:'lengstTid', l:'Lengst tid', enhet:'t', v:s => s.lengstTid ? s.lengstTid.timer : null, tur:s => s.lengstTid, d:1 },
+{ k:'raskest', l:'Raskeste tur', enhet:'km/t', v:s => s.raskest ? s.raskest.fart : null, tur:s => s.raskest, d:1 },
+{ k:'km', l:'Km totalt', enhet:'km', v:s => s.km || null, d:0 },
+{ k:'turer', l:'Turer', enhet:'turer', v:s => s.turer || null, d:0 }
+];
+window._fsValg = window._fsValg || { maal:'snittFart', forer:'' };
+function _fsEsc(v) { return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+function fsVelgMaal(k) { window._fsValg.maal = k; _renderForerGrafer(); }
+function fsVelgForer(i) { const n = (window._fsNavn || [])[i]; window._fsValg.forer = (n === undefined || window._fsValg.forer === n) ? '' : n; _renderForerGrafer(); }
+function _renderForerGrafer() {
+const el = document.getElementById('stats-forer');
+const tall = window._fsTall || [];
+if (!el) return;
+if (!tall.length) { el.innerHTML = ''; return; }
+const fs = _forerStatistikk(tall);
+const navn = Object.keys(fs).sort((a, b) => fs[b].turer - fs[a].turer);
+window._fsNavn = navn;
+const valg = window._fsValg;
+if (valg.forer && !fs[valg.forer]) valg.forer = '';
+const M = _FS_MAAL.find(m => m.k === valg.maal) || _FS_MAAL[0];
+const fmt = (v, d) => v == null ? '–' : Number(v).toFixed(d);
+
+// Fører-velger
+const chips = `<div class="fg-chips" role="group" aria-label="Velg fører"><button type="button" class="fg-chip${!valg.forer ? ' on' : ''}" onclick="fsVelgForer(-1)">Alle</button>${navn.map((f, i) => `<button type="button" class="fg-chip${valg.forer === f ? ' on' : ''}" onclick="fsVelgForer(${i})">${_fsEsc(_fornavn(f))}</button>`).join('')}</div>`;
+
+// Topplisten
+const rader = navn.map(f => ({ f, v: M.v(fs[f]), tur: M.tur ? M.tur(fs[f]) : null, sub: M.sub ? M.sub(fs[f]) : '' })).filter(r => r.v != null && r.v > 0).sort((a, b) => b.v - a.v);
+const maks = rader.length ? rader[0].v : 1;
+const leder = rader[0];
+const hero = leder ? `<div class="fg-hero"><div class="fg-hero-v">${fmt(leder.v, M.d)} <small>${M.enhet}</small></div><div class="fg-hero-t"><b>${M.hero || M.l}</b> · ${_fsEsc(_fornavn(leder.f))}${leder.tur ? ` · ${formatDato(leder.tur.t.dato)} · ${_fsEsc(leder.tur.t.loype)}` : M.k === 'snittFart' ? ' · gjennomsnitt av alle turer i perioden' : ' · i perioden'}</div></div>` : '';
+const maalKnapper = `<div class="fg-maal" role="tablist">${_FS_MAAL.map(m => `<button type="button" role="tab" aria-selected="${m.k === M.k}" class="${m.k === M.k ? 'on' : ''}" onclick="fsVelgMaal('${m.k}')">${m.l}</button>`).join('')}</div>`;
+const liste = rader.length ? `<div class="fg-lb">${rader.map((r, i) => {
+const idx = navn.indexOf(r.f);
+const tip = `${r.f}: ${fmt(r.v, M.d)} ${M.enhet}${r.sub ? ` – ${r.sub}` : ''}${r.tur ? ` – ${formatDato(r.tur.t.dato)}, ${r.tur.t.loype}, ${r.tur.km.toFixed(1)} km på ${r.tur.timer.toFixed(1)} t` : ''}`;
+const dim = valg.forer && valg.forer !== r.f ? ' dim' : '';
+return `<button type="button" class="fg-rad${i === 0 ? ' leder' : ''}${valg.forer === r.f ? ' valgt' : ''}${dim}" data-tip="${_fsEsc(tip)}" onclick="fsVelgForer(${idx})"><span class="fg-navn">${i === 0 ? '<span class="fg-stjerne" aria-label="Rekord">★</span>' : ''}${_fsEsc(_fornavn(r.f))}</span><span class="fg-spor"><span class="fg-bar" style="width:${Math.max(3, r.v / maks * 100).toFixed(1)}%"></span></span><span class="fg-v">${fmt(r.v, M.d)}</span>${r.tur ? `<span class="fg-sub">${formatDato(r.tur.t.dato)} · ${_fsEsc(r.tur.t.loype)}</span>` : r.sub ? `<span class="fg-sub">${_fsEsc(r.sub)}</span>` : ''}</button>`;
+}).join('')}</div>` : '<div class="empty" style="padding:14px"><p>For lite data for denne målingen</p></div>';
+
+// Fart per tur (prikker over tid)
+const pk = tall.filter(x => x.fart !== null && x.t.dato).map(x => ({ x, tid: new Date(x.t.dato + 'T12:00').getTime() }));
+let fart = '';
+if (pk.length) {
+const W = 340, H = 200, pl = 30, pr = 10, pt = 14, pb = 26;
+const t0 = Math.min(...pk.map(p => p.tid)), t1 = Math.max(...pk.map(p => p.tid));
+const yMaks = Math.max(5, Math.ceil(Math.max(...pk.map(p => p.x.fart)) / 5) * 5);
+const yMin = Math.max(0, Math.floor((Math.min(...pk.map(p => p.x.fart)) - 1) / 5) * 5);
+const X = t => t1 === t0 ? pl + (W - pl - pr) / 2 : pl + (t - t0) / (t1 - t0) * (W - pl - pr);
+const Y = v => pt + (1 - (v - yMin) / (yMaks - yMin)) * (H - pt - pb);
+const grid = [];
+for (let v = yMin; v <= yMaks; v += 5) grid.push(`<line x1="${pl}" x2="${W - pr}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" class="fg-grid${v === yMin ? ' base' : ''}"/><text x="${pl - 6}" y="${(Y(v) + 3).toFixed(1)}" text-anchor="end" class="fg-akse">${v}</text>`);
+const dFmt = t => { const d = new Date(t); return d.getDate() + '.' + (d.getMonth() + 1); };
+const xl = t1 === t0 ? [t0] : [t0, t0 + (t1 - t0) / 2, t1];
+const xLab = xl.map((t, i) => `<text x="${X(t).toFixed(1)}" y="${H - 8}" text-anchor="${xl.length === 1 ? 'middle' : i === 0 ? 'start' : i === xl.length - 1 ? 'end' : 'middle'}" class="fg-akse">${dFmt(t)}</text>`).join('');
+const utvalg = valg.forer ? pk.filter(p => p.x.t.forer === valg.forer) : pk;
+const sKm = utvalg.reduce((s, p) => s + p.x.km, 0), sT = utvalg.reduce((s, p) => s + p.x.timer, 0);
+const snitt = sT > 0 ? sKm / sT : null;
+const sorter = [...pk].sort((a, b) => (valg.forer ? (a.x.t.forer === valg.forer) - (b.x.t.forer === valg.forer) : 0));
+const prikker = sorter.map(p => {
+const aktiv = !valg.forer || p.x.t.forer === valg.forer;
+const tip = `${_fornavn(p.x.t.forer)} · ${formatDato(p.x.t.dato)} · ${p.x.t.loype}: ${p.x.fart.toFixed(1)} km/t (${p.x.km.toFixed(1)} km på ${p.x.timer.toFixed(1)} t)`;
+return `<circle cx="${X(p.tid).toFixed(1)}" cy="${Y(p.x.fart).toFixed(1)}" r="${aktiv ? 5 : 4}" class="fg-prikk${aktiv ? '' : ' av'}" data-tip="${_fsEsc(tip)}"/>`;
+}).join('');
+const snittLinje = snitt ? `<line x1="${pl}" x2="${W - pr}" y1="${Y(snitt).toFixed(1)}" y2="${Y(snitt).toFixed(1)}" class="fg-snitt"/>` : '';
+const hvem = valg.forer ? _fsEsc(_fornavn(valg.forer)) : 'Alle førere';
+const forklaring = `<div class="fg-forkl"><span><i class="fg-dot"></i>${hvem} (${utvalg.length} tur${utvalg.length === 1 ? '' : 'er'})</span>${valg.forer ? '<span><i class="fg-dot av"></i>andre</span>' : ''}${snitt ? `<span><i class="fg-strek"></i>snittfart <b>${snitt.toFixed(1)} km/t</b></span>` : ''}</div>`;
+fart = `<div class="fg-tittel">Fart per tur <span>km/t · trykk på en prikk for detaljer</span></div>
+<svg viewBox="0 0 ${W} ${H}" class="fg-svg" role="img" aria-label="Fart per tur i km/t over tid">${grid.join('')}${snittLinje}${prikker}${xLab}</svg>${forklaring}`;
+}
+
+// Nøkkeltall for valgt fører (eller alle)
+const sum = valg.forer ? fs[valg.forer] : (() => {
+const a = { turer:0, km:0, timer:0, nKm:0, nTimer:0, diesel:0, adblue:0, fartKm:0, fartTimer:0, lengstKm:null, raskest:null };
+navn.forEach(f => { const s = fs[f]; ['turer','km','timer','nKm','nTimer','diesel','adblue','fartKm','fartTimer'].forEach(k => a[k] += s[k]);
+if (s.lengstKm && (!a.lengstKm || s.lengstKm.km > a.lengstKm.km)) a.lengstKm = s.lengstKm;
+if (s.raskest && (!a.raskest || s.raskest.fart > a.raskest.fart)) a.raskest = s.raskest; });
+a.snittFart = a.fartTimer > 0 ? a.fartKm / a.fartTimer : null;
+return a;
+})();
+const celle = (v, l, kl) => `<div class="fg-celle"><div class="fg-cv${kl ? ' ' + kl : ''}">${v}</div><div class="fg-cl">${l}</div></div>`;
+const noekkel = `<div class="fg-tittel">${valg.forer ? _fsEsc(valg.forer) : 'Alle førere'} <span>i perioden</span></div><div class="fg-noekkel">`
++ celle(sum.turer, 'Turer') + celle(sum.km.toFixed(1), 'Km totalt') + celle(sum.timer.toFixed(1), 'Timer totalt')
++ celle(sum.nKm ? (sum.km / sum.nKm).toFixed(1) : '–', 'Snitt km/tur') + celle(sum.nTimer ? (sum.timer / sum.nTimer).toFixed(1) : '–', 'Snitt t/tur') + celle(sum.snittFart != null ? sum.snittFart.toFixed(1) : '–', 'Snittfart km/t', 'fart')
++ celle(sum.lengstKm ? sum.lengstKm.km.toFixed(1) : '–', 'Lengste tur km') + celle(sum.raskest ? sum.raskest.fart.toFixed(1) : '–', 'Raskeste km/t', 'fart') + celle(`${sum.diesel} / ${sum.adblue}`, 'Diesel / AdBlue') + `</div>`;
+
+el.innerHTML = chips + `<div class="fg-blokk">${maalKnapper}${hero}${liste}</div><div class="fg-blokk">${fart}</div><div class="fg-blokk">${noekkel}</div>`;
+}
+// Felles verktøytips for [data-tip] (mus og trykk)
+(function () {
+let tipEl = null;
+const vis = (e, mal) => {
+if (!tipEl) { tipEl = document.createElement('div'); tipEl.className = 'fg-tip'; tipEl.setAttribute('role', 'status'); document.body.appendChild(tipEl); }
+tipEl.textContent = mal.getAttribute('data-tip');
+tipEl.hidden = false;
+const r = mal.getBoundingClientRect();
+const b = Math.min(260, window.innerWidth - 24);
+tipEl.style.maxWidth = b + 'px';
+let x = r.left + r.width / 2 - tipEl.offsetWidth / 2;
+x = Math.max(12, Math.min(x, window.innerWidth - tipEl.offsetWidth - 12));
+let y = r.top - tipEl.offsetHeight - 8;
+if (y < 60) y = r.bottom + 8;
+tipEl.style.left = x + 'px'; tipEl.style.top = y + 'px';
+};
+const skjul = () => { if (tipEl) tipEl.hidden = true; };
+document.addEventListener('pointerover', e => { const m = e.target.closest && e.target.closest('#stats-forer [data-tip]'); if (m) vis(e, m); else skjul(); });
+document.addEventListener('scroll', skjul, { passive: true });
+})();
 // ── DASHBOARD ──
 // «siden 12. sep» – eldste dato blant turene (for «Siste 5»)
 function _sidenTekst(liste) {
@@ -2116,10 +2235,6 @@ ${dashFilter === '5'
 const labelMap = {'5':'Siste 5 turer',sesong:'Sesongen',uke:'Denne uken',alle:'Alle turer'};
 const labelEl = document.getElementById('dash-recent-label');
 renderLoypeStatus();
-try {
-const _pf = loggFilter; loggFilter = 'sesong'; const _ses = filterTurer(turer); loggFilter = _pf;
-_renderRekorder(document.getElementById('dash-rekorder'), _turTall(_ses), true);
-} catch(e) { console.error('Rekorder:', e); }
 const filtrertDashSortert = [...filtrertDash].sort((a,b) => {
 const da = (a.dato||'') + ' ' + (a.slutt||'00:00');
 const db = (b.dato||'') + ' ' + (b.slutt||'00:00');
@@ -2347,12 +2462,9 @@ options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:f
 scales:{ y:{beginAtZero:true, grid:{color:'#E8F4FD'}, ticks:{callback:v=>v+' km', font:{size:11}}},
 x:{grid:{display:false}, ticks:{font:{size:11}}} } }
 });
-_pEl('stats-rekord-periode');
-const _tallStats = _turTall(filtrertStats);
-_renderRekorder(document.getElementById('stats-rekorder'), _tallStats, false);
-const _fs = _forerStatistikk(_tallStats);
-document.getElementById('stats-forer-empty').style.display = Object.keys(_fs).length ? 'none' : 'block';
-_renderForerKort(document.getElementById('stats-forer'), _fs);
+window._fsTall = _turTall(filtrertStats);
+document.getElementById('stats-forer-empty').style.display = window._fsTall.some(x => x.t.forer) ? 'none' : 'block';
+try { _renderForerGrafer(); } catch(e) { console.error('Førergrafer:', e); }
 const loypeMap = {};
 const diffMapLoype = beregnDiff(turer);
 
@@ -3169,7 +3281,8 @@ forerStats[t.forer].turer.push(t);
 renderStatsMaskiner();
 const kortEl = document.getElementById('stats-sjaforer-kort');
 const forerNavn = Object.keys(forerStats);
-if (!forerNavn.length) { kortEl.innerHTML='<div class="empty"><p>Ingen data for valgt periode</p></div>'; }
+if (!kortEl) { /* kortet er fjernet – erstattet av førergrafene */ }
+else if (!forerNavn.length) { kortEl.innerHTML='<div class="empty"><p>Ingen data for valgt periode</p></div>'; }
 else {
 // Destroy old driver charts
 Object.keys(window._forerCharts||{}).forEach(k => { try { window._forerCharts[k].destroy(); } catch(e){} });
