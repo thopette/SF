@@ -296,7 +296,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="16.09" data-tid="17:40">17:40</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="17.09" data-tid="08:10">08:10</span>
 </div>
 
 <div class="nav">
@@ -1845,8 +1845,7 @@ function renderDashboard() {
   if (nilEl) {
     // Bare antall økter – en avkrysning sier ikke hvor lenge de var i nærområdet
     const nilOkter = okter.filter(o => o.nil);
-    const kunMarka = okter.length - nilOkter.length;
-    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilOkter.length} av ${okter.length} økter</b> · ${kunMarka} kun i marka</span>`;
+    nilEl.innerHTML = `<span>Nærområdet / NIL denne sesongen</span><span><b>${nilOkter.length} av ${okter.length} økter</b></span>`;
     nilEl.hidden = !nilOkter.length;
   }
 
