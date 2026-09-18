@@ -222,6 +222,13 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 @keyframes oktpuls{50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.okt-live i{animation:none}}
 .okt-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.kobar{display:flex;align-items:center;gap:10px;padding:7px 14px;background:#EEF5FC;border-bottom:1px solid #C8DDF0;font-size:12px;color:#1A4B7A}
+.kobar[hidden]{display:none}
+.kobar .prikk{width:8px;height:8px;border-radius:50%;background:#2D5A8E;flex-shrink:0}
+.kobar.sender .prikk{animation:kopuls 1.1s ease-in-out infinite}
+.kobar .ko-tekst{flex:1;min-width:0}
+.kobar button{padding:5px 11px;border-radius:14px;border:1.5px solid #9FC3E6;background:#fff;color:#1A4B7A;font-family:var(--sans);font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+@keyframes kopuls{50%{opacity:.25}}
 .rlbar{display:flex;align-items:center;gap:10px;padding:6px 14px;background:#FFF8E7;border-bottom:1px solid #F5D5A0}
 .rlbar[hidden]{display:none}
 .rlbar button{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:16px;border:1.5px solid #E0B057;background:#fff;color:#8A5300;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
@@ -313,7 +320,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="12:37">12:37</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="13:04">13:04</span>
 </div>
 
 <div class="nav">
@@ -324,6 +331,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <button class="nav-btn" onclick="visTab('galleri')" id="btn-galleri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Galleri</button>
 </div>
 
+<div class="kobar" id="ko-bar" hidden><span class="prikk"></span><span class="ko-tekst">Turen venter på å bli sendt</span><button type="button" onclick="koSend()">Send nå</button></div>
 <div class="rlbar" id="reload-bar" hidden><button type="button" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span>Testmodus – tømmer mellomlagrede data</span></div>
 <div class="content">
 
@@ -657,19 +665,21 @@ function _lokalDato(d) {
   d = d || new Date();
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
-async function apiKall(body, forsokNr) {
+async function apiKall(body, forsokNr, opts) {
   forsokNr = forsokNr || 1;
+  opts = opts || {};
+  const _maksForsok = opts.maksForsok || 4;
   startSpinner();
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), _timeoutFor(body));
+  const timeout = setTimeout(() => controller.abort(), opts.frist || _timeoutFor(body));
   const bodyStr = JSON.stringify(body);
   const brukGet = bodyStr.length < 1500 && !body.tur && !body.base64 && !body.forere && !body.loyper && !body.maskiner && !body.innstillinger && !body.feil && !body.service && !body.kontakt && !body.scootere && !body.items && !body.bildeIds;
   const kanPrøveIgjen = brukGet || _IDEMPOTENTE_SKRIV.indexOf(body.action) > -1;
   const nyttForsøk = async (grunn) => {
-    console.warn(`${grunn} – prøver igjen (forsøk ${forsokNr + 1}/4)…`);
-    try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/4)…`, ''); } catch(_) {}
+    console.warn(`${grunn} – prøver igjen (forsøk ${forsokNr + 1}/${_maksForsok})…`);
+    try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/${_maksForsok})…`, ''); } catch(_) {}
     await new Promise(r => setTimeout(r, _RETRY_PAUSE_MS[forsokNr - 1] || 4000));
-    return apiKall(body, forsokNr + 1);
+    return apiKall(body, forsokNr + 1, opts);
   };
   try {
     let res;
@@ -689,7 +699,7 @@ async function apiKall(body, forsokNr) {
       clearTimeout(timeout);
       const erTimeout = nettFeil.name === 'AbortError';
       // Nettverksfeil: prøv igjen for lese-kall og trygge skrive-kall. Tidsavbrudd på trege kall prøves ikke igjen.
-      if (kanPrøveIgjen && forsokNr < 4 && !(erTimeout && _TREGE_ACTIONS.indexOf(body.action) > -1)) {
+      if (kanPrøveIgjen && forsokNr < _maksForsok && !(erTimeout && _TREGE_ACTIONS.indexOf(body.action) > -1)) {
         return nyttForsøk(erTimeout ? 'Tidsavbrudd' : 'Nettverksfeil');
       }
       if (erTimeout) throw new Error('Tidsfrist utløpt – sjekk nettforbindelsen og prøv igjen.');
@@ -701,11 +711,11 @@ async function apiKall(body, forsokNr) {
     catch(e) {
       console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}, ${brukGet ? 'GET' : 'POST'}). Første 500 tegn:`, txt.substring(0, 500));
       console.error('HTTP status:', res.status, 'Response length:', txt.length);
-      if (forsokNr < 4) return nyttForsøk('Ugyldig svar');
+      if (forsokNr < _maksForsok) return nyttForsøk('Ugyldig svar');
       const erLoginSide = txt.includes('accounts.google.com');
       throw new Error(erLoginSide
         ? 'Apps Script krever re-autorisering. Åpne script-editoren og godkjenn tilgang.'
-        : `Server svarte ikke etter 4 forsøk (HTTP ${res.status}). Prøv igjen om et øyeblikk.`);
+        : `Server svarte ikke etter ${_maksForsok} forsøk (HTTP ${res.status}). Prøv igjen om et øyeblikk.`);
     }
   } catch(e) {
     clearTimeout(timeout);
@@ -852,7 +862,104 @@ function tegnReloadKnapp() {
 }
 document.addEventListener('DOMContentLoaded', tegnReloadKnapp);
 tegnReloadKnapp();
+
+// Kalles når regnearket har kvittert for en tur fra køen
+function koFerdig(tur, res) {
+  const id = String(res.id || tur.id);
+  const idx = turer.findIndex(t => String(t.id) === String(tur.id));
+  if (idx >= 0) {
+    turer[idx] = Object.assign({}, turer[idx], {
+      id: id, venter: false,
+      kmPerTur: (res.kmPerTur !== undefined && res.kmPerTur !== '') ? (parseFloat(res.kmPerTur) || null) : turer[idx].kmPerTur
+    });
+  }
+  _skrivTurerCache();
+  try { renderDashboard(); if (document.getElementById('tab-logg') && document.getElementById('tab-logg').classList.contains('active')) renderLogg(); } catch(e) {}
+  try { oppdaterKmHint(); } catch(e) {}
+  // Bilder som ventet på turen kan nå kobles
+  try { _bkStart(); } catch(e) {}
+  // E-postvarsel sendes først nå – ingen får mail om en tur som ikke kom fram
+  try {
+    const turMedId = Object.assign({}, tur, { id: id }, res.kmPerTur !== undefined ? { kmPerTur: res.kmPerTur } : {});
+    apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'scooter' })
+      .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
+  } catch(e) {}
+  clearTimeout(window._synkEtterLagring);
+  window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData({ utenConfig: true }); }, 8000);
+}
+
+// ── UTKØ FOR TURER ──
+// Turen lagres på telefonen først og sendes til regnearket i bakgrunnen. Backend kjenner igjen
+// tur-ID-en, så gjentatte forsøk kan ikke gi dobbeltføring. Køen tømmes først når Sheets kvitterer.
+const _KO_KEY = 'sf_tur_ko_scooter_v1';
+let _turKo = [];
+function _lesKo() { try { const r = localStorage.getItem(_KO_KEY); const o = r ? JSON.parse(r) : null; return Array.isArray(o) ? o : []; } catch(e) { return []; } }
+function _skrivKo() { try { localStorage.setItem(_KO_KEY, JSON.stringify(_turKo)); } catch(e) {} }
+function koHarTur(id) { return _turKo.some(k => String(k.tur.id) === String(id)); }
+// Turer som ennå ikke er sendt, må ikke forsvinne når ferske data kommer fra regnearket
+function _flettKo() {
+  _turKo.forEach(k => {
+    const t = k.tur;
+    if (turer.some(x => String(x.id) === String(t.id))) return;
+    turer.unshift({
+      id: String(t.id), dato: t.dato, sjafor: t.sjafor, scooter: t.scooter, slutt: _normTid(t.slutt),
+      km: parseFloat(t.km) || 0, tidBrukt: parseFloat(t.tidBrukt) || 0, beskrivelse: t.beskrivelse || '',
+      snoLav: t.snoLav, snoHoy: t.snoHoy, foreforhold: parseInt(t.foreforhold) || 0,
+      merknaderSki: t.merknaderSki || '', bildeUrl: t.bildeUrl || '', vaer: t.vaer || '',
+      redigert: false, nil: t.nil === 'Ja', bensin: t.bensin === 'Ja',
+      kmPerTur: null, harFeil: t.harFeil === true, venter: true
+    });
+  });
+}
+function koLeggTil(tur) { _turKo.push({ tur: tur, lagt: Date.now(), forsok: 0 }); _skrivKo(); koTegn('venter'); }
+function koTegn(status) {
+  const bar = document.getElementById('ko-bar');
+  if (!bar) return;
+  const n = _turKo.length;
+  if (!n) { bar.hidden = true; return; }
+  const txt = bar.querySelector('.ko-tekst');
+  const ord = n === 1 ? 'Turen' : n + ' turer';
+  if (txt) txt.textContent = status === 'sender' ? ord + ' sendes til regnearket …'
+    : status === 'feil' ? ord + ' er lagret på telefonen – venter på nett'
+    : ord + ' venter på å bli sendt';
+  bar.classList.toggle('sender', status === 'sender');
+  bar.hidden = false;
+}
+let _koSender = false;
+// frist: kort frist (ms) når brukeren står og venter. Uten frist brukes vanlige tidsgrenser.
+async function koSend(opts) {
+  opts = opts || {};
+  if (!_turKo.length) { koTegn('tom'); return true; }
+  if (_koSender) return false;
+  _koSender = true;
+  koTegn('sender');
+  try {
+    for (const post of [..._turKo]) {
+      try {
+        const res = await apiKall({ action: 'leggTilScooter', tur: post.tur }, 1,
+          opts.frist ? { frist: opts.frist, maksForsok: 1 } : { frist: 15000, maksForsok: 2 });
+        if (res && res.feil) throw new Error(res.feil);
+        _turKo = _turKo.filter(k => k !== post);
+        _skrivKo();
+        koFerdig(post.tur, res || {});
+      } catch(e) {
+        post.forsok++; post.sisteFeil = String(e && e.message || e);
+        _skrivKo(); koTegn('feil');
+        console.warn('Turen er ikke sendt ennå:', post.sisteFeil);
+        return false;
+      }
+    }
+  } finally { _koSender = false; }
+  koTegn('tom');
+  return true;
+}
+// Prøv igjen automatisk: jevnlig, når nettet kommer tilbake og når appen hentes fram
+setInterval(() => { if (_turKo.length && navigator.onLine !== false && !document.hidden) koSend(); }, 30000);
+window.addEventListener('online', () => { if (_turKo.length) koSend(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && _turKo.length) koSend(); });
+
 function hentAltPaNytt() {
+  // NB: utkøen for turer røres ikke – usendte turer skal aldri kastes
   ['sf_turer_scooter_v1', 'sf_startdata_scooter_v1', 'sf_config_cache', 'sf_galleri_v1', 'sf_admin_bilder_v1'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
   location.reload();
 }
@@ -914,6 +1021,7 @@ async function lastData(opts) {
     if (turData.feil) throw new Error(turData.feil);
     if (cfg && cfg.feil) throw new Error(cfg.feil);
     turer = (turData.turer || []).map(mapTur);
+    _flettKo();
     _turerLastet = true;
     _visteDataTs = Date.now();
     _skrivTurerCache();
@@ -1286,6 +1394,8 @@ async function _bkKobleTilTur(item) {
       if (item.iSkjema && valgtBildeUrls.indexOf(item.url) < 0) valgtBildeUrls.push(item.url);
       return;
     }
+    // Turen kan fortsatt stå i utkøen – da finnes ikke raden ennå, og vi venter i stedet for å gi opp
+    if (koHarTur(turId)) { await new Promise(r => setTimeout(r, 3000)); forsok = 0; continue; }
     const res = await apiKall({ action: 'leggTilBilder', turId: String(turId), urls: [item.url], appType: BK_APP });
     if (!res.feil) {
       item.koblet = true;
@@ -1294,8 +1404,8 @@ async function _bkKobleTilTur(item) {
       return;
     }
     // «Fant ikke turen» kan skje et øyeblikk mens turen lagres/redigeres → vent og prøv igjen
-    if (forsok >= 4) throw new Error('Bildet er lastet opp, men ble ikke koblet til turen (' + res.feil + ')');
-    await new Promise(r => setTimeout(r, 2000 * forsok));
+    if (forsok >= 10) throw new Error('Bildet er lastet opp, men ble ikke koblet til turen (' + res.feil + ')');
+    await new Promise(r => setTimeout(r, Math.min(2000 * forsok, 8000)));
   }
 }
 
@@ -1639,23 +1749,17 @@ async function lagreTur() {
   btn.disabled = true;
   btn.innerHTML = '<div class="spinner"></div> Lagrer…';
   bkKnyttTilTur(tur.id);  // bilder som fortsatt lastes opp, kobles til denne turen når de er ferdige
+  const varRedigering = !!redigererTurId;
   try {
-    const action = redigererTurId ? 'oppdaterScooterTur' : 'leggTilScooter';
-    const res = await apiKall({ action, tur });
-    if (res.feil) throw new Error(res.feil);
-    // Send e-post-varsel i bakgrunn – kun for nye turer (ikke oppdatering)
-    if (!redigererTurId) {
-      try {
-        const turMedId = Object.assign({}, tur,
-          res.id ? { id: res.id } : {},
-          res.kmPerTur !== undefined ? { kmPerTur: res.kmPerTur } : {}
-        );
-        apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'scooter' })
-          .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
-      } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
+    let res = {};
+    if (varRedigering) {
+      res = await apiKall({ action: 'oppdaterScooterTur', tur });
+      if (res.feil) throw new Error(res.feil);
+      toast('Tur oppdatert ✓' + (bkHarVentende(tur.id) ? ' – bildene fortsetter i bakgrunnen' : ''), 'ok');
+    } else {
+      // Ny tur: legges i utkøen og er trygt lagret på telefonen med en gang
+      koLeggTil(tur);
     }
-    toast((redigererTurId ? 'Tur oppdatert ✓' : 'Tur lagret ✓') + (bkHarVentende(tur.id) ? ' – bildene fortsetter i bakgrunnen' : ''), 'ok');
-    const varRedigering = !!redigererTurId;
     // Oppdater lokalt med en gang – ingen ventetid på full ny henting
     try {
       const lokal = {
@@ -1669,6 +1773,7 @@ async function lagreTur() {
         harFeil: tur.harFeil === true
       };
       if (tur.harFeil === undefined) delete lokal.harFeil;  // redigering: behold eksisterende feil-flagg
+      if (!varRedigering) lokal.venter = true;   // vises som «sendes» til regnearket har kvittert
       const idx = turer.findIndex(t => t.id === lokal.id);
       if (idx >= 0) { if (lokal.kmPerTur === null) lokal.kmPerTur = turer[idx].kmPerTur; turer[idx] = Object.assign({}, turer[idx], lokal); }
       else turer.unshift(lokal);
@@ -1677,11 +1782,19 @@ async function lagreTur() {
       oppdaterKmHint();
     } catch(e) { console.log('Lokal oppdatering feilet:', e); }
     avbrytRediger();  // Nullstiller state og form
-    // Én stille synk mot Sheets litt senere (etter varselkallet)
-    clearTimeout(window._synkEtterLagring);
-    window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData(); }, 8000);
     // Nye turer → gå til Dashboard (bruker ser den øverst). Redigering → gå til Logg (finner der de var).
     visTab(varRedigering ? 'logg' : 'dashboard');
+    if (varRedigering) {
+      clearTimeout(window._synkEtterLagring);
+      window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData({ utenConfig: true }); }, 8000);
+    } else {
+      // Prøv å sende straks, men vent maks 4 sekunder. Resten skjer i bakgrunnen.
+      const sendtNa = await koSend({ frist: 4000 });
+      toast(sendtNa
+        ? ('Tur lagret ✓' + (bkHarVentende(tur.id) ? ' – bildene fortsetter i bakgrunnen' : ''))
+        : 'Lagret på telefonen ✓ – sendes automatisk', sendtNa ? 'ok' : '');
+      if (!sendtNa) setTimeout(() => koSend(), 5000);
+    }
   } catch(e) {
     bkAngre(tur.id);
     toast('Lagring feilet: ' + e.message, 'err');
@@ -2087,7 +2200,7 @@ function renderTurItem(t) {
   const feilBadge = t.harFeil
     ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>`
     : '';
-  return `<div class="log-item${bilderHtml ? ' har-bilder' : ''}">${bilderHtml ? '<div>' : ''}<div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div>${bilderHtml ? '</div>' + bilderHtml : ''}</div>`;
+  return `<div class="log-item${bilderHtml ? ' har-bilder' : ''}">${bilderHtml ? '<div>' : ''}<div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}${t.venter ? ' <span title="Lagret på telefonen – sendes til regnearket" style="display:inline-flex;align-items:center;padding:1px 6px;background:#EEF5FC;color:#1A4B7A;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #C8DDF0">↑ sendes</span>' : ''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div>${bilderHtml ? '</div>' + bilderHtml : ''}</div>`;
 }
 
 // ── SCOOTERPARK-WIDGET (Alt A: kortrekke med mini-sparklines) ──
@@ -3408,6 +3521,8 @@ async function initAlt() {
   const slut = document.getElementById('f-slutt'); if (slut && !slut.value) slut.value = n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
   const dato = document.getElementById('f-dato'); if (dato && !dato.value) dato.value = _lokalDato(n);
   // Steg 1: vis skjemaet straks fra lagret startdata
+  _turKo = _lesKo();
+  koTegn(_turKo.length ? 'venter' : 'tom');
   const cache = _lesStartCache();
   // Turer fra forrige økt vises med én gang – ferske hentes uansett rett etter
   const tc = _lesTurerCache();
@@ -3423,7 +3538,9 @@ async function initAlt() {
   } else if (tc) {
     renderDashboard();
   }
+  _flettKo();
   visFerskhet('henter');
+  if (_turKo.length) koSend();   // usendte turer fra forrige gang
   hentVaer();  // vær går ikke via Apps Script
   setInterval(hentVaer, 30 * 60 * 1000); // Oppdater vær hvert 30. min
   // Steg 2 og 3 samtidig: oppsett (lite kall) og alle turer. Startdata har med oppsettet,
