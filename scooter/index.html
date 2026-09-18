@@ -321,7 +321,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="13:16">13:16</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="17:08">17:08</span>
 </div>
 
 <div class="nav">
@@ -648,10 +648,10 @@ const _TREGE_ACTIONS = ['lastOppBilde','hentAlleBilder','listAlleBilder','hentDi
 const _IDEMPOTENTE_SKRIV = ['lastOppBilde','leggTil','leggTilScooter','oppdaterVaer','oppdaterVaerScooter','oppdaterScooterTur'];
 function _timeoutFor(body) {
   if (_TREGE_ACTIONS.indexOf(body.action) > -1) return 90000;
-  if ((body.action === 'hentAlle' || body.action === 'hentAlleScooter') && !body.fraDato) return 45000;
-  return 25000;
+  if ((body.action === 'hentAlle' || body.action === 'hentAlleScooter') && !body.fraDato) return 25000;
+  return 15000;
 }
-const _RETRY_PAUSE_MS = [1000, 2000, 4000];
+const _RETRY_PAUSE_MS = [800, 2500, 6000];
 // Drive-thumbnail i ønsket bredde (miniatyrer trenger ikke 1000–1600 px)
 function _thumb(url, w) {
   if (!url) return '';
@@ -666,7 +666,37 @@ function _lokalDato(d) {
   d = d || new Date();
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
-async function apiKall(body, forsokNr, opts) {
+
+// ── ÉN KØ MOT BACKEND ──
+// Apps Script kjører ett kall om gangen per bruker. Sender vi flere samtidig, stiller de seg i kø
+// hos Google, og ventetiden bygger seg opp til tidsavbrudd. Derfor sender appen ett kall om gangen,
+// med lagring av tur først i rekka.
+const _PRI = {
+  leggTil: 10, leggTilScooter: 10, oppdaterScooterTur: 10, slett: 9, slettScooter: 9,
+  hentStartdata: 5, hentStartdataScooter: 5, hentConfig: 4, hentConfigScooter: 4,
+  leggTilBilder: 3, lastOppBilde: 2,
+  sendVarselTur: -1, sendVarselFeil: -1, hentServiceData: -2,
+  listAlleBilder: -3, hentAlleBilder: -3, hentDiskStatus: -3
+};
+const _nettKo = [];
+let _nettAktiv = false;
+function _nettKjor() {
+  if (_nettAktiv || !_nettKo.length) return;
+  _nettKo.sort((a, b) => b.pri - a.pri || a.nr - b.nr);
+  const jobb = _nettKo.shift();
+  _nettAktiv = true;
+  jobb.fn().then(jobb.ok, jobb.nei).then(() => { _nettAktiv = false; _nettKjor(); }, () => { _nettAktiv = false; _nettKjor(); });
+}
+let _nettNr = 0;
+function _nettKall(fn, pri) {
+  return new Promise((ok, nei) => { _nettKo.push({ fn, ok, nei, pri: pri || 0, nr: _nettNr++ }); _nettKjor(); });
+}
+function apiKall(body, forsokNr, opts) {
+  opts = opts || {};
+  const pri = (opts.pri !== undefined) ? opts.pri : (_PRI[body && body.action] || 0);
+  return _nettKall(() => _apiKallRa(body, forsokNr, opts), pri);
+}
+async function _apiKallRa(body, forsokNr, opts) {
   forsokNr = forsokNr || 1;
   opts = opts || {};
   const _maksForsok = opts.maksForsok || 4;
@@ -942,6 +972,11 @@ function koTegn(status) {
 }
 let _koSender = false;
 // frist: kort frist (ms) når brukeren står og venter. Uten frist brukes vanlige tidsgrenser.
+// Venter på svar i inntil ms millisekunder – sendingen fortsetter uansett i bakgrunnen
+function koSendMedFrist(ms) {
+  const p = koSend();
+  return Promise.race([p, new Promise(r => setTimeout(() => r(false), ms))]);
+}
 async function koSend(opts) {
   opts = opts || {};
   if (!_turKo.length) { koTegn('tom'); return true; }
@@ -951,8 +986,7 @@ async function koSend(opts) {
   try {
     for (const post of [..._turKo]) {
       try {
-        const res = await apiKall({ action: 'leggTilScooter', tur: post.tur }, 1,
-          opts.frist ? { frist: opts.frist, maksForsok: 1 } : { frist: 15000, maksForsok: 2 });
+        const res = await apiKall({ action: 'leggTilScooter', tur: post.tur }, 1, { frist: 15000, maksForsok: 2 });
         if (res && res.feil) throw new Error(res.feil);
         _turKo = _turKo.filter(k => k !== post);
         _skrivKo();
@@ -1007,7 +1041,7 @@ let _turerLastet = false;  // true når alle turer er hentet (da er turer-lista 
 function _lesStartCache() { try { const r = localStorage.getItem(_START_CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
 function hentStartdata() {
   _startPromise = (async () => {
-    const sd = await apiKall({ action: 'hentStartdataScooter' });
+    const sd = await apiKall({ action: 'hentStartdataScooter', medService: true });
     if (!sd || sd.feil || !sd.ok) throw new Error((sd && sd.feil) || 'Ugyldig startdata');
     _brukConfigScooter(sd.config);
     _startStand = sd.stand || {};
@@ -1016,6 +1050,12 @@ function hentStartdata() {
     renderSjaforChips();
     renderScooterCards();
     oppdaterKmHint();
+    // Feildata følger med oppstartskallet – da slipper vi et eget kall
+    if (sd.serviceData && Array.isArray(sd.serviceData.feil)) {
+      feilData = sd.serviceData.feil.filter(f => (f.enhet || 'maskin') === 'scooter');
+      window._serviceFraStart = true;
+      try { oppdaterServiceBadge(); } catch(e) {}
+    }
     return sd;
   })();
   return _startPromise;
@@ -1804,7 +1844,7 @@ async function lagreTur() {
       window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData({ utenConfig: true }); }, 8000);
     } else {
       // Prøv å sende straks, men vent maks 4 sekunder. Resten skjer i bakgrunnen.
-      const sendtNa = await koSend({ frist: 4000 });
+      const sendtNa = await koSendMedFrist(4000);
       toast(sendtNa
         ? ('Tur lagret ✓' + (bkHarVentende(tur.id) ? ' – bildene fortsetter i bakgrunnen' : ''))
         : 'Lagret på telefonen ✓ – sendes automatisk', sendtNa ? 'ok' : '');
@@ -3560,9 +3600,10 @@ async function initAlt() {
   setInterval(hentVaer, 30 * 60 * 1000); // Oppdater vær hvert 30. min
   // Steg 2 og 3 samtidig: oppsett (lite kall) og alle turer. Startdata har med oppsettet,
   // så turhentingen trenger ikke config – da slipper vi et kall og venter ikke på tur.
+  // Ett kall om gangen – køen sender oppsett først, så turer, og feildata sist
   const pStart = hentStartdata().catch(e => console.error('Startdata feilet:', e)).finally(() => { if (loader) loader.classList.remove('visible'); });
   const pData = lastData({ utenConfig: true });
-  hentFeilData();   // feildata henter vi med en gang, ikke til slutt
+  pStart.then(() => { if (!window._serviceFraStart) hentFeilData(); });
   await Promise.allSettled([pStart, pData]);
 }
 initAlt();
