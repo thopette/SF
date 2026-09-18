@@ -233,6 +233,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .rlbar[hidden]{display:none}
 .rlbar button{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:16px;border:1.5px solid #E0B057;background:#fff;color:#8A5300;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .rlbar span{font-size:11px;color:#8A5300;flex:1;min-width:0}
+.ferskhet[hidden]{display:none !important}
 .ferskhet{display:flex;align-items:center;gap:7px;padding:6px 12px;margin:0 0 10px;font-size:11.5px;color:var(--text2);background:var(--snow);border:1px solid var(--border);border-radius:8px}
 .ferskhet b{color:var(--text);font-weight:600}
 .ferskhet.gammel{background:#FFF8E7;border-color:#F5D5A0;color:#8A5300}
@@ -320,7 +321,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="13:04">13:04</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="13:16">13:16</span>
 </div>
 
 <div class="nav">
@@ -498,7 +499,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div id="tab-admin" class="tab-content">
   <div class="card">
     <div class="card-header">Data</div>
-    <div class="card-body"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">Tømmer mellomlagrede data på denne enheten og henter alt fra regnearket.</span></div><label style="display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);cursor:pointer"><input type="checkbox" id="admin-vis-reload" onchange="settVisReloadKnapp(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis knappen under menylinjen<br><span style="font-size:11px;color:var(--text2)">Nyttig ved testing. Gjelder bare denne enheten og nettleseren.</span></span></label></div>
+    <div class="card-body"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">Tømmer mellomlagrede data på denne enheten og henter alt fra regnearket.</span></div><label style="display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);cursor:pointer"><input type="checkbox" id="admin-vis-reload" onchange="settVisReloadKnapp(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis knappen under menylinjen<br><span style="font-size:11px;color:var(--text2)">Nyttig ved testing. Gjelder bare denne enheten og nettleseren.</span></span></label><label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer"><input type="checkbox" id="admin-vis-ferskhet" onchange="settVisFerskhet(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis linjen «Sist oppdatert …»<br><span style="font-size:11px;color:var(--text2)">Står øverst på Dashboard og Logg. Gjelder bare denne enheten.</span></span></label></div>
   </div>
   <div class="card">
     <div class="card-header">Scootere</div>
@@ -841,11 +842,23 @@ function visFerskhet(status) {
   else if (status === 'feil') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – kunne ikke oppdatere` : 'Kunne ikke hente data'; kl = 'gammel'; }
   else { tekst = `Sist oppdatert <b>${nar}</b>`; }
   if (dager >= 1 && status !== 'henter') { tekst += ` · mer enn ${dager === 1 ? 'ett døgn' : dager + ' døgn'} gammelt`; kl = 'gammel'; }
+  const synlig = _lesVisFerskhet();
   document.querySelectorAll('[data-ferskhet]').forEach(el => {
+    el.hidden = !synlig;
     el.className = 'ferskhet' + (kl ? ' ' + kl : '');
     const t = el.querySelector('.tekst'); if (t) t.innerHTML = tekst;
   });
 }
+// Infolinja «Sist oppdatert …» – av/på per enhet
+const _VIS_FERSK_KEY = 'sf_vis_ferskhet';
+function _lesVisFerskhet() { try { return localStorage.getItem(_VIS_FERSK_KEY) !== 'nei'; } catch(e) { return true; } }
+function settVisFerskhet(pa) {
+  try { localStorage.setItem(_VIS_FERSK_KEY, pa ? 'ja' : 'nei'); } catch(e) {}
+  visFerskhet('ok');
+  const cb = document.getElementById('admin-vis-ferskhet');
+  if (cb) cb.checked = pa;
+}
+
 // Knapp under menylinjen – av/på per enhet (nyttig ved testing)
 const _VIS_RELOAD_KEY = 'sf_vis_reload';
 function _lesVisReload() { try { return localStorage.getItem(_VIS_RELOAD_KEY) === 'ja'; } catch(e) { return false; } }
@@ -859,6 +872,8 @@ function tegnReloadKnapp() {
   if (bar) bar.hidden = !pa;
   const cb = document.getElementById('admin-vis-reload');
   if (cb) cb.checked = pa;
+  const cb2 = document.getElementById('admin-vis-ferskhet');
+  if (cb2) cb2.checked = _lesVisFerskhet();
 }
 document.addEventListener('DOMContentLoaded', tegnReloadKnapp);
 tegnReloadKnapp();
