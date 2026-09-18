@@ -222,6 +222,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 @keyframes oktpuls{50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.okt-live i{animation:none}}
 .okt-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.rlbar{display:flex;align-items:center;gap:10px;padding:6px 14px;background:#FFF8E7;border-bottom:1px solid #F5D5A0}
+.rlbar[hidden]{display:none}
+.rlbar button{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:16px;border:1.5px solid #E0B057;background:#fff;color:#8A5300;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.rlbar span{font-size:11px;color:#8A5300;flex:1;min-width:0}
 .ferskhet{display:flex;align-items:center;gap:7px;padding:6px 12px;margin:0 0 10px;font-size:11.5px;color:var(--text2);background:var(--snow);border:1px solid var(--border);border-radius:8px}
 .ferskhet b{color:var(--text);font-weight:600}
 .ferskhet.gammel{background:#FFF8E7;border-color:#F5D5A0;color:#8A5300}
@@ -309,7 +313,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="09:44">09:44</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="12:37">12:37</span>
 </div>
 
 <div class="nav">
@@ -320,6 +324,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
   <button class="nav-btn" onclick="visTab('galleri')" id="btn-galleri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Galleri</button>
 </div>
 
+<div class="rlbar" id="reload-bar" hidden><button type="button" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span>Testmodus – tømmer mellomlagrede data</span></div>
 <div class="content">
 
 <div id="tab-dashboard" class="tab-content">
@@ -485,7 +490,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div id="tab-admin" class="tab-content">
   <div class="card">
     <div class="card-header">Data</div>
-    <div class="card-body" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">Tømmer mellomlagrede data på denne enheten og henter alt fra regnearket.</span></div>
+    <div class="card-body"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">Tømmer mellomlagrede data på denne enheten og henter alt fra regnearket.</span></div><label style="display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);cursor:pointer"><input type="checkbox" id="admin-vis-reload" onchange="settVisReloadKnapp(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis knappen under menylinjen<br><span style="font-size:11px;color:var(--text2)">Nyttig ved testing. Gjelder bare denne enheten og nettleseren.</span></span></label></div>
   </div>
   <div class="card">
     <div class="card-header">Scootere</div>
@@ -831,6 +836,22 @@ function visFerskhet(status) {
     const t = el.querySelector('.tekst'); if (t) t.innerHTML = tekst;
   });
 }
+// Knapp under menylinjen – av/på per enhet (nyttig ved testing)
+const _VIS_RELOAD_KEY = 'sf_vis_reload';
+function _lesVisReload() { try { return localStorage.getItem(_VIS_RELOAD_KEY) === 'ja'; } catch(e) { return false; } }
+function settVisReloadKnapp(pa) {
+  try { localStorage.setItem(_VIS_RELOAD_KEY, pa ? 'ja' : 'nei'); } catch(e) {}
+  tegnReloadKnapp();
+}
+function tegnReloadKnapp() {
+  const pa = _lesVisReload();
+  const bar = document.getElementById('reload-bar');
+  if (bar) bar.hidden = !pa;
+  const cb = document.getElementById('admin-vis-reload');
+  if (cb) cb.checked = pa;
+}
+document.addEventListener('DOMContentLoaded', tegnReloadKnapp);
+tegnReloadKnapp();
 function hentAltPaNytt() {
   ['sf_turer_scooter_v1', 'sf_startdata_scooter_v1', 'sf_config_cache', 'sf_galleri_v1', 'sf_admin_bilder_v1'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
   location.reload();
