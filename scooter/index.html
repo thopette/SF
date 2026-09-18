@@ -222,6 +222,14 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 @keyframes oktpuls{50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.okt-live i{animation:none}}
 .okt-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.ferskhet{display:flex;align-items:center;gap:7px;padding:6px 12px;margin:0 0 10px;font-size:11.5px;color:var(--text2);background:var(--snow);border:1px solid var(--border);border-radius:8px}
+.ferskhet b{color:var(--text);font-weight:600}
+.ferskhet.gammel{background:#FFF8E7;border-color:#F5D5A0;color:#8A5300}
+.ferskhet.gammel b{color:#8A5300}
+.ferskhet .prikk{width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.ferskhet.henter .prikk{animation:fpuls 1.2s ease-in-out infinite}
+.ferskhet.gammel .prikk{background:#E67E22}
+@keyframes fpuls{50%{opacity:.25}}
 .seksjon{display:flex;align-items:center;gap:10px;margin:22px 2px 10px;font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--navy)}
 .seksjon:first-child{margin-top:4px}
 .seksjon::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -301,7 +309,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="17.09" data-tid="10:20">10:20</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="09:44">09:44</span>
 </div>
 
 <div class="nav">
@@ -315,6 +323,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div class="content">
 
 <div id="tab-dashboard" class="tab-content">
+  <div class="ferskhet" data-ferskhet><span class="prikk"></span><span class="tekst">Laster …</span></div>
   <div class="seksjon">Økter <small>det laget har kjørt</small></div>
   <div class="stat-grid" id="stat-grid">
     <div class="stat-box"><div class="stat-value" id="stat-turer">–</div><div class="stat-label">Sum økter denne sesongen</div><div class="okt-sub" id="stat-turer-sub"></div></div>
@@ -402,6 +411,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 </div>
 
 <div id="tab-logg" class="tab-content">
+  <div class="ferskhet" data-ferskhet><span class="prikk"></span><span class="tekst">Laster …</span></div>
   <div class="card">
     <div class="card-header">Logg</div>
     <div class="bryter" id="logg-bryter"><button type="button" data-m="okt" onclick="settLoggModus('okt')">Per økt</button><button type="button" data-m="scooter" onclick="settLoggModus('scooter')">Per scooter</button></div>
@@ -473,6 +483,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 </div>
 
 <div id="tab-admin" class="tab-content">
+  <div class="card">
+    <div class="card-header">Data</div>
+    <div class="card-body" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">Tømmer mellomlagrede data på denne enheten og henter alt fra regnearket.</span></div>
+  </div>
   <div class="card">
     <div class="card-header">Scootere</div>
     <div class="card-body" id="admin-scootere"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
@@ -793,6 +807,35 @@ function sesongPeriodeTekst(sesong) {
 }
 
 // ── DATA-LAST ─────────────────────────────────────────
+// ── MELLOMLAGRING AV TURER ──
+// Forrige henting vises med én gang; ferske data hentes i bakgrunnen hver gang.
+const _TURER_CACHE_KEY = 'sf_turer_scooter_v1';
+let _visteDataTs = 0;
+function _lesTurerCache() {
+  try { const r = localStorage.getItem(_TURER_CACHE_KEY); const o = r ? JSON.parse(r) : null; return (o && Array.isArray(o.turer) && o.turer.length) ? o : null; } catch(e) { return null; }
+}
+function _skrivTurerCache() {
+  try { localStorage.setItem(_TURER_CACHE_KEY, JSON.stringify({ ts: Date.now(), turer })); } catch(e) {}
+}
+function _klokke(ts) { const d = new Date(ts); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+function visFerskhet(status) {
+  const dager = _visteDataTs ? Math.floor((Date.now() - _visteDataTs) / 86400000) : 0;
+  const nar = _visteDataTs ? _klokke(_visteDataTs) : '';
+  let tekst, kl = '';
+  if (status === 'henter') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – oppdaterer …` : 'Henter data …'; kl = 'henter'; }
+  else if (status === 'feil') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – kunne ikke oppdatere` : 'Kunne ikke hente data'; kl = 'gammel'; }
+  else { tekst = `Sist oppdatert <b>${nar}</b>`; }
+  if (dager >= 1 && status !== 'henter') { tekst += ` · mer enn ${dager === 1 ? 'ett døgn' : dager + ' døgn'} gammelt`; kl = 'gammel'; }
+  document.querySelectorAll('[data-ferskhet]').forEach(el => {
+    el.className = 'ferskhet' + (kl ? ' ' + kl : '');
+    const t = el.querySelector('.tekst'); if (t) t.innerHTML = tekst;
+  });
+}
+function hentAltPaNytt() {
+  ['sf_turer_scooter_v1', 'sf_startdata_scooter_v1', 'sf_config_cache', 'sf_galleri_v1', 'sf_admin_bilder_v1'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+  location.reload();
+}
+
 // Bruk oppsett (sjåfører, scootere, innstillinger)
 function _brukConfigScooter(cfg) {
   if (!cfg || cfg.feil) return;
@@ -851,6 +894,9 @@ async function lastData(opts) {
     if (cfg && cfg.feil) throw new Error(cfg.feil);
     turer = (turData.turer || []).map(mapTur);
     _turerLastet = true;
+    _visteDataTs = Date.now();
+    _skrivTurerCache();
+    visFerskhet('ok');
     if (cfg) _brukConfigScooter(cfg);
     renderSjaforChips();
     renderScooterCards();
@@ -858,6 +904,7 @@ async function lastData(opts) {
     if (document.getElementById('tab-logg')?.classList.contains('active')) renderLogg();
     oppdaterKmHint();
   } catch(e) {
+    visFerskhet('feil');
     toast('Kunne ikke laste data: ' + e.message, 'err');
     console.error(e);
   }
@@ -1604,6 +1651,7 @@ async function lagreTur() {
       const idx = turer.findIndex(t => t.id === lokal.id);
       if (idx >= 0) { if (lokal.kmPerTur === null) lokal.kmPerTur = turer[idx].kmPerTur; turer[idx] = Object.assign({}, turer[idx], lokal); }
       else turer.unshift(lokal);
+      _skrivTurerCache();
       renderDashboard();
       oppdaterKmHint();
     } catch(e) { console.log('Lokal oppdatering feilet:', e); }
@@ -3340,6 +3388,9 @@ async function initAlt() {
   const dato = document.getElementById('f-dato'); if (dato && !dato.value) dato.value = _lokalDato(n);
   // Steg 1: vis skjemaet straks fra lagret startdata
   const cache = _lesStartCache();
+  // Turer fra forrige økt vises med én gang – ferske hentes uansett rett etter
+  const tc = _lesTurerCache();
+  if (tc) { turer = tc.turer; _turerLastet = true; _visteDataTs = tc.ts; }
   if (cache && cache.config) {
     _brukConfigScooter(cache.config);
     _startStand = cache.stand || {};
@@ -3348,17 +3399,18 @@ async function initAlt() {
     renderDashboard();
     oppdaterKmHint();
     if (loader) loader.classList.remove('visible');
+  } else if (tc) {
+    renderDashboard();
   }
+  visFerskhet('henter');
   hentVaer();  // vær går ikke via Apps Script
   setInterval(hentVaer, 30 * 60 * 1000); // Oppdater vær hvert 30. min
-  // Steg 2: fersk startdata (lite kall)
-  try { await hentStartdata(); }
-  catch(e) { console.error('Startdata feilet:', e); }
-  finally { if (loader) loader.classList.remove('visible'); }
-  // Steg 3: alle turer i bakgrunnen (oppsettet er allerede ferskt)
-  await lastData({ utenConfig: _startFersk });
-  // Steg 4: feildata
-  hentFeilData();
+  // Steg 2 og 3 samtidig: oppsett (lite kall) og alle turer. Startdata har med oppsettet,
+  // så turhentingen trenger ikke config – da slipper vi et kall og venter ikke på tur.
+  const pStart = hentStartdata().catch(e => console.error('Startdata feilet:', e)).finally(() => { if (loader) loader.classList.remove('visible'); });
+  const pData = lastData({ utenConfig: true });
+  hentFeilData();   // feildata henter vi med en gang, ikke til slutt
+  await Promise.allSettled([pStart, pData]);
 }
 initAlt();
 </script>
