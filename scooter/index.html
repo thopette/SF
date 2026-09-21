@@ -91,7 +91,12 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .forer-summary-item strong { color:var(--navy); font-weight:700; }
 .tab-content { display:none; }
 .tab-content.active { display:block; }
-.time-with-now { position:relative; }
+.form-grid > * { min-width:0; }
+.field input, .field select, .field textarea { min-width:0; }
+/* Tid- og datofelt får lik bredde og høyde på mobil (iOS/Android gir dem ellers egen intrinsic bredde) */
+.field input[type="time"], .field input[type="date"] { -webkit-appearance:none; appearance:none; width:100%; min-width:0; height:41px; line-height:normal; }
+.time-with-now { position:relative; min-width:0; }
+@media (max-width: 399px) { .form-grid.dato-tid { grid-template-columns:1fr; } }
 .time-with-now .now-btn { position:absolute; right:4px; top:50%; transform:translateY(-50%); background:var(--mid); color:white; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; }
 .input-with-unit { position:relative; }
 .input-with-unit .unit { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text2); font-size:13px; pointer-events:none; }
@@ -364,7 +369,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="11:55">11:55</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="13:00">13:00</span>
 </div>
 
 <div class="nav">
@@ -425,7 +430,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
         <div class="field"><label>Km-stand ved parkering</label><input type="number" id="f-km" inputmode="numeric" placeholder="km"><div class="hint" id="hint-km"></div></div>
         <div class="field"><label>Tid brukt (min)</label><input type="number" id="f-tid" inputmode="numeric" placeholder="min"><div class="hint" id="hint-tid"></div></div>
       </div>
-      <div class="form-grid">
+      <div class="form-grid dato-tid">
         <div class="field"><label>Sluttidspunkt</label><div class="time-with-now"><input type="time" id="f-slutt" style="padding-right:56px"><button class="now-btn" onclick="event.preventDefault(); document.getElementById('f-slutt').value = new Date().toTimeString().slice(0,5)">Nå</button></div></div>
         <div class="field"><label>Dato</label><input type="date" id="f-dato"></div>
       </div>
@@ -955,7 +960,7 @@ document.addEventListener('DOMContentLoaded', tegnReloadKnapp);
 tegnReloadKnapp();
 
 // Kalles når regnearket har kvittert for en tur fra køen
-function koFerdig(tur, res) {
+function koFerdig(tur, res, post) {
   const id = String(res.id || tur.id);
   const idx = turer.findIndex(t => String(t.id) === String(tur.id));
   if (idx >= 0) {
@@ -970,7 +975,13 @@ function koFerdig(tur, res) {
   // Bilder som ventet på turen kan nå kobles
   try { _bkStart(); } catch(e) {}
   // E-postvarsel sendes først nå – ingen får mail om en tur som ikke kom fram
-  try {
+  // Varsel bare når raden faktisk ble ny. Ligger turen allerede i regnearket (duplikat etter
+  // en køpost som ble liggende), er mailen sendt for lenge siden – da skal den ikke sendes om igjen.
+  const _gammelKo = !!(post && post.lagt && (Date.now() - post.lagt) > 6 * 60 * 60 * 1000);
+  if (res && res.duplikat) console.log('Turen lå allerede i regnearket – varsel ikke sendt på nytt');
+  else if (_gammelKo) console.log('Køpost eldre enn 6 timer – varsel ikke sendt');
+  else try {
+
     const turMedId = Object.assign({}, tur, { id: id }, res.kmPerTur !== undefined ? { kmPerTur: res.kmPerTur } : {});
     apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'scooter' })
       .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
@@ -1036,7 +1047,7 @@ async function koSend(opts) {
         if (res && res.feil) throw new Error(res.feil);
         _turKo = _turKo.filter(k => k !== post);
         _skrivKo();
-        koFerdig(post.tur, res || {});
+        koFerdig(post.tur, res || {}, post);
       } catch(e) {
         post.forsok++; post.sisteFeil = String(e && e.message || e);
         _skrivKo(); koTegn('feil');
@@ -1165,12 +1176,48 @@ function mapTur(t) {
 }
 
 // ── SJÅFØR & SCOOTER VELGERE ──────────────────────────
+// ── SJÅFØRNAVN ──
+// Chipsene viser fornavn (eller «Stian Ø.» når to deler fornavn), men turen lagres alltid
+// med navnet slik det står i sjåførlista – «Kari» blir «Kari Nordmann».
+function _normNavn(n) { return String(n == null ? '' : n).replace(/\s+/g, ' ').trim(); }
+function _unikeNavn(liste) {
+  const ut = [], sett = {};
+  (liste || []).forEach(n => { const v = _normNavn(n); if (!v) return; const k = v.toLowerCase(); if (sett[k]) return; sett[k] = 1; ut.push(v); });
+  return ut;
+}
+function _kanoniskSjafor(v) {
+  const n = _normNavn(v);
+  if (!n) return '';
+  const liste = _unikeNavn(sjaforer);
+  const eks = liste.find(f => f.toLowerCase() === n.toLowerCase());
+  if (eks) return eks;
+  const kandidat = liste.filter(f => f.split(' ')[0].toLowerCase() === n.toLowerCase());
+  return kandidat.length === 1 ? kandidat[0] : n;
+}
+function _navnKart(liste) {
+  const navn = _unikeNavn(liste), ant = {};
+  navn.forEach(n => { const f = n.split(' ')[0].toLowerCase(); ant[f] = (ant[f] || 0) + 1; });
+  const kart = {};
+  navn.forEach(n => {
+    const d = n.split(' '), f = d[0];
+    kart[n] = ant[f.toLowerCase()] > 1 ? (d.length > 1 ? f + ' ' + d[d.length - 1][0] + '.' : n) : f;
+  });
+  return kart;
+}
+function _visNavn(n) {
+  const full = _kanoniskSjafor(n);
+  const kart = _navnKart(sjaforer);
+  return kart[full] || full.split(' ')[0] || full;
+}
 function renderSjaforChips() {
   const el = document.getElementById('sjafor-chips');
-  el.innerHTML = sjaforer.map(s => `<div class="chip${valgtSjafor===s?' selected':''}" onclick="velgSjafor('${s.replace(/'/g,"\\'")}')">${s}</div>`).join('');
+  const liste = _unikeNavn(sjaforer);
+  const kart = _navnKart(sjaforer);
+  const valgt = _kanoniskSjafor(valgtSjafor);
+  el.innerHTML = liste.map(s => `<div class="chip${valgt===s?' selected':''}" onclick="velgSjafor('${s.replace(/'/g,"\\'")}')" title="${s.replace(/"/g,'&quot;')}">${kart[s] || s}</div>`).join('');
 }
 function velgSjafor(navn) {
-  valgtSjafor = navn;
+  valgtSjafor = _kanoniskSjafor(navn);
   renderSjaforChips();
 }
 
@@ -1812,6 +1859,13 @@ function _kvittLogo() {
   const img = document.querySelector('#center-loader img');
   return img && img.src ? img.src : '';
 }
+function _kvittVarighet() {
+  // Sekunder kvitteringen står – settes i maskin-appen under Admin → Innstillinger
+  const raw = (typeof innstillinger === 'object' && innstillinger) ? innstillinger.kvittSekunder : '';
+  const n = parseFloat(String(raw || '').replace(',', '.'));
+  if (!isFinite(n) || n <= 0) return 5000;
+  return Math.min(15, Math.max(1, n)) * 1000;
+}
 function visKvittering(d) {
   let bg = document.getElementById('kvitt-bg');
   if (!bg) {
@@ -1822,6 +1876,7 @@ function visKvittering(d) {
     document.body.appendChild(bg);
   }
   const logo = _kvittLogo();
+  const _ms = _kvittVarighet();
   const tall = (d.tall || []).map(t =>
     '<div><b' + (String(t.v).length > 7 ? ' class="lang"' : '') + '>' + t.v + '</b><span>' + t.l + '</span></div>').join('');
   const merker = (d.merker || []).filter(Boolean).map(m =>
@@ -1837,12 +1892,12 @@ function visKvittering(d) {
       '<div class="kvitt-meta">' + (d.meta || '') + (merker ? '<div class="kvitt-merker">' + merker + '</div>' : '') + '</div>' +
       '<div class="kvitt-status" id="kvitt-status"><span class="prikk"></span>' + (d.status || 'Lagret på telefonen') + '</div>' +
       '<div class="kvitt-hint">Lukkes av seg selv – trykk for å lukke nå</div>' +
-      '<div class="kvitt-progress"><i></i></div>' +
+      '<div class="kvitt-progress"><i style="animation-duration:' + _ms + 'ms"></i></div>' +
     '</div>';
   void bg.offsetWidth;
   bg.classList.add('vis');
   clearTimeout(_kvittTimer);
-  _kvittTimer = setTimeout(lukkKvittering, 2000);
+  _kvittTimer = setTimeout(lukkKvittering, _ms);
 }
 function kvittStatus(tekst, ok) {
   const el = document.getElementById('kvitt-status');
@@ -1901,7 +1956,7 @@ async function lagreTur() {
     id: Date.now().toString(),  // Klient-ID: gjør retry trygt (backend avviser duplikater)
     dato: document.getElementById('f-dato').value,
     slutt: document.getElementById('f-slutt').value,
-    sjafor: valgtSjafor,
+    sjafor: _kanoniskSjafor(valgtSjafor),
     scooter: valgtScooter.navn,
     kmStartScooter: valgtScooter.kmStart || 0,
     km: km,
@@ -2025,7 +2080,8 @@ function startRedigerTur(id) {
   redigererTurId = id;
   visTab('ny');
   // Sett sjåfør og scooter
-  valgtSjafor = t.sjafor;
+  // Gamle turer kan være lagret med bare fornavn – vis og lagre dem med fullt navn
+  valgtSjafor = _kanoniskSjafor(t.sjafor);
   valgtScooter = scootere.find(s => s.navn === t.scooter) || { navn: t.scooter, kmStart: 0 };
   renderSjaforChips();
   renderScooterCards();
