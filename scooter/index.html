@@ -378,7 +378,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="15:20">15:20</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="15:45">15:45</span>
 </div>
 
 <div class="nav">
@@ -3292,7 +3292,9 @@ function visNyFeilPanel() {
   document.getElementById('feil-beskrivelse').value = '';
   document.getElementById('feil-modal').classList.add('open');
 }
+let _lagrerFeil = false;
 async function lagreFeilPanel() {
+  if (_lagrerFeil) return;   // hindrer at dobbelttrykk gir to meldinger og to e-poster
   const feil = {
     maskin: document.getElementById('feil-scooter').value,
     forer: document.getElementById('feil-forer').value,
@@ -3301,6 +3303,10 @@ async function lagreFeilPanel() {
     enhet: 'scooter'
   };
   if (!feil.beskrivelse) { toast('Skriv beskrivelse', 'err'); return; }
+  _lagrerFeil = true;
+  const knapp = document.querySelector('#feil-modal button[onclick="lagreFeilPanel()"]');
+  const knappTekst = knapp ? knapp.innerHTML : '';
+  if (knapp) { knapp.disabled = true; knapp.innerHTML = 'Lagrer…'; knapp.style.opacity = '0.7'; knapp.style.cursor = 'not-allowed'; }
   try {
     const res = await apiKall({ action: 'lagreFeil', feil });
     if (res.feil) throw new Error(res.feil);
@@ -3318,6 +3324,10 @@ async function lagreFeilPanel() {
     lukkAllePaneler();
     await hentFeilData();
   } catch(e) { toast('Feil: ' + e.message, 'err'); }
+  finally {
+    _lagrerFeil = false;
+    if (knapp) { knapp.disabled = false; knapp.innerHTML = knappTekst; knapp.style.opacity = ''; knapp.style.cursor = ''; }
+  }
 }
 
 // Rapporter feil fra Ny økt-fanen: åpne feil-modal med scooter, sjåfør og km-stand pre-fylt
