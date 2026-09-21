@@ -269,12 +269,47 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .sb-status.feil{background:#FDECEC;color:#8A1C12}
 .sb-status .bk-spin{border-color:rgba(31,78,121,.25);border-top-color:#1F4E79}
 .sb-fjern{background:none;border:0;color:var(--text2);font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 0;margin-top:4px}
+/* ── KVITTERING ETTER LAGRET ØKT ── */
+.kvitt-bg { position:fixed; inset:0; z-index:400; background:rgba(240,246,252,0.92); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:18px; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+.kvitt-bg.vis { opacity:1; pointer-events:auto; }
+.kvitt { width:100%; max-width:340px; background:var(--white); border-radius:16px; border:1px solid var(--border); box-shadow:0 14px 34px rgba(20,45,80,0.18); padding:20px 18px 0; text-align:center; transform:translateY(10px) scale(.97); transition:transform .25s cubic-bezier(.2,.9,.3,1.2); max-height:calc(100vh - 36px); overflow-y:auto; }
+.kvitt-bg.vis .kvitt { transform:none; }
+.kvitt-logo { position:relative; width:74px; height:74px; margin:0 auto 12px; }
+.kvitt-logo img { width:74px; height:74px; object-fit:contain; }
+.kvitt-logo::after { content:''; position:absolute; inset:-7px; border-radius:50%; border:3px solid rgba(39,174,96,0.18); border-top-color:var(--success); animation:kvitt-snurr .9s cubic-bezier(.4,0,.2,1) 1; }
+@keyframes kvitt-snurr { from { transform:rotate(0); } to { transform:rotate(360deg); } }
+.kvitt-hake { position:absolute; right:-2px; bottom:-2px; width:26px; height:26px; border-radius:50%; background:var(--success); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(39,174,96,0.4); animation:kvitt-pop .3s .16s backwards cubic-bezier(.2,.9,.3,1.6); }
+@keyframes kvitt-pop { from { transform:scale(0); } to { transform:scale(1); } }
+.kvitt-hilsen { font-size:20px; font-weight:700; color:var(--navy); letter-spacing:-.2px; line-height:1.25; }
+.kvitt-under { font-size:13px; color:var(--text2); margin-top:3px; }
+.kvitt-tall { display:flex; gap:8px; margin:14px 0 10px; }
+.kvitt-tall > div { flex:1; background:var(--ice); border:1px solid #D6E6F5; border-radius:10px; padding:9px 6px; min-width:0; }
+.kvitt-tall b { display:block; font-family:var(--mono); font-size:21px; color:var(--navy); font-weight:600; line-height:1.15; }
+.kvitt-tall b.lang { font-size:17px; white-space:nowrap; }
+.kvitt-tall span { font-size:9.5px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:.3px; }
+.kvitt-meta { font-size:12px; color:var(--text2); line-height:1.5; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.kvitt-meta b { color:var(--navy); font-weight:600; }
+.kvitt-merker { display:flex; gap:5px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+.kvitt-merke { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; background:var(--snow); border:1px solid var(--border); color:var(--text2); }
+.kvitt-merke.nil { background:#FFF6E5; border-color:#F3D9A4; color:#9A6B12; }
+.kvitt-merke.sammen { background:#EEF5FC; border-color:#C8DDF0; color:#1A4B7A; }
+.kvitt-status { display:flex; align-items:center; justify-content:center; gap:6px; font-size:11.5px; color:var(--text2); padding:11px 0 9px; }
+.kvitt-status .prikk { width:7px; height:7px; border-radius:50%; background:#F39C12; animation:kvitt-puls 1s infinite; flex-shrink:0; }
+.kvitt-status.ok { color:var(--success); }
+.kvitt-status.ok .prikk { background:var(--success); animation:none; }
+@keyframes kvitt-puls { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+.kvitt-hint { font-size:10px; color:#9AA7B4; padding:0 0 10px; }
+.kvitt-progress { height:3px; background:var(--ice); border-radius:0 0 16px 16px; overflow:hidden; margin:0 -18px; }
+.kvitt-progress i { display:block; height:100%; background:var(--accent); width:100%; transform-origin:left; }
+.kvitt-bg.vis .kvitt-progress i { animation:kvitt-krymp 2s linear forwards; }
+@keyframes kvitt-krymp { from { transform:scaleX(1); } to { transform:scaleX(0); } }
+
 </style></head><body>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
 <div class="center-loader visible" id="center-loader">
   <div class="center-loader-logo-wrap">
-    <img src="data:image/png;base64,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" alt="SF" style="width:120px;height:120px;border-radius:20px">
+    <img src="data:image/png;base64,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" alt="SF" style="width:120px;height:120px;border-radius:20px">
   </div>
   <div class="center-loader-tekst">Laster inn…</div>
   <div style="display:flex;gap:6px;margin-top:4px">
@@ -329,7 +364,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="09:14">09:14</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="11:55">11:55</span>
 </div>
 
 <div class="nav">
@@ -513,6 +548,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
     <div class="card-header">Scootere</div>
     <div class="card-body" id="admin-scootere"><p style="font-size:13px;color:var(--text2)">Laster…</p></div>
   </div>
+
 </div>
 
 <div id="tab-galleri" class="tab-content">
@@ -1749,6 +1785,88 @@ function fjernAlleBilder() {
 }
 
 // ── LAGRE TUR ─────────────────────────────────────────
+// Hilsener i kvitteringen – redigeres i maskin-appen under Admin → Innstillinger (nøkkel: hilsenerScooter)
+const _HILSEN_NOKKEL = 'hilsenerScooter';
+const _HILSEN_STD = ['Bra jobba', 'Takk for turen', 'Godt spora', 'Stå på'];
+// ── KVITTERING ETTER LAGRET ØKT ──
+// Vises lokalt med en gang, lukker seg selv etter 2 sekunder. Ingen nettkall.
+let _kvittTimer = null;
+let _sisteHilsen = '';
+function _hilsenListe() {
+  const raw = (typeof innstillinger === 'object' && innstillinger) ? innstillinger[_HILSEN_NOKKEL] : '';
+  const liste = String(raw || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  return liste.length ? liste : _HILSEN_STD;
+}
+function lagHilsen(navn) {
+  const fornavn = String(navn || '').trim().split(/\s+/)[0] || '';
+  const liste = _hilsenListe();
+  let kandidater = liste.filter(h => h !== _sisteHilsen);
+  if (!kandidater.length) kandidater = liste;
+  const valgt = kandidater[Math.floor(Math.random() * kandidater.length)];
+  _sisteHilsen = valgt;
+  if (valgt.indexOf('{navn}') > -1) return valgt.replace(/\{navn\}/g, fornavn).trim();
+  const ren = valgt.replace(/[\s!.,]+$/, '');
+  return fornavn ? ren + ', ' + fornavn + '!' : ren + '!';
+}
+function _kvittLogo() {
+  const img = document.querySelector('#center-loader img');
+  return img && img.src ? img.src : '';
+}
+function visKvittering(d) {
+  let bg = document.getElementById('kvitt-bg');
+  if (!bg) {
+    bg = document.createElement('div');
+    bg.id = 'kvitt-bg';
+    bg.className = 'kvitt-bg';
+    bg.addEventListener('click', lukkKvittering);
+    document.body.appendChild(bg);
+  }
+  const logo = _kvittLogo();
+  const tall = (d.tall || []).map(t =>
+    '<div><b' + (String(t.v).length > 7 ? ' class="lang"' : '') + '>' + t.v + '</b><span>' + t.l + '</span></div>').join('');
+  const merker = (d.merker || []).filter(Boolean).map(m =>
+    '<span class="kvitt-merke' + (m.type ? ' ' + m.type : '') + '">' + m.tekst + '</span>').join('');
+  bg.innerHTML =
+    '<div class="kvitt">' +
+      '<div class="kvitt-logo">' + (logo ? '<img src="' + logo + '" alt="">' : '') +
+        '<div class="kvitt-hake"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+      '</div>' +
+      '<div class="kvitt-hilsen">' + (d.hilsen || '') + '</div>' +
+      '<div class="kvitt-under">' + (d.under || '') + '</div>' +
+      (tall ? '<div class="kvitt-tall">' + tall + '</div>' : '') +
+      '<div class="kvitt-meta">' + (d.meta || '') + (merker ? '<div class="kvitt-merker">' + merker + '</div>' : '') + '</div>' +
+      '<div class="kvitt-status" id="kvitt-status"><span class="prikk"></span>' + (d.status || 'Lagret på telefonen') + '</div>' +
+      '<div class="kvitt-hint">Lukkes av seg selv – trykk for å lukke nå</div>' +
+      '<div class="kvitt-progress"><i></i></div>' +
+    '</div>';
+  void bg.offsetWidth;
+  bg.classList.add('vis');
+  clearTimeout(_kvittTimer);
+  _kvittTimer = setTimeout(lukkKvittering, 2000);
+}
+function kvittStatus(tekst, ok) {
+  const el = document.getElementById('kvitt-status');
+  if (!el || !kvitteringVises()) return false;
+  el.className = 'kvitt-status' + (ok ? ' ok' : '');
+  el.innerHTML = '<span class="prikk"></span>' + tekst;
+  return true;
+}
+function kvitteringVises() {
+  const bg = document.getElementById('kvitt-bg');
+  return !!(bg && bg.classList.contains('vis'));
+}
+function lukkKvittering() {
+  clearTimeout(_kvittTimer);
+  const bg = document.getElementById('kvitt-bg');
+  if (bg) bg.classList.remove('vis');
+}
+function _kvittTid(min) {
+  const m = Math.round(min || 0);
+  if (m < 60) return m + ' min';
+  const t = Math.floor(m / 60), r = m % 60;
+  return r ? t + ' t ' + r + ' min' : t + ' t';
+}
+
 async function lagreTur() {
   if (!valgtSjafor) { toast('Velg sjåfør', 'err'); return; }
   if (!valgtScooter) { toast('Velg scooter', 'err'); return; }
@@ -1853,9 +1971,40 @@ async function lagreTur() {
       clearTimeout(window._synkEtterLagring);
       window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData({ utenConfig: true }); }, 8000);
     } else {
+      // Kvittering: tallene er kjent lokalt, så den vises med en gang – ingen venting på nett
+      try {
+        const _tall = [
+          { v: _kvittTid(tid), l: 'tid i løypa' },
+          { v: km.toLocaleString('nb-NO'), l: 'km-stand' }
+        ];
+        const _merker = [];
+        try {
+          const _okt = grupperOkter(turer).find(o => o.turer.some(t => String(t.id) === String(tur.id)));
+          const _andre = _okt ? [...new Set(_okt.turer
+            .filter(t => String(t.id) !== String(tur.id))
+            .map(t => String(t.sjafor || '').trim().split(/\s+/)[0])
+            .filter(Boolean))] : [];
+          if (_andre.length) _merker.push({ type: 'sammen', tekst: 'Kjørte sammen med ' + _andre.join(', ') });
+        } catch(e) {}
+        if (tur.nil) _merker.push({ type: 'nil', tekst: 'Nærområdet / NIL' });
+        if (tur.bensin) _merker.push({ tekst: 'Bensin fylt' });
+        if (tur.foreforhold) _merker.push({ tekst: 'Føre ' + tur.foreforhold + '/5' });
+        const _antBilder = tur.bildeUrl ? tur.bildeUrl.split(',').filter(Boolean).length : 0;
+        if (_antBilder > 0) _merker.push({ tekst: _antBilder + (_antBilder === 1 ? ' bilde' : ' bilder') });
+        else if (bkHarVentende(tur.id)) _merker.push({ tekst: 'Bilder lastes opp' });
+        visKvittering({
+          hilsen: lagHilsen(tur.sjafor),
+          under: 'Turen er lagret',
+          tall: _tall,
+          meta: '<b>' + tur.scooter + '</b>' + (tur.slutt ? ' · parkert ' + _normTid(tur.slutt) : ''),
+          merker: _merker,
+          status: 'Sender til regnearket …'
+        });
+      } catch(e) { console.log('Kvittering feilet:', e); }
       // Prøv å sende straks, men vent maks 4 sekunder. Resten skjer i bakgrunnen.
       const sendtNa = await koSendMedFrist(4000);
-      toast(sendtNa
+      const _iKvitt = kvittStatus(sendtNa ? 'Sendt til regnearket' : 'Lagret på telefonen – sendes automatisk', sendtNa);
+      if (!_iKvitt || !sendtNa) toast(sendtNa
         ? ('Tur lagret ✓' + (bkHarVentende(tur.id) ? ' – bildene fortsetter i bakgrunnen' : ''))
         : 'Lagret på telefonen ✓ – sendes automatisk', sendtNa ? 'ok' : '');
       if (!sendtNa) setTimeout(() => koSend(), 5000);

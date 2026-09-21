@@ -216,6 +216,41 @@
 .nil-gr>span.n{text-align:left}
 .nil-gr>span.h{border-top:0;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--text2);font-weight:600;padding:2px 0}
 .nil-note{font-size:11px;color:var(--text2);font-style:italic;margin-top:8px}
+/* ── KVITTERING ETTER LAGRET ØKT ── */
+.kvitt-bg { position:fixed; inset:0; z-index:400; background:rgba(240,246,252,0.92); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:18px; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+.kvitt-bg.vis { opacity:1; pointer-events:auto; }
+.kvitt { width:100%; max-width:340px; background:var(--white); border-radius:16px; border:1px solid var(--border); box-shadow:0 14px 34px rgba(20,45,80,0.18); padding:20px 18px 0; text-align:center; transform:translateY(10px) scale(.97); transition:transform .25s cubic-bezier(.2,.9,.3,1.2); max-height:calc(100vh - 36px); overflow-y:auto; }
+.kvitt-bg.vis .kvitt { transform:none; }
+.kvitt-logo { position:relative; width:74px; height:74px; margin:0 auto 12px; }
+.kvitt-logo img { width:74px; height:74px; object-fit:contain; }
+.kvitt-logo::after { content:''; position:absolute; inset:-7px; border-radius:50%; border:3px solid rgba(39,174,96,0.18); border-top-color:var(--success); animation:kvitt-snurr .9s cubic-bezier(.4,0,.2,1) 1; }
+@keyframes kvitt-snurr { from { transform:rotate(0); } to { transform:rotate(360deg); } }
+.kvitt-hake { position:absolute; right:-2px; bottom:-2px; width:26px; height:26px; border-radius:50%; background:var(--success); color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(39,174,96,0.4); animation:kvitt-pop .3s .16s backwards cubic-bezier(.2,.9,.3,1.6); }
+@keyframes kvitt-pop { from { transform:scale(0); } to { transform:scale(1); } }
+.kvitt-hilsen { font-size:20px; font-weight:700; color:var(--navy); letter-spacing:-.2px; line-height:1.25; }
+.kvitt-under { font-size:13px; color:var(--text2); margin-top:3px; }
+.kvitt-tall { display:flex; gap:8px; margin:14px 0 10px; }
+.kvitt-tall > div { flex:1; background:var(--ice); border:1px solid #D6E6F5; border-radius:10px; padding:9px 6px; min-width:0; }
+.kvitt-tall b { display:block; font-family:var(--mono); font-size:21px; color:var(--navy); font-weight:600; line-height:1.15; }
+.kvitt-tall b.lang { font-size:17px; white-space:nowrap; }
+.kvitt-tall span { font-size:9.5px; color:var(--text2); font-weight:600; text-transform:uppercase; letter-spacing:.3px; }
+.kvitt-meta { font-size:12px; color:var(--text2); line-height:1.5; padding-bottom:12px; border-bottom:1px solid var(--border); }
+.kvitt-meta b { color:var(--navy); font-weight:600; }
+.kvitt-merker { display:flex; gap:5px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+.kvitt-merke { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; background:var(--snow); border:1px solid var(--border); color:var(--text2); }
+.kvitt-merke.nil { background:#FFF6E5; border-color:#F3D9A4; color:#9A6B12; }
+.kvitt-merke.sammen { background:#EEF5FC; border-color:#C8DDF0; color:#1A4B7A; }
+.kvitt-status { display:flex; align-items:center; justify-content:center; gap:6px; font-size:11.5px; color:var(--text2); padding:11px 0 9px; }
+.kvitt-status .prikk { width:7px; height:7px; border-radius:50%; background:#F39C12; animation:kvitt-puls 1s infinite; flex-shrink:0; }
+.kvitt-status.ok { color:var(--success); }
+.kvitt-status.ok .prikk { background:var(--success); animation:none; }
+@keyframes kvitt-puls { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+.kvitt-hint { font-size:10px; color:#9AA7B4; padding:0 0 10px; }
+.kvitt-progress { height:3px; background:var(--ice); border-radius:0 0 16px 16px; overflow:hidden; margin:0 -18px; }
+.kvitt-progress i { display:block; height:100%; background:var(--accent); width:100%; transform-origin:left; }
+.kvitt-bg.vis .kvitt-progress i { animation:kvitt-krymp 2s linear forwards; }
+@keyframes kvitt-krymp { from { transform:scaleX(1); } to { transform:scaleX(0); } }
+
 </style></head><body>
 <div id="loading-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(255,255,255,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px">
 <div class="spinner"></div>
@@ -247,7 +282,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v21.09 09:14</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v21.09 11:55</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -318,7 +353,7 @@ Sesonginnstillinger
 </div>
 <div class="field"><label>Stedsnavn</label><input type="text" id="admin-vaer-navn" placeholder="Mitt sted" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div>
 </div>
-<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Scooterøkter</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Samme økt innen (minutter)</label><input type="number" inputmode="numeric" id="admin-okt-min" placeholder="30" min="5" max="180" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Scooterturer samme dag med sluttid innenfor denne grensen regnes som én økt.</div></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Læring</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Læring starter fra</label><input type="date" id="admin-laering-fra" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Turer før denne datoen telles ikke i læringen for kombinerte runder. La stå tom for å bruke alle data.</div></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+<div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Scooterøkter</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Samme økt innen (minutter)</label><input type="number" inputmode="numeric" id="admin-okt-min" placeholder="30" min="5" max="180" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Scooterturer samme dag med sluttid innenfor denne grensen regnes som én økt.</div></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Læring</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Læring starter fra</label><input type="date" id="admin-laering-fra" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Turer før denne datoen telles ikke i læringen for kombinerte runder. La stå tom for å bruke alle data.</div></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Hilsener i kvitteringen – maskin og scooter</div><div class="form-grid full" style="margin-bottom:10px"><div class="field"><textarea id="admin-hilsener" rows="5" placeholder="Bra jobba" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow);min-height:96px"></textarea><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Maskinloggen. Én hilsen per linje, <b>uten navn</b> – appen legger til fornavnet selv: «Bra jobba» blir «Bra jobba, Thomas!». Kvitteringen trekker tilfeldig og bruker aldri samme to ganger på rad. Vil du styre plasseringen selv, skriv {navn} i linja. Tomt felt gir standardlista.</div></div><div class="field" style="margin-top:10px"><textarea id="admin-hilsener-scooter" rows="5" placeholder="Bra jobba" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow);min-height:96px"></textarea><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Scooterloggen. Samme regler – hilsenene vises i kvitteringen i scooter-appen.</div></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
 Google Sheets tilkobling
 </div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Vedlikehold</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Regn ut <strong>Maskintimer</strong>, <strong>Km kjørt</strong> og <strong>Km/t</strong> på nytt for alle turer i loggen. Brukes etter at en gammel registrering er rettet i sheetet, slik at avledede tall blir riktige.</div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-wrap:wrap"><span id="diff-status" style="font-size:12px;color:var(--text2);display:none"></span><button class="btn btn-primary btn-sm" id="diff-knapp" onclick="regnUtDiffPaNytt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Regn ut på nytt</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-post-varsler</div><div class="card-body"><div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">Master-brytere for varsler. Skru av kategorier her for å stoppe alle e-poster i den kategorien, uansett hva enkeltkontakter har krysset av for.</div><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-tur-maskin" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>maskin-turer</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-tur-scooter" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>scooter-turer</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-feil-maskin" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>maskin-feil</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-feil-scooter" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>scooter-feil</strong></span></label></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Krysstilgang</div><label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:10px;background:var(--ice);border-radius:6px;margin-bottom:16px"><input type="checkbox" id="admin-tillat-cross" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer;margin-top:1px"><div><div>Tillat <strong>scooter-sjåfører</strong> å abonnere på <strong>maskin-turer</strong></div><div style="font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4">Om av: alle scooter-only kontakter mister sitt VarslerTurMaskin-abonnement. Maskin-sjåfører beholder alt uansett.</div></div></label><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Statistikk</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"><div style="background:var(--snow);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="admin-varsler-stats-mottakere">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Aktive mottakere</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="admin-varsler-stats-epost">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Med e-post</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="admin-varsler-stats-uke">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Sendt siste 7d</div></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="admin-varsler-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreVarslerAdmin()">Lagre varsler-innstillinger</button></div></div></div><div class="card"><div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Bilder på Drive</span><span id="admin-bilder-status" style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:400;margin-left:auto"></span></div><div class="card-body" id="admin-bilder"><p style="font-size:13px;color:var(--text2)">Klikk «Last inn» for å se bilder og diskstatus</p><button onclick="lastAdminBilder()" class="btn btn-outline" style="margin-top:8px">Last inn bilder</button></div></div>
 
@@ -1861,6 +1896,90 @@ btn.classList.toggle('active', parseInt(btn.dataset.val) === condVal);
 });
 }
 // ── LAGRE TUR ──
+// Hilsener i kvitteringen – redigeres under Admin → Innstillinger (nøkkel: hilsenerMaskin)
+const _HILSEN_NOKKEL = 'hilsenerMaskin';
+const _HILSEN_STD = ['Bra jobba', 'Takk for økta', 'Godt kjørt', 'Stå på'];
+// Scooter-appen sin liste redigeres her, men brukes bare der
+const _HILSEN_STD_SCOOTER = ['Bra jobba', 'Takk for turen', 'Godt spora', 'Stå på'];
+// ── KVITTERING ETTER LAGRET ØKT ──
+// Vises lokalt med en gang, lukker seg selv etter 2 sekunder. Ingen nettkall.
+let _kvittTimer = null;
+let _sisteHilsen = '';
+function _hilsenListe() {
+  const raw = (typeof innstillinger === 'object' && innstillinger) ? innstillinger[_HILSEN_NOKKEL] : '';
+  const liste = String(raw || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  return liste.length ? liste : _HILSEN_STD;
+}
+function lagHilsen(navn) {
+  const fornavn = String(navn || '').trim().split(/\s+/)[0] || '';
+  const liste = _hilsenListe();
+  let kandidater = liste.filter(h => h !== _sisteHilsen);
+  if (!kandidater.length) kandidater = liste;
+  const valgt = kandidater[Math.floor(Math.random() * kandidater.length)];
+  _sisteHilsen = valgt;
+  if (valgt.indexOf('{navn}') > -1) return valgt.replace(/\{navn\}/g, fornavn).trim();
+  const ren = valgt.replace(/[\s!.,]+$/, '');
+  return fornavn ? ren + ', ' + fornavn + '!' : ren + '!';
+}
+function _kvittLogo() {
+  const img = document.querySelector('#center-loader img');
+  return img && img.src ? img.src : '';
+}
+function visKvittering(d) {
+  let bg = document.getElementById('kvitt-bg');
+  if (!bg) {
+    bg = document.createElement('div');
+    bg.id = 'kvitt-bg';
+    bg.className = 'kvitt-bg';
+    bg.addEventListener('click', lukkKvittering);
+    document.body.appendChild(bg);
+  }
+  const logo = _kvittLogo();
+  const tall = (d.tall || []).map(t =>
+    '<div><b' + (String(t.v).length > 7 ? ' class="lang"' : '') + '>' + t.v + '</b><span>' + t.l + '</span></div>').join('');
+  const merker = (d.merker || []).filter(Boolean).map(m =>
+    '<span class="kvitt-merke' + (m.type ? ' ' + m.type : '') + '">' + m.tekst + '</span>').join('');
+  bg.innerHTML =
+    '<div class="kvitt">' +
+      '<div class="kvitt-logo">' + (logo ? '<img src="' + logo + '" alt="">' : '') +
+        '<div class="kvitt-hake"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+      '</div>' +
+      '<div class="kvitt-hilsen">' + (d.hilsen || '') + '</div>' +
+      '<div class="kvitt-under">' + (d.under || '') + '</div>' +
+      (tall ? '<div class="kvitt-tall">' + tall + '</div>' : '') +
+      '<div class="kvitt-meta">' + (d.meta || '') + (merker ? '<div class="kvitt-merker">' + merker + '</div>' : '') + '</div>' +
+      '<div class="kvitt-status" id="kvitt-status"><span class="prikk"></span>' + (d.status || 'Lagret på telefonen') + '</div>' +
+      '<div class="kvitt-hint">Lukkes av seg selv – trykk for å lukke nå</div>' +
+      '<div class="kvitt-progress"><i></i></div>' +
+    '</div>';
+  void bg.offsetWidth;
+  bg.classList.add('vis');
+  clearTimeout(_kvittTimer);
+  _kvittTimer = setTimeout(lukkKvittering, 2000);
+}
+function kvittStatus(tekst, ok) {
+  const el = document.getElementById('kvitt-status');
+  if (!el || !kvitteringVises()) return false;
+  el.className = 'kvitt-status' + (ok ? ' ok' : '');
+  el.innerHTML = '<span class="prikk"></span>' + tekst;
+  return true;
+}
+function kvitteringVises() {
+  const bg = document.getElementById('kvitt-bg');
+  return !!(bg && bg.classList.contains('vis'));
+}
+function lukkKvittering() {
+  clearTimeout(_kvittTimer);
+  const bg = document.getElementById('kvitt-bg');
+  if (bg) bg.classList.remove('vis');
+}
+function _kvittTid(min) {
+  const m = Math.round(min || 0);
+  if (m < 60) return m + ' min';
+  const t = Math.floor(m / 60), r = m % 60;
+  return r ? t + ' t ' + r + ' min' : t + ' t';
+}
+
 function showLoading(tekst='Lagrer økt…') {
 const el = document.getElementById('loading-tekst');
 if (el) el.textContent = tekst;
@@ -1995,11 +2114,38 @@ fjernAlleBilder();
 hideLoading();
 btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Lagre økt';
 showTab('dashboard');
+// Kvittering: alle tallene er kjent lokalt, så den vises med en gang – ingen venting på nett
+try {
+  const _kmDiff = (kmNy > 0 && sisteKm > 0) ? kmNy - sisteKm : null;
+  const _timerDiff = (timerNy > 0 && sisteTimer > 0) ? timerNy - sisteTimer : null;
+  const _tall = [];
+  if (_kmDiff !== null && _kmDiff >= 0) _tall.push({ v: _kmDiff.toFixed(1).replace('.', ','), l: 'km denne økta' });
+  else if (kmNy > 0) _tall.push({ v: kmNy.toLocaleString('nb-NO'), l: 'km-stand' });
+  if (_timerDiff !== null && _timerDiff >= 0) _tall.push({ v: _timerDiff.toFixed(1).replace('.', ','), l: 'maskintimer' });
+  else if (timerNy > 0) _tall.push({ v: String(timerNy).replace('.', ','), l: 'timerteller' });
+  const _merker = [];
+  if (tur.diesel) _merker.push({ tekst: 'Diesel fylt' });
+  if (tur.adblue) _merker.push({ tekst: 'AdBlue fylt' });
+  if (tur.forkond) _merker.push({ tekst: 'Føre ' + tur.forkond + '/5' });
+  const _antBilder = tur.bildeUrl ? tur.bildeUrl.split(',').filter(Boolean).length : 0;
+  if (_antBilder > 0) _merker.push({ tekst: _antBilder + (_antBilder === 1 ? ' bilde' : ' bilder') });
+  else if (bkHarVentende(tur.id)) _merker.push({ tekst: 'Bilder lastes opp' });
+  visKvittering({
+    hilsen: lagHilsen(forer),
+    under: 'Økta er lagret',
+    tall: _tall,
+    meta: '<b>' + loype + '</b>' + (tur.maskin ? '<br>' + tur.maskin : '') + ' · ferdig ' + tur.slutt,
+    merker: _merker,
+    status: 'Sender til regnearket …'
+  });
+} catch(e) { console.log('Kvittering feilet:', e); }
 // Prøv å sende med en gang, men vent maks 4 sekunder på svar. Resten går i bakgrunnen.
 setSyncStatus('loading', 'Sync');
 const _sendtNa = await koSendMedFrist(4000);
 setSyncStatus(_sendtNa ? 'ok' : 'loading-bg', 'Sync');
-bkToast(_sendtNa
+// Står kvitteringen fortsatt oppe, oppdaterer vi statuslinja der. Ellers vanlig toast.
+const _iKvitt = kvittStatus(_sendtNa ? 'Sendt til regnearket' : 'Lagret på telefonen – sendes automatisk', _sendtNa);
+if (!_iKvitt || !_sendtNa) bkToast(_sendtNa
   ? ('✓ Økt lagret' + (bkHarVentende(tur.id) ? ' – bildene fortsetter i bakgrunnen' : ''))
   : '✓ Lagret på telefonen – sendes til regnearket automatisk');
 if (!_sendtNa) setTimeout(() => koSend(), 5000);
@@ -4087,6 +4233,8 @@ await apiKall({ action: 'lagreInnstillinger', innstillinger: {
 sesongStart, sesongSlutt, maxKm, maxTimer,
 laeringFraDato,
 oktMinutter: document.getElementById('admin-okt-min')?.value || '30',
+hilsenerMaskin: (document.getElementById('admin-hilsener')?.value || '').trim(),
+hilsenerScooter: (document.getElementById('admin-hilsener-scooter')?.value || '').trim(),
 vaerstasjon: vaerValg2,
 vaerLat: document.getElementById('admin-vaer-lat')?.value||'',
 vaerLon: document.getElementById('admin-vaer-lon')?.value||'',
@@ -4094,6 +4242,10 @@ vaerNavn: document.getElementById('admin-vaer-navn')?.value||''
 }});
 // Oppdater lokal kopi slik at læringen reagerer umiddelbart
 if (innstillinger) { innstillinger.laeringFraDato = laeringFraDato; innstillinger.oktMinutter = document.getElementById('admin-okt-min')?.value || '30'; }
+if (innstillinger) innstillinger.hilsenerMaskin = (document.getElementById('admin-hilsener')?.value || '').trim();
+if (innstillinger) innstillinger.hilsenerScooter = (document.getElementById('admin-hilsener-scooter')?.value || '').trim();
+_tomConfigCache();
+try { localStorage.removeItem(_START_CACHE_KEY); } catch(e) {}
 renderAdminLaering();
 } catch(e) { console.error('lagreInnstillinger feil', e); }
 const msg = document.getElementById('sesong-lagret');
@@ -4165,6 +4317,17 @@ if (window._maxKm) document.getElementById('admin-max-km').value = window._maxKm
 if (window._maxTimer) document.getElementById('admin-max-timer').value = window._maxTimer;
 const oktEl = document.getElementById('admin-okt-min');
 if (oktEl) oktEl.value = (innstillinger && innstillinger.oktMinutter) ? String(innstillinger.oktMinutter) : '';
+const hilsenEl = document.getElementById('admin-hilsener');
+if (hilsenEl) {
+  const lagret = (innstillinger && innstillinger.hilsenerMaskin) ? String(innstillinger.hilsenerMaskin).trim() : '';
+  // Tomt = aldri lagret: vis standardlista så den er enkel å bygge videre på
+  hilsenEl.value = lagret || _HILSEN_STD.join('\n');
+}
+const hilsenScEl = document.getElementById('admin-hilsener-scooter');
+if (hilsenScEl) {
+  const lagretSc = (innstillinger && innstillinger.hilsenerScooter) ? String(innstillinger.hilsenerScooter).trim() : '';
+  hilsenScEl.value = lagretSc || _HILSEN_STD_SCOOTER.join('\n');
+}
 const laerEl = document.getElementById('admin-laering-fra');
 if (laerEl) {
   const v = (innstillinger && innstillinger.laeringFraDato) ? String(innstillinger.laeringFraDato) : '';
