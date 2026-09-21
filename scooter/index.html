@@ -373,7 +373,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="13:30">13:30</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="14:10">14:10</span>
 </div>
 
 <div class="nav">
@@ -436,7 +436,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
       </div>
       <div class="form-grid dato-tid">
         <div class="field"><label>Sluttidspunkt</label><div class="time-with-now"><input type="time" id="f-slutt" style="padding-right:56px"><button class="now-btn" onclick="event.preventDefault(); document.getElementById('f-slutt').value = new Date().toTimeString().slice(0,5)">Nå</button></div></div>
-        <div class="field"><label>Dato</label><input type="date" id="f-dato"></div>
+        <div class="field"><label>Dato</label><div class="time-with-now"><input type="date" id="f-dato" style="padding-right:64px"><button class="now-btn" onclick="event.preventDefault(); settIDag()">I dag</button></div></div>
       </div>
       <div class="field"><label>Kjøring</label><div class="nk-grid">
         <label class="nk" for="f-nil"><input type="checkbox" id="f-nil" onchange="this.closest('.nk').classList.toggle('on', this.checked)"><div><b>Kjørte (også) i nærområdet / for NIL</b><small>Kryss av selv om turen også gikk i marka – labbeløype, lysløypa o.l.</small></div></label>
@@ -987,8 +987,7 @@ function koFerdig(tur, res, post) {
   else try {
 
     const turMedId = Object.assign({}, tur, { id: id }, res.kmPerTur !== undefined ? { kmPerTur: res.kmPerTur } : {});
-    apiKall({ action: 'sendVarselTur', tur: turMedId, appType: 'scooter' })
-      .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
+    _sendVarselNarBildeneErKlare(turMedId, 'scooter');
   } catch(e) {}
   clearTimeout(window._synkEtterLagring);
   window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData({ utenConfig: true }); }, 8000);
@@ -1212,6 +1211,11 @@ function _visNavn(n) {
   const full = _kanoniskSjafor(n);
   const kart = _navnKart(sjaforer);
   return kart[full] || full.split(' ')[0] || full;
+}
+function settIDag() {
+  const n = new Date();
+  const el = document.getElementById('f-dato');
+  if (el) el.value = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
 }
 function renderSjaforChips() {
   const el = document.getElementById('sjafor-chips');
@@ -1871,6 +1875,63 @@ function _kvittVarighet() {
   return Math.min(15, Math.max(1, n)) * 1000;
 }
 // Etter lagring: rull ned til «Siste økter» slik at man ser at turen faktisk ble ført opp
+// ── DYPLENKE FRA E-POST (?tur=<id>) ──
+// E-posten lenker rett til turen. Vi venter til turen finnes i lista, åpner loggen og blinker den.
+let _dypTurId = null;
+function startDypLenke() {
+  try {
+    const id = new URLSearchParams(location.search).get('tur');
+    if (!id) return;
+    _dypTurId = String(id);
+    try { history.replaceState({}, '', location.pathname); } catch(e) {}
+    _forsokDypLenke(0);
+  } catch(e) { console.log('Dyplenke feilet:', e); }
+}
+function _forsokDypLenke(n) {
+  if (!_dypTurId) return;
+  const finnes = (turer || []).some(t => String(t.id) === _dypTurId);
+  if (!finnes) { if (n < 25) setTimeout(() => _forsokDypLenke(n + 1), 1500); else _dypTurId = null; return; }
+  // Turkortet har data-turid i begge visningene (økt og enkelttur), så vi lar brukeren beholde sin visning
+  try { visTab('logg'); if (typeof renderLogg === 'function') renderLogg(); } catch(e) {}
+  setTimeout(() => {
+    const id = _dypTurId;
+    _dypTurId = null;
+    if (!id) return;
+    let el = null;
+    try { el = document.querySelector('[data-turid="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'); } catch(e) {}
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('sf-nytt-blink');
+    setTimeout(() => el.classList.remove('sf-nytt-blink'), 3600);
+  }, 350);
+}
+// E-postvarsel: vent på bilder som fortsatt lastes opp, slik at de blir med i mailen.
+// Maks 90 sekunder, og vi sender straks appen legges bort. Står det igjen bilder, sier mailen fra om det.
+async function _sendVarselNarBildeneErKlare(tur, appType) {
+  const start = Date.now();
+  let avbryt = false;
+  const skjult = () => { if (document.hidden) avbryt = true; };
+  const borte = () => { avbryt = true; };
+  document.addEventListener('visibilitychange', skjult);
+  window.addEventListener('pagehide', borte);
+  try {
+    while (!avbryt && (Date.now() - start) < 90000 && bkHarVentende(tur.id)) {
+      await new Promise(r => setTimeout(r, 1500));
+    }
+  } catch(e) {}
+  document.removeEventListener('visibilitychange', skjult);
+  window.removeEventListener('pagehide', borte);
+  let venter = 0;
+  try { venter = _bk.ko.filter(i => !i.forkastet && String(i.turId) === String(tur.id) && i.status !== 'ferdig').length; } catch(e) {}
+  // Bruk bildene som faktisk er koblet til turen nå
+  try {
+    const t = (turer || []).find(x => String(x.id) === String(tur.id));
+    if (t && t.bildeUrl) tur = Object.assign({}, tur, { bildeUrl: t.bildeUrl });
+  } catch(e) {}
+  if (venter > 0) tur = Object.assign({}, tur, { bilderVenter: venter });
+  return apiKall({ action: 'sendVarselTur', tur: tur, appType: appType })
+    .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
+}
 function rullTilSiste() {
   try {
     const liste = document.getElementById('siste-turer');
@@ -2292,7 +2353,7 @@ function renderOktKort(o) {
     const rest = urls.length - vis.length;
     bilder = `<div class="log-bilder">${vis.map((u, i) => `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${uj}, ${i})"><img src="${_thumb(u, 120)}" loading="lazy" decoding="async" alt="">${i === vis.length - 1 && rest > 0 ? `<span class="mer">+${rest}</span>` : ''}</span>`).join('')}${vent}</div>`;
   }
-  const rader = turerSortert.map(t => `<div class="okt-rad"><span class="ik">🛷</span><span class="nv"><b>${esc(t.sjafor)}</b> <span class="sc">· ${esc(t.scooter)}</span></span><span class="t">${t.bensin ? '<span title="Fylte bensin">⛽</span> ' : ''}${t.tidBrukt ? _minTilTekst(t.tidBrukt) : '–'}</span></div>`).join('');
+  const rader = turerSortert.map(t => `<div class="okt-rad" data-turid="${t.id}"><span class="ik">🛷</span><span class="nv"><b>${esc(t.sjafor)}</b> <span class="sc">· ${esc(t.scooter)}</span></span><span class="t">${t.bensin ? '<span title="Fylte bensin">⛽</span> ' : ''}${t.tidBrukt ? _minTilTekst(t.tidBrukt) : '–'}</span></div>`).join('');
   const fore = turerSortert.map(t => t.foreforhold).filter(Boolean);
   const snoT = turerSortert.find(t => t.snoLav || t.snoHoy);
   const info = [];
@@ -2505,7 +2566,7 @@ function renderTurItem(t) {
   const feilBadge = t.harFeil
     ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>`
     : '';
-  return `<div class="log-item${bilderHtml ? ' har-bilder' : ''}">${bilderHtml ? '<div>' : ''}<div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}${t.venter ? ' <span title="Lagret på telefonen – sendes til regnearket" style="display:inline-flex;align-items:center;padding:1px 6px;background:#EEF5FC;color:#1A4B7A;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #C8DDF0">↑ sendes</span>' : ''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div>${bilderHtml ? '</div>' + bilderHtml : ''}</div>`;
+  return `<div class="log-item${bilderHtml ? ' har-bilder' : ''}" data-turid="${t.id}">${bilderHtml ? '<div>' : ''}<div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}${t.venter ? ' <span title="Lagret på telefonen – sendes til regnearket" style="display:inline-flex;align-items:center;padding:1px 6px;background:#EEF5FC;color:#1A4B7A;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #C8DDF0">↑ sendes</span>' : ''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div>${bilderHtml ? '</div>' + bilderHtml : ''}</div>`;
 }
 
 // ── SCOOTERPARK-WIDGET (Alt A: kortrekke med mini-sparklines) ──
@@ -3858,6 +3919,7 @@ async function initAlt() {
   await Promise.allSettled([pStart, pData]);
 }
 initAlt();
+startDypLenke();   // ?tur=<id> fra e-post
 </script>
 
 <!-- Lightbox for forstørret bildevisning -->
