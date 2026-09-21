@@ -313,6 +313,11 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 @keyframes sf-nytt-blink { 0% { box-shadow:0 0 0 0 rgba(74,159,212,0); } 15% { box-shadow:0 0 0 3px rgba(74,159,212,0.5); } 70% { box-shadow:0 0 0 3px rgba(74,159,212,0.5); } 100% { box-shadow:0 0 0 0 rgba(74,159,212,0); } }
 .sf-nytt-blink { animation:sf-nytt-blink 3.2s ease-in-out 1; border-radius:10px; }
 @media (prefers-reduced-motion: reduce) { .sf-nytt-blink { animation:none; } }
+/* Dra ned for å oppdatere (mobil) */
+.pull-indikator { position:fixed; top:0; left:0; right:0; z-index:150; display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--sans); font-size:12px; font-weight:600; color:var(--mid); background:var(--ice); border-bottom:1px solid #C8DDF0; height:0; overflow:hidden; transition:height .12s ease; }
+.pull-indikator .snurr { width:13px; height:13px; border:2px solid rgba(74,159,212,0.3); border-top-color:var(--mid); border-radius:50%; }
+.pull-indikator.spinner .snurr { animation:pull-spin .8s linear infinite; }
+@keyframes pull-spin { to { transform:rotate(360deg); } }
 </style></head><body>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
@@ -373,7 +378,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="14:10">14:10</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="15:20">15:20</span>
 </div>
 
 <div class="nav">
@@ -842,6 +847,8 @@ function visTab(id) {
   if (id === 'admin') renderAdmin();
   if (id === 'galleri') lastBildeGalleri();
   if (id === 'dashboard') renderDashboard();
+  // Ser man på tall, skal de være ferske – henter i bakgrunnen hvis de er mer enn et minutt gamle
+  if (id === 'dashboard' || id === 'logg' || id === 'stats') { try { oppdaterData(); } catch(e) {} }
 }
 
 function toggleOptional() {
@@ -982,8 +989,9 @@ function koFerdig(tur, res, post) {
   // Varsel bare når raden faktisk ble ny. Ligger turen allerede i regnearket (duplikat etter
   // en køpost som ble liggende), er mailen sendt for lenge siden – da skal den ikke sendes om igjen.
   const _gammelKo = !!(post && post.lagt && (Date.now() - post.lagt) > 6 * 60 * 60 * 1000);
-  if (res && res.duplikat) console.log('Turen lå allerede i regnearket – varsel ikke sendt på nytt');
-  else if (_gammelKo) console.log('Køpost eldre enn 6 timer – varsel ikke sendt');
+  // NB: res.duplikat betyr bare at raden alt lå der – ofte fordi kallet vårt gikk i tidsavbrudd og
+  // ble prøvd på nytt. Da skal mailen fortsatt sendes; backend sørger for maks én mail per tur.
+  if (_gammelKo) console.log('Køpost eldre enn 6 timer – varsel ikke sendt');
   else try {
 
     const turMedId = Object.assign({}, tur, { id: id }, res.kmPerTur !== undefined ? { kmPerTur: res.kmPerTur } : {});
@@ -1905,9 +1913,102 @@ function _forsokDypLenke(n) {
     setTimeout(() => el.classList.remove('sf-nytt-blink'), 3600);
   }, 350);
 }
+// ── OPPFRISKNING ──
+// Appen viser mellomlagrede tall med én gang. Blir de gamle – for eksempel mens en annen sjåfør
+// registrerer en tur – henter vi ferske data når appen kommer fram igjen, ved fanebytte, eller
+// når man drar ned øverst på siden.
+const _FERSK_GRENSE_MS = 60000;
+let _oppdatererNa = false;
+function dataAlder() { return _visteDataTs ? (Date.now() - _visteDataTs) : Infinity; }
+async function oppdaterData(opts) {
+  opts = opts || {};
+  if (_oppdatererNa) return false;
+  const grense = opts.maksAlder !== undefined ? opts.maksAlder : _FERSK_GRENSE_MS;
+  if (!opts.tvunget && dataAlder() < grense) return false;
+  if (!scriptUrl || navigator.onLine === false || document.hidden) return false;
+  _oppdatererNa = true;
+  visFerskhet('henter');
+  try { await lastData({ utenConfig: true }); } catch(e) { console.log('Oppdatering feilet:', e); visFerskhet('feil'); }
+  finally { _oppdatererNa = false; }
+  return true;
+}
+// Kommer appen fram igjen, er det et tydelig signal om at noen vil se ferske tall
+document.addEventListener('visibilitychange', () => { if (!document.hidden) oppdaterData({ maksAlder: 20000 }); });
+window.addEventListener('focus', () => oppdaterData({ maksAlder: 20000 }));
+window.addEventListener('online', () => oppdaterData());
+
+// Dra ned øverst på siden for å oppdatere
+(function pullTilOppdatering() {
+  let startY = null, dratt = 0, indikator = null;
+  const MAKS = 90, TERSKEL = 62;
+  const lagIndikator = () => {
+    if (indikator) return indikator;
+    indikator = document.createElement('div');
+    indikator.className = 'pull-indikator';
+    indikator.innerHTML = '<span class="snurr"></span><span class="tekst">Dra ned for å oppdatere</span>';
+    document.body.appendChild(indikator);
+    return indikator;
+  };
+  const rydd = () => { if (indikator) { indikator.style.height = '0px'; indikator.classList.remove('spinner'); } dratt = 0; startY = null; };
+  document.addEventListener('touchstart', e => {
+    if (_oppdatererNa) return;
+    const y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    startY = y <= 0 && e.touches.length === 1 ? e.touches[0].clientY : null;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (startY === null) return;
+    dratt = Math.max(0, Math.min(MAKS, e.touches[0].clientY - startY));
+    if (dratt <= 0) return;
+    const el = lagIndikator();
+    el.style.height = Math.round(dratt * 0.45) + 'px';
+    el.querySelector('.tekst').textContent = dratt >= TERSKEL ? 'Slipp for å oppdatere' : 'Dra ned for å oppdatere';
+  }, { passive: true });
+  document.addEventListener('touchend', async () => {
+    if (startY === null) return;
+    const skalOppdatere = dratt >= TERSKEL;
+    if (!skalOppdatere) { rydd(); return; }
+    const el = lagIndikator();
+    el.style.height = '30px';
+    el.classList.add('spinner');
+    el.querySelector('.tekst').textContent = 'Oppdaterer …';
+    startY = null; dratt = 0;
+    try { await oppdaterData({ tvunget: true }); } catch(e) {}
+    setTimeout(rydd, 450);
+  }, { passive: true });
+})();
+
+// ── VARSELKØ ──
+// Mailen skal sendes selv om appen lukkes mens bildene lastes opp. Køen ligger i localStorage og
+// tømmes ved oppstart. Backend sender maks én mail per tur, så et nytt forsøk kan ikke gi dobbel mail.
+const _VARSEL_KO_KEY = 'sf_varsel_ko_scooter_v1';
+function _lesVarselKo() { try { const r = localStorage.getItem(_VARSEL_KO_KEY); return r ? JSON.parse(r) : []; } catch(e) { return []; } }
+function _skrivVarselKo(liste) { try { localStorage.setItem(_VARSEL_KO_KEY, JSON.stringify(liste)); } catch(e) {} }
+function _varselKoLeggTil(tur, appType) {
+  const liste = _lesVarselKo().filter(p => String(p.tur && p.tur.id) !== String(tur.id));
+  liste.push({ tur: tur, appType: appType, lagt: Date.now() });
+  _skrivVarselKo(liste);
+}
+function _varselKoFjern(id) {
+  _skrivVarselKo(_lesVarselKo().filter(p => String(p.tur && p.tur.id) !== String(id)));
+}
+async function _varselKoSend() {
+  const liste = _lesVarselKo();
+  if (!liste.length) return;
+  for (const post of liste) {
+    // Eldre enn et døgn: turen er uansett gammelt nytt – ikke send mail om den nå
+    if (post.lagt && (Date.now() - post.lagt) > 24 * 60 * 60 * 1000) { _varselKoFjern(post.tur && post.tur.id); continue; }
+    try {
+      const res = await apiKall({ action: 'sendVarselTur', tur: post.tur, appType: post.appType });
+      if (res && (res.ok || res.alleredeSendt)) _varselKoFjern(post.tur && post.tur.id);
+    } catch(e) { console.log('Varsel-sending feilet – prøver senere:', e); }
+  }
+}
 // E-postvarsel: vent på bilder som fortsatt lastes opp, slik at de blir med i mailen.
 // Maks 90 sekunder, og vi sender straks appen legges bort. Står det igjen bilder, sier mailen fra om det.
 async function _sendVarselNarBildeneErKlare(tur, appType) {
+  // Legg turen i varselkøen med én gang – da blir mailen sendt ved neste oppstart
+  // selv om appen lukkes mens vi venter på bildene
+  _varselKoLeggTil(tur, appType);
   const start = Date.now();
   let avbryt = false;
   const skjult = () => { if (document.hidden) avbryt = true; };
@@ -1929,8 +2030,8 @@ async function _sendVarselNarBildeneErKlare(tur, appType) {
     if (t && t.bildeUrl) tur = Object.assign({}, tur, { bildeUrl: t.bildeUrl });
   } catch(e) {}
   if (venter > 0) tur = Object.assign({}, tur, { bilderVenter: venter });
-  return apiKall({ action: 'sendVarselTur', tur: tur, appType: appType })
-    .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
+  _varselKoLeggTil(tur, appType);
+  return _varselKoSend();
 }
 function rullTilSiste() {
   try {
@@ -3920,6 +4021,7 @@ async function initAlt() {
 }
 initAlt();
 startDypLenke();   // ?tur=<id> fra e-post
+setTimeout(() => { try { _varselKoSend(); } catch(e) {} }, 6000);   // mail som ikke rakk å bli sendt sist
 </script>
 
 <!-- Lightbox for forstørret bildevisning -->
