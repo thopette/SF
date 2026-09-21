@@ -309,6 +309,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .kvitt-bg.vis .kvitt-progress i { animation:kvitt-krymp 2s linear forwards; }
 @keyframes kvitt-krymp { from { transform:scaleX(1); } to { transform:scaleX(0); } }
 
+/* Etter lagring: rull til siste turer/økter og blink kortet så man ser at turen kom med */
+@keyframes sf-nytt-blink { 0% { box-shadow:0 0 0 0 rgba(74,159,212,0); } 15% { box-shadow:0 0 0 3px rgba(74,159,212,0.5); } 70% { box-shadow:0 0 0 3px rgba(74,159,212,0.5); } 100% { box-shadow:0 0 0 0 rgba(74,159,212,0); } }
+.sf-nytt-blink { animation:sf-nytt-blink 3.2s ease-in-out 1; border-radius:10px; }
+@media (prefers-reduced-motion: reduce) { .sf-nytt-blink { animation:none; } }
 </style></head><body>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
@@ -369,7 +373,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="13:00">13:00</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="13:30">13:30</span>
 </div>
 
 <div class="nav">
@@ -1866,6 +1870,36 @@ function _kvittVarighet() {
   if (!isFinite(n) || n <= 0) return 5000;
   return Math.min(15, Math.max(1, n)) * 1000;
 }
+// Etter lagring: rull ned til «Siste økter» slik at man ser at turen faktisk ble ført opp
+function rullTilSiste() {
+  try {
+    const liste = document.getElementById('siste-turer');
+    const kort = liste ? liste.closest('.card') : null;
+    if (!kort) return;
+    requestAnimationFrame(() => {
+      const rull = (mykt) => {
+        const fast = (document.querySelector('.topbar') ? document.querySelector('.topbar').offsetHeight : 0)
+                   + (document.querySelector('.nav') ? document.querySelector('.nav').offsetHeight : 0) + 10;
+        const topp = kort.getBoundingClientRect().top;
+        if (!mykt && Math.abs(topp - fast) < 14) return;   // allerede på plass
+        const y = topp + (window.pageYOffset || document.documentElement.scrollTop || 0) - fast;
+        try { window.scrollTo({ top: Math.max(0, y), behavior: mykt ? 'smooth' : 'auto' }); }
+        catch(e) { window.scrollTo(0, Math.max(0, y)); }
+      };
+      rull(true);
+      // Lista tegnes om når regnearket kvitterer, og da kan høyden over kortet endre seg litt – juster i etterkant
+      clearTimeout(window._rullTimer);
+      window._rullTimer = setTimeout(() => rull(false), 1300);
+      // Blinket legges på selve kortet – lista under tegnes om igjen når regnearket kvitterer,
+      // og da ville et blink på turraden forsvunnet med det samme.
+      kort.classList.remove('sf-nytt-blink');
+      void kort.offsetWidth;
+      kort.classList.add('sf-nytt-blink');
+      clearTimeout(window._blinkTimer);
+      window._blinkTimer = setTimeout(() => kort.classList.remove('sf-nytt-blink'), 3600);
+    });
+  } catch(e) { console.log('Rulling til siste turer feilet:', e); }
+}
 function visKvittering(d) {
   let bg = document.getElementById('kvitt-bg');
   if (!bg) {
@@ -2026,6 +2060,7 @@ async function lagreTur() {
       clearTimeout(window._synkEtterLagring);
       window._synkEtterLagring = setTimeout(() => { if (!document.hidden) lastData({ utenConfig: true }); }, 8000);
     } else {
+      rullTilSiste();
       // Kvittering: tallene er kjent lokalt, så den vises med en gang – ingen venting på nett
       try {
         const _tall = [
