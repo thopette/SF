@@ -222,6 +222,14 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 @keyframes oktpuls{50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.okt-live i{animation:none}}
 .okt-sub{font-size:11px;color:var(--text2);margin-top:3px}
+.enhet-rad{display:grid;grid-template-columns:1fr auto auto auto auto;gap:12px;align-items:center;padding:2px 0}
+.enhet-rad > div{min-width:0}
+@media (max-width:560px){
+  .enhet-rad{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 6px}
+  .enhet-rad .enhet-navn{grid-column:1 / -2}
+  .enhet-rad .enhet-btn{grid-column:-2 / -1;justify-self:end;align-self:start}
+  .enhet-rad .enhet-tall{min-width:0 !important}
+}
 .kobar{display:flex;align-items:center;gap:10px;padding:7px 14px;background:#EEF5FC;border-bottom:1px solid #C8DDF0;font-size:12px;color:#1A4B7A}
 .kobar[hidden]{display:none}
 .kobar .prikk{width:8px;height:8px;border-radius:50%;background:#2D5A8E;flex-shrink:0}
@@ -321,7 +329,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="18.09" data-tid="17:08">17:08</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="09:14">09:14</span>
 </div>
 
 <div class="nav">
@@ -710,7 +718,9 @@ async function _apiKallRa(body, forsokNr, opts) {
     console.warn(`${grunn} – prøver igjen (forsøk ${forsokNr + 1}/${_maksForsok})…`);
     try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/${_maksForsok})…`, ''); } catch(_) {}
     await new Promise(r => setTimeout(r, _RETRY_PAUSE_MS[forsokNr - 1] || 4000));
-    return apiKall(body, forsokNr + 1, opts);
+    // NB: kall _apiKallRa direkte – apiKall ville lagt forsøket bakerst i køen, men plassen i køen
+    // er opptatt av dette kallet. Da ville nytt forsøk aldri startet (vranglås).
+    return _apiKallRa(body, forsokNr + 1, opts);
   };
   try {
     let res;
@@ -3217,6 +3227,7 @@ function renderStatsSjafor(t) {
   });
   const rader = Object.entries(per).sort((a,b) => b[1].turer - a[1].turer);
   el.innerHTML = `
+    <div style="overflow-x:auto">
     <table style="width:100%;border-collapse:collapse;font-size:13px">
       <thead><tr style="text-align:left;color:var(--text2);font-size:11px;text-transform:uppercase;letter-spacing:0.4px">
         <th style="padding:8px 6px;font-weight:600">Sjåfør</th>
@@ -3233,7 +3244,7 @@ function renderStatsSjafor(t) {
           <td style="padding:8px 6px;text-align:right;font-family:var(--mono);white-space:nowrap">${d.turer > 0 ? _minTilTekst(d.tid/d.turer) : '–'}</td>
           <td style="padding:8px 6px;text-align:right;color:var(--text2);font-size:12px">${d.siste ? formaterDatoKort(d.siste) : '–'}</td>
         </tr>`).join('')}</tbody>
-    </table>`;
+    </table></div>`;
 }
 
 let statsScooterVisInaktive = false;
@@ -3307,21 +3318,21 @@ function renderScooterOversikt(t, filter) {
 
     // Kompakt rad (alltid synlig)
     const kompakt = `
-      <div style="display:grid;grid-template-columns:1fr auto auto auto auto;gap:12px;align-items:center;padding:2px 0">
-        <div style="min-width:0">
+      <div class="enhet-rad">
+        <div class="enhet-navn" style="min-width:0">
           <div style="font-size:14px;font-weight:700;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.navn}</div>
           <div style="font-size:11px;color:var(--text2);margin-top:2px">${statusBadge}${s.sisteDato ? ' · sist ' + formaterDatoKort(s.sisteDato) : ''}</div>
         </div>
-        <div style="text-align:center;min-width:60px">
+        <div class="enhet-tall" style="text-align:center;min-width:60px">
           <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${s.sisteKm !== null ? s.sisteKm : '–'}</div>
           <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Km-stand</div>
           ${s.kmTotalt > 0 ? `<div style="font-size:10px;color:var(--text2);margin-top:1px;white-space:nowrap" title="Økning på km-telleren i perioden – all bruk">+${Math.round(s.kmTotalt)} i perioden</div>` : ''}
         </div>
-        <div style="text-align:center;min-width:50px">
+        <div class="enhet-tall" style="text-align:center;min-width:50px">
           <div style="font-size:15px;font-weight:700;color:var(--navy);font-family:var(--mono)">${s.turer}</div>
           <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Turer</div>
         </div>
-        <div style="text-align:center;min-width:80px">
+        <div class="enhet-tall" style="text-align:center;min-width:80px">
           ${antFeil ? `<div style="display:flex;justify-content:center;gap:4px;align-items:baseline">
             ${feil.ny.length ? `<span style="font-size:14px;font-weight:700;color:#E74C3C">${feil.ny.length}</span>` : ''}
             ${feil.ny.length && (feil.paabegynt.length || feil.ferdig.length) ? '<span style="color:var(--text2);font-size:10px">/</span>' : ''}
@@ -3331,7 +3342,7 @@ function renderScooterOversikt(t, filter) {
           </div>` : '<div style="font-size:12px;color:var(--text2)">–</div>'}
           <div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:0.3px">Ny/På/Løst</div>
         </div>
-        <button onclick="toggleScooterUtvidet('${s.navn.replace(/'/g, "\\'")}')" style="padding:6px 10px;background:${utvidet?'#EAF6FE':'white'};border:1.5px solid ${utvidet?'#2E7BB8':'var(--border)'};border-radius:6px;color:${utvidet?'#2E7BB8':'var(--text2)'};font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap">${utvidet ? '▲ Skjul' : '▼ Vis'}</button>
+        <button class="enhet-btn" onclick="toggleScooterUtvidet('${s.navn.replace(/'/g, "\\'")}')" style="padding:6px 10px;background:${utvidet?'#EAF6FE':'white'};border:1.5px solid ${utvidet?'#2E7BB8':'var(--border)'};border-radius:6px;color:${utvidet?'#2E7BB8':'var(--text2)'};font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap">${utvidet ? '▲ Skjul' : '▼ Vis'}</button>
       </div>`;
 
     // Utvidet innhold (kun om utvidet)
