@@ -294,7 +294,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v21.09 16:20</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v21.09 17:00</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -775,6 +775,10 @@ function _lokalDato(d) {
 // med lagring av tur først i rekka.
 const _PRI = {
   leggTil: 10, leggTilScooter: 10, oppdaterScooterTur: 10, slett: 9, slettScooter: 9,
+  // Alt brukeren står og venter på skal foran bildeopplasting – ellers henger «Lagrer …»
+  // til alle bildene er ferdige.
+  lagreFeil: 8, oppdaterFeilStatus: 8, lagreService: 8, lagreKontakt: 8,
+  lagreForere: 7, lagreLoyper: 7, lagreMaskiner: 7, lagreScootere: 7, lagreInnstillinger: 7,
   hentStartdata: 5, hentStartdataScooter: 5, hentConfig: 4, hentConfigScooter: 4,
   leggTilBilder: 3, lastOppBilde: 2,
   sendVarselTur: -1, sendVarselFeil: -1, hentServiceData: -2,
@@ -1001,7 +1005,17 @@ function _lesTurerCache() {
 function _skrivTurerCache() {
   try { localStorage.setItem(_TURER_CACHE_KEY, JSON.stringify({ ts: Date.now(), alle: _alleDataLastet, turer })); } catch(e) {}
 }
-function _klokke(ts) { const d = new Date(ts); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+function _klokke(ts) {
+  const d = new Date(ts), n = new Date();
+  const kl = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  const sammeDag = d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+  if (sammeDag) return kl;
+  // Tall fra en annen dag skal ikke se ferske ut – vis dato foran klokkeslettet
+  const igar = new Date(n); igar.setDate(n.getDate() - 1);
+  const erIgar = d.getFullYear() === igar.getFullYear() && d.getMonth() === igar.getMonth() && d.getDate() === igar.getDate();
+  const mnd = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][d.getMonth()];
+  return (erIgar ? 'i går ' : d.getDate() + '. ' + mnd + ' ') + kl;
+}
 // status: 'henter' | 'ok' | 'feil'
 function visFerskhet(status) {
   const gammelt = _visteDataTs && (Date.now() - _visteDataTs) > 86400000;
@@ -2064,7 +2078,7 @@ window.addEventListener('online', () => oppdaterData());
     if (indikator) return indikator;
     indikator = document.createElement('div');
     indikator.className = 'pull-indikator';
-    indikator.innerHTML = '<span class="snurr"></span><span class="tekst">Dra ned for å oppdatere</span>';
+    indikator.innerHTML = '<span class="snurr"></span><span class="tekst">Dra ned for å hente nye turer</span>';
     document.body.appendChild(indikator);
     return indikator;
   };
@@ -2080,7 +2094,7 @@ window.addEventListener('online', () => oppdaterData());
     if (dratt <= 0) return;
     const el = lagIndikator();
     el.style.height = Math.round(dratt * 0.45) + 'px';
-    el.querySelector('.tekst').textContent = dratt >= TERSKEL ? 'Slipp for å oppdatere' : 'Dra ned for å oppdatere';
+    el.querySelector('.tekst').textContent = dratt >= TERSKEL ? 'Slipp for å hente nye turer' : 'Dra ned for å hente nye turer';
   }, { passive: true });
   document.addEventListener('touchend', async () => {
     if (startY === null) return;
@@ -2089,7 +2103,7 @@ window.addEventListener('online', () => oppdaterData());
     const el = lagIndikator();
     el.style.height = '30px';
     el.classList.add('spinner');
-    el.querySelector('.tekst').textContent = 'Oppdaterer …';
+    el.querySelector('.tekst').textContent = 'Henter nye turer …';
     startY = null; dratt = 0;
     try { await oppdaterData({ tvunget: true }); } catch(e) {}
     setTimeout(rydd, 450);
@@ -5937,6 +5951,10 @@ if (!feil.beskrivelse) { alert('Legg inn en beskrivelse.'); return; }
 const btn = document.querySelector('button[onclick="lagreNyFeil()"]');
 const originalTekst = btn ? btn.innerHTML : '';
 if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner" style="display:inline-block;width:12px;height:12px;vertical-align:middle;margin-right:6px"></span>Lagrer…'; btn.style.opacity = '0.7'; btn.style.cursor = 'not-allowed'; }
+// Tar det tid fordi et bilde er midt i opplastingen, sier vi fra i stedet for å bare stå og spinne
+const _ventTimerFeil = setTimeout(() => {
+  if (btn && btn.disabled && _bkAktive().length) btn.innerHTML = '<span class="spinner" style="display:inline-block;width:12px;height:12px;vertical-align:middle;margin-right:6px"></span>Venter på bilde …';
+}, 2500);
 let lagretOk = false;
 try {
 const res = await apiKall({ action: 'lagreFeil', feil });
@@ -5964,6 +5982,7 @@ console.error('lagreNyFeil svar:', res);
 alert('Feil ved lagring: ' + e.message);
 console.error('lagreNyFeil exception:', e);
 } finally {
+clearTimeout(_ventTimerFeil);
 // Alltid gjenopprett knappen om skjemaet fortsatt er synlig (kan være erstattet av lista)
 if (btn && !lagretOk && document.body.contains(btn)) {
 btn.disabled = false; btn.innerHTML = originalTekst; btn.style.opacity = ''; btn.style.cursor = '';
@@ -6469,7 +6488,7 @@ async function startApp() {
   await Promise.allSettled([pStart, pData]);
   try { await window._alleDataPromise; } catch(e) {}
   // Start bakgrunns-refresh hvert 10. minutt
-  setInterval(() => { if(scriptUrl && document.visibilityState==='visible') hentDataBakgrunn(); }, CACHE_TTL);
+  setInterval(() => { if (!document.hidden) oppdaterData({ maksAlder: 9 * 60 * 1000 }); }, CACHE_TTL);
 }
 startApp();
 startDypLenke();   // ?tur=<id> fra e-post

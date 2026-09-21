@@ -381,7 +381,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="16:20">16:20</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="17:00">17:00</span>
 </div>
 
 <div class="nav">
@@ -734,6 +734,10 @@ function _lokalDato(d) {
 // med lagring av tur først i rekka.
 const _PRI = {
   leggTil: 10, leggTilScooter: 10, oppdaterScooterTur: 10, slett: 9, slettScooter: 9,
+  // Alt brukeren står og venter på skal foran bildeopplasting – ellers henger «Lagrer …»
+  // til alle bildene er ferdige.
+  lagreFeil: 8, oppdaterFeilStatus: 8, lagreService: 8, lagreKontakt: 8,
+  lagreForere: 7, lagreLoyper: 7, lagreMaskiner: 7, lagreScootere: 7, lagreInnstillinger: 7,
   hentStartdata: 5, hentStartdataScooter: 5, hentConfig: 4, hentConfigScooter: 4,
   leggTilBilder: 3, lastOppBilde: 2,
   sendVarselTur: -1, sendVarselFeil: -1, hentServiceData: -2,
@@ -928,7 +932,17 @@ function _lesTurerCache() {
 function _skrivTurerCache() {
   try { localStorage.setItem(_TURER_CACHE_KEY, JSON.stringify({ ts: Date.now(), turer })); } catch(e) {}
 }
-function _klokke(ts) { const d = new Date(ts); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+function _klokke(ts) {
+  const d = new Date(ts), n = new Date();
+  const kl = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  const sammeDag = d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+  if (sammeDag) return kl;
+  // Tall fra en annen dag skal ikke se ferske ut – vis dato foran klokkeslettet
+  const igar = new Date(n); igar.setDate(n.getDate() - 1);
+  const erIgar = d.getFullYear() === igar.getFullYear() && d.getMonth() === igar.getMonth() && d.getDate() === igar.getDate();
+  const mnd = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][d.getMonth()];
+  return (erIgar ? 'i går ' : d.getDate() + '. ' + mnd + ' ') + kl;
+}
 function visFerskhet(status) {
   const dager = _visteDataTs ? Math.floor((Date.now() - _visteDataTs) / 86400000) : 0;
   const nar = _visteDataTs ? _klokke(_visteDataTs) : '';
@@ -1992,6 +2006,8 @@ async function oppdaterData(opts) {
 document.addEventListener('visibilitychange', () => { if (!document.hidden) oppdaterData({ maksAlder: 20000 }); });
 window.addEventListener('focus', () => oppdaterData({ maksAlder: 20000 }));
 window.addEventListener('online', () => oppdaterData());
+// Står appen åpen hele dagen, frisker vi opp hvert tiende minutt så tallene aldri blir gamle
+setInterval(() => { if (!document.hidden) oppdaterData({ maksAlder: 9 * 60 * 1000 }); }, 10 * 60 * 1000);
 
 // Dra ned øverst på siden for å oppdatere
 (function pullTilOppdatering() {
@@ -2001,7 +2017,7 @@ window.addEventListener('online', () => oppdaterData());
     if (indikator) return indikator;
     indikator = document.createElement('div');
     indikator.className = 'pull-indikator';
-    indikator.innerHTML = '<span class="snurr"></span><span class="tekst">Dra ned for å oppdatere</span>';
+    indikator.innerHTML = '<span class="snurr"></span><span class="tekst">Dra ned for å hente nye turer</span>';
     document.body.appendChild(indikator);
     return indikator;
   };
@@ -2017,7 +2033,7 @@ window.addEventListener('online', () => oppdaterData());
     if (dratt <= 0) return;
     const el = lagIndikator();
     el.style.height = Math.round(dratt * 0.45) + 'px';
-    el.querySelector('.tekst').textContent = dratt >= TERSKEL ? 'Slipp for å oppdatere' : 'Dra ned for å oppdatere';
+    el.querySelector('.tekst').textContent = dratt >= TERSKEL ? 'Slipp for å hente nye turer' : 'Dra ned for å hente nye turer';
   }, { passive: true });
   document.addEventListener('touchend', async () => {
     if (startY === null) return;
@@ -2026,7 +2042,7 @@ window.addEventListener('online', () => oppdaterData());
     const el = lagIndikator();
     el.style.height = '30px';
     el.classList.add('spinner');
-    el.querySelector('.tekst').textContent = 'Oppdaterer …';
+    el.querySelector('.tekst').textContent = 'Henter nye turer …';
     startY = null; dratt = 0;
     try { await oppdaterData({ tvunget: true }); } catch(e) {}
     setTimeout(rydd, 450);
@@ -3365,6 +3381,10 @@ async function lagreFeilPanel() {
   const knapp = document.querySelector('#feil-modal button[onclick="lagreFeilPanel()"]');
   const knappTekst = knapp ? knapp.innerHTML : '';
   if (knapp) { knapp.disabled = true; knapp.innerHTML = 'Lagrer…'; knapp.style.opacity = '0.7'; knapp.style.cursor = 'not-allowed'; }
+  // Tar det tid fordi et bilde er midt i opplastingen, sier vi fra i stedet for å bare stå og spinne
+  const _ventTimer = setTimeout(() => {
+    if (knapp && knapp.disabled && _bkAktive().length) knapp.innerHTML = 'Venter på bilde …';
+  }, 2500);
   try {
     const res = await apiKall({ action: 'lagreFeil', feil });
     if (res.feil) throw new Error(res.feil);
@@ -3383,6 +3403,7 @@ async function lagreFeilPanel() {
     await hentFeilData();
   } catch(e) { toast('Feil: ' + e.message, 'err'); }
   finally {
+    clearTimeout(_ventTimer);
     _lagrerFeil = false;
     if (knapp) { knapp.disabled = false; knapp.innerHTML = knappTekst; knapp.style.opacity = ''; knapp.style.cursor = ''; }
   }
