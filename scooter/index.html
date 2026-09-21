@@ -321,6 +321,34 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .pull-indikator .snurr { width:13px; height:13px; border:2px solid rgba(74,159,212,0.3); border-top-color:var(--mid); border-radius:50%; }
 .pull-indikator.spinner .snurr { animation:pull-spin .8s linear infinite; }
 @keyframes pull-spin { to { transform:rotate(360deg); } }
+/* ── OPPLASTINGSSKJERM ── */
+.opp-bg { position:fixed; inset:0; z-index:420; background:var(--snow); display:none; flex-direction:column; padding:22px 18px 18px; }
+.opp-bg.vis { display:flex; }
+.opp-logo { width:56px; height:56px; margin:0 auto 14px; display:block; object-fit:contain; }
+.opp-bg h3 { margin:0; text-align:center; font-size:19px; font-weight:700; color:var(--navy); letter-spacing:-.2px; }
+.opp-und { text-align:center; font-size:13px; color:var(--text2); margin-top:4px; }
+.opp-stor { font-family:var(--mono); font-size:34px; font-weight:600; color:var(--navy); text-align:center; margin:16px 0 2px; line-height:1; }
+.opp-stor small { font-size:15px; color:var(--text2); font-weight:500; font-family:var(--sans); }
+.opp-bar { height:8px; background:var(--ice); border-radius:99px; overflow:hidden; margin:12px 2px 6px; border:1px solid #D6E6F5; }
+.opp-bar i { display:block; height:100%; background:linear-gradient(90deg,var(--accent),var(--mid)); width:0; transition:width .4s ease; }
+.opp-bar.feil i { background:linear-gradient(90deg,#F39C12,#E67E22); }
+.opp-bar.ok i { background:linear-gradient(90deg,#27AE60,#1E8449); }
+.opp-igjen { text-align:center; font-size:12px; color:var(--text2); }
+.opp-ruter { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:16px 0 10px; }
+.opp-rute { width:46px; height:46px; border-radius:8px; background:var(--ice); border:1px solid var(--border); position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.opp-rute .ikon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; }
+.opp-rute.ferdig .ikon { background:rgba(39,174,96,.82); color:#fff; }
+.opp-rute.laster .ikon { background:rgba(20,33,58,.45); color:#fff; }
+.opp-rute.feil .ikon { background:rgba(231,76,60,.85); color:#fff; }
+.opp-rute .sn { width:18px; height:18px; border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; animation:opp-sn .8s linear infinite; }
+@keyframes opp-sn { to { transform:rotate(360deg); } }
+.opp-melding { background:#FFF6E5; border:1px solid #F3D9A4; border-radius:10px; padding:11px 12px; font-size:12.5px; line-height:1.5; color:#8A5300; }
+.opp-melding b { color:#7A4E00; }
+.opp-melding.ok { background:#E8F7EE; border-color:#BFE6CD; color:#1E5A2E; text-align:center; }
+.opp-knapper { margin-top:auto; display:flex; gap:8px; padding-top:14px; }
+.opp-knapper button { flex:1; padding:12px; border-radius:9px; font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer; border:1.5px solid var(--mid); background:var(--white); color:var(--mid); }
+.opp-knapper button.pri { background:var(--mid); color:#fff; }
+.opp-knapper button.fare { border-color:#E74C3C; color:#E74C3C; }
 </style></head><body>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
@@ -381,7 +409,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="17:00">17:00</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="18:15">18:15</span>
 </div>
 
 <div class="nav">
@@ -740,7 +768,8 @@ const _PRI = {
   lagreForere: 7, lagreLoyper: 7, lagreMaskiner: 7, lagreScootere: 7, lagreInnstillinger: 7,
   hentStartdata: 5, hentStartdataScooter: 5, hentConfig: 4, hentConfigScooter: 4,
   leggTilBilder: 3, lastOppBilde: 2,
-  sendVarselTur: -1, sendVarselFeil: -1, hentServiceData: -2,
+  sendVarselFeil: 6,   // feilvarsel skal ut raskt, ikke bak bildeopplasting
+  sendVarselTur: -1, hentServiceData: -2,
   listAlleBilder: -3, hentAlleBilder: -3, hentDiskStatus: -3
 };
 const _nettKo = [];
@@ -1442,7 +1471,7 @@ function fjernScooterBilde() {
 async function lastOppScooterBilde(fil) {
   const jobb = (async () => {
     const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = () => rej(new Error('Kunne ikke lese bildet')); r.readAsDataURL(fil); });
-    const komprimert = await komprimerBilde(dataUrl, 1280, 0.75);
+    const komprimert = await komprimerBilde(dataUrl, 1000, 0.72);
     document.getElementById('scooter-bilde-img').src = komprimert;
     document.getElementById('scooter-bilde-preview').style.display = 'block';
     _sbStatus('laster', 'Laster opp bildet … Du kan trykke Lagre – det lagres når opplastingen er ferdig.');
@@ -1510,7 +1539,7 @@ async function _bkLesOgKomprimer(item) {
     r.onerror = () => rej(new Error('Kunne ikke lese bildet'));
     r.readAsDataURL(item.fil);
   });
-  item.preview = await komprimerBilde(dataUrl, 1280, 0.75);
+  item.preview = await komprimerBilde(dataUrl, 1000, 0.72);
   item.fil = null;
 }
 
@@ -1700,6 +1729,7 @@ function _bkVurderFerdig() {
 
 // ── Visning ──
 function bkRender() {
+  try { oppTegn(); } catch(e) {}
   _bkRenderPill();
   _bkRenderPop();
   bkRenderSkjema();
@@ -1913,9 +1943,108 @@ function fjernAlleBilder() {
 // Hilsener i kvitteringen – redigeres i maskin-appen under Admin → Innstillinger (nøkkel: hilsenerScooter)
 const _HILSEN_NOKKEL = 'hilsenerScooter';
 const _HILSEN_STD = ['Bra jobba', 'Takk for turen', 'Godt spora', 'Stå på'];
+// ── OPPLASTINGSSKJERM ──
+// Vises etter kvitteringen når det fortsatt er bilder igjen, slik at sjåføren ser nøyaktig
+// når telefonen kan legges bort. Turen er alltid lagret før denne kommer.
+let _oppTurId = null, _oppTotalt = 0, _oppStart = 0, _oppFerdigVedStart = 0, _oppLukkTimer = null;
+function _oppTall(turId) {
+  const mine = _bk.ko.filter(i => !i.forkastet && String(i.turId) === String(turId));
+  return {
+    aktive: mine.filter(i => i.status === 'venter' || i.status === 'laster').length,
+    feil: mine.filter(i => i.status === 'feil').length,
+    liste: mine
+  };
+}
+function visOpplastingsskjerm(turId) {
+  const t = _oppTall(turId);
+  if (!t.aktive && !t.feil) return false;
+  _oppTurId = String(turId);
+  _oppTotalt = t.liste.length + _bkFerdigeFor(turId);
+  _oppFerdigVedStart = _oppTotalt - t.aktive - t.feil;
+  _oppStart = Date.now();
+  let bg = document.getElementById('opp-bg');
+  if (!bg) {
+    bg = document.createElement('div');
+    bg.id = 'opp-bg';
+    bg.className = 'opp-bg';
+    document.body.appendChild(bg);
+  }
+  bg.classList.add('vis');
+  oppTegn();
+  return true;
+}
+function _bkFerdigeFor(turId) {
+  return _bk.ko.filter(i => !i.forkastet && String(i.turId) === String(turId) && i.status === 'ferdig').length;
+}
+function oppSynlig() { const b = document.getElementById('opp-bg'); return !!(b && b.classList.contains('vis')); }
+function lukkOpplasting() {
+  clearTimeout(_oppLukkTimer);
+  const bg = document.getElementById('opp-bg');
+  if (bg) bg.classList.remove('vis');
+  _oppTurId = null;
+}
+function _oppTid(sek) {
+  if (sek <= 10) return 'under 10 sekunder igjen';
+  if (sek < 60) return 'ca. ' + (Math.ceil(sek / 5) * 5) + ' sekunder igjen';
+  const min = Math.ceil(sek / 60);
+  return 'ca. ' + min + (min === 1 ? ' minutt igjen' : ' minutter igjen');
+}
+function oppTegn() {
+  const bg = document.getElementById('opp-bg');
+  if (!bg || !oppSynlig() || !_oppTurId) return;
+  const t = _oppTall(_oppTurId);
+  const ferdig = Math.max(0, _oppTotalt - t.aktive - t.feil);
+  const alleFerdige = t.aktive === 0 && t.feil === 0;
+  const stoppet = t.aktive === 0 && t.feil > 0;
+  // Anslag: mål hvor lang tid bildene i denne runden faktisk har tatt
+  const gjort = ferdig - _oppFerdigVedStart;
+  const snittMs = gjort > 0 ? (Date.now() - _oppStart) / gjort : 4000;
+  const igjenSek = Math.round(t.aktive * snittMs / 1000);
+  const ruter = Array.from({ length: _oppTotalt }, (_, i) => {
+    if (i < ferdig) return '<div class="opp-rute ferdig"><span class="ikon">✓</span></div>';
+    if (i < ferdig + t.feil && stoppet) return '<div class="opp-rute feil"><span class="ikon">!</span></div>';
+    if (i === ferdig && t.aktive) return '<div class="opp-rute laster"><span class="ikon"><span class="sn"></span></span></div>';
+    if (t.feil && i >= _oppTotalt - t.feil) return '<div class="opp-rute feil"><span class="ikon">!</span></div>';
+    return '<div class="opp-rute"></div>';
+  }).join('');
+  const logo = (typeof _kvittLogo === 'function') ? _kvittLogo() : '';
+  const tittel = alleFerdige ? 'Alle bilder er lagt til'
+    : stoppet ? (t.feil === 1 ? 'Ett bilde kom ikke fram' : t.feil + ' bilder kom ikke fram')
+    : 'Laster opp bilder';
+  const under = alleFerdige ? 'Du kan legge bort telefonen'
+    : stoppet ? ferdig + ' av ' + _oppTotalt + ' bilder er lagt til turen'
+    : 'Turen er lagret – bildene kobles til når de er ferdige';
+  const melding = alleFerdige
+    ? '<div class="opp-melding ok">Skjermen kan sovne igjen – ingenting mer skjer i bakgrunnen.</div>'
+    : stoppet
+      ? '<div class="opp-melding"><b>Prøv igjen når du har dekning</b><br>Bildet ligger fortsatt på telefonen. Appen prøver av seg selv når nettet er tilbake.</div>'
+      : '<div class="opp-melding"><b>Hold appen åpen</b><br>Ikke lås telefonen før dette er ferdig. Skjermen holdes våken så lenge opplastingen pågår – stopper den likevel, fortsetter den neste gang du åpner appen.</div>';
+  const knapper = alleFerdige
+    ? '<button type="button" class="pri" onclick="lukkOpplasting()">Lukk</button>'
+    : stoppet
+      ? '<button type="button" class="fare" onclick="bkForkastFeilede(); oppTegn();">Forkast</button><button type="button" class="pri" onclick="bkProvIgjen(); oppTegn();">Prøv igjen</button>'
+      : '<button type="button" onclick="lukkOpplasting()">Fortsett i appen</button>';
+  bg.innerHTML =
+    (logo ? '<img class="opp-logo" src="' + logo + '" alt="">' : '') +
+    '<h3>' + tittel + '</h3>' +
+    '<div class="opp-und">' + under + '</div>' +
+    '<div class="opp-stor">' + ferdig + ' <small>av ' + _oppTotalt + (_oppTotalt === 1 ? ' bilde' : ' bilder') + '</small></div>' +
+    '<div class="opp-bar' + (alleFerdige ? ' ok' : stoppet ? ' feil' : '') + '"><i style="width:' + Math.round(ferdig / Math.max(1, _oppTotalt) * 100) + '%"></i></div>' +
+    '<div class="opp-igjen">' + (alleFerdige ? 'Ferdig på ' + Math.max(1, Math.round((Date.now() - _oppStart) / 1000)) + ' sekunder'
+        : stoppet ? 'Stoppet – appen prøver igjen automatisk' : _oppTid(igjenSek)) + '</div>' +
+    '<div class="opp-ruter">' + ruter + '</div>' +
+    melding +
+    '<div class="opp-knapper">' + knapper + '</div>';
+  if (alleFerdige) {
+    clearTimeout(_oppLukkTimer);
+    _oppLukkTimer = setTimeout(lukkOpplasting, 2500);
+  }
+}
+
 // ── KVITTERING ETTER LAGRET ØKT ──
 // Vises lokalt med en gang, lukker seg selv etter 2 sekunder. Ingen nettkall.
 let _kvittTimer = null;
+let _kvittTurId = null;
 let _sisteHilsen = '';
 function _hilsenListe() {
   const raw = (typeof innstillinger === 'object' && innstillinger) ? innstillinger[_HILSEN_NOKKEL] : '';
@@ -2165,6 +2294,7 @@ function visKvittering(d) {
     '</div>';
   void bg.offsetWidth;
   bg.classList.add('vis');
+  _kvittTurId = d.turId || null;
   clearTimeout(_kvittTimer);
   _kvittTimer = setTimeout(lukkKvittering, _ms);
 }
@@ -2183,6 +2313,10 @@ function lukkKvittering() {
   clearTimeout(_kvittTimer);
   const bg = document.getElementById('kvitt-bg');
   if (bg) bg.classList.remove('vis');
+  // Er det bilder igjen, tar opplastingsskjermen over – ellers går man rett til dashboardet
+  const turId = _kvittTurId;
+  _kvittTurId = null;
+  if (turId) { try { visOpplastingsskjerm(turId); } catch(e) { console.log('Opplastingsskjerm feilet:', e); } }
 }
 function _kvittTid(min) {
   const m = Math.round(min || 0);
@@ -2324,6 +2458,7 @@ async function lagreTur() {
           meta: '<b>' + tur.scooter + '</b>' + (tur.slutt ? ' · parkert ' + _normTid(tur.slutt) : ''),
           merker: _merker,
           varsel: _kvittBildeVarsel(tur.id),
+          turId: tur.id,
           status: 'Sender til regnearket …'
         });
       } catch(e) { console.log('Kvittering feilet:', e); }
@@ -3366,6 +3501,51 @@ function visNyFeilPanel() {
   document.getElementById('feil-beskrivelse').value = '';
   document.getElementById('feil-modal').classList.add('open');
 }
+// ── UTKØ FOR FEILMELDINGER ──
+// Feilmeldingen lagres på telefonen med en gang og sendes i bakgrunnen, på samme måte som turer.
+// Da lukker skjemaet seg straks – også når bilder holder på å lastes opp eller nettet er borte.
+// Backend kjenner igjen ID-en, så nye forsøk kan ikke gi dobbelt melding.
+const _FEIL_KO_KEY = 'sf_feil_ko_scooter_v1';
+let _feilKoSender = false;
+function _lesFeilKo() { try { const r = localStorage.getItem(_FEIL_KO_KEY); return r ? JSON.parse(r) : []; } catch(e) { return []; } }
+function _skrivFeilKo(liste) { try { localStorage.setItem(_FEIL_KO_KEY, JSON.stringify(liste)); } catch(e) {} }
+function feilKoLeggTil(feil) {
+  const liste = _lesFeilKo();
+  liste.push({ feil: feil, appType: 'scooter', lagt: Date.now(), forsok: 0 });
+  _skrivFeilKo(liste);
+}
+function feilKoAntall() { return _lesFeilKo().length; }
+async function feilKoSend() {
+  if (_feilKoSender) return;
+  const liste = _lesFeilKo();
+  if (!liste.length) return;
+  _feilKoSender = true;
+  try {
+    for (const post of liste) {
+      try {
+        const res = await apiKall({ action: 'lagreFeil', feil: post.feil });
+        if (res && res.feil) throw new Error(res.feil);
+        _skrivFeilKo(_lesFeilKo().filter(p => String(p.feil.id) !== String(post.feil.id)));
+        // Varselet sendes først når meldingen faktisk ligger i regnearket
+        if (!res.duplikat) {
+          apiKall({ action: 'sendVarselFeil', feil: post.feil, appType: post.appType })
+            .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
+        }
+        try { await hentFeilData(); } catch(e) {}
+      } catch(e) {
+        post.forsok = (post.forsok || 0) + 1;
+        console.warn('Feilmeldingen er ikke sendt ennå:', e && e.message || e);
+        const oppdatert = _lesFeilKo().map(p => String(p.feil.id) === String(post.feil.id) ? post : p);
+        _skrivFeilKo(oppdatert);
+        break;   // ett om gangen – resten venter til neste forsøk
+      }
+    }
+  } finally { _feilKoSender = false; }
+}
+setInterval(() => { if (feilKoAntall() && navigator.onLine !== false && !document.hidden) feilKoSend(); }, 30000);
+window.addEventListener('online', () => feilKoSend());
+document.addEventListener('visibilitychange', () => { if (!document.hidden && feilKoAntall()) feilKoSend(); });
+
 let _lagrerFeil = false;
 async function lagreFeilPanel() {
   if (_lagrerFeil) return;   // hindrer at dobbelttrykk gir to meldinger og to e-poster
@@ -3386,21 +3566,22 @@ async function lagreFeilPanel() {
     if (knapp && knapp.disabled && _bkAktive().length) knapp.innerHTML = 'Venter på bilde …';
   }, 2500);
   try {
-    const res = await apiKall({ action: 'lagreFeil', feil });
-    if (res.feil) throw new Error(res.feil);
-    // Send e-post-varsel i bakgrunn (fire-and-forget)
+    feil.id = Date.now().toString();      // klient-ID → trygt å prøve igjen
+    feilKoLeggTil(feil);
+    // Vis meldingen lokalt med en gang
     try {
-      const feilMedId = Object.assign({}, feil, { id: res.id });
-      apiKall({ action: 'sendVarselFeil', feil: feilMedId, appType: 'scooter' })
-        .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
-    } catch(e) { console.log('Kunne ikke starte varsel-sending:', e); }
-    toast('Feil registrert ✓', 'ok');
-    // Om feilen ble meldt via "Rapporter feil"-knappen i Ny økt-fanen: merk pågående tur med feil-flagg
+      feilData.push({ id: feil.id, maskin: feil.maskin, forer: feil.forer, kmstand: feil.kmstand,
+        beskrivelse: feil.beskrivelse, enhet: feil.enhet, dato: new Date().toISOString().slice(0,10),
+        status: 'Ny', statusDato: '', venter: true });
+      if (typeof oppdaterServiceBadge === 'function') oppdaterServiceBadge();
+      if (typeof renderDashboard === 'function' && document.getElementById('tab-dashboard').classList.contains('active')) renderDashboard();
+    } catch(e) { console.log('Lokal visning av feil feilet:', e); }
     if (_feilFraNyOkt) { harFeilFraDenneOkta = true; _feilFraNyOkt = false; }
-    // Lukk feil-modal og HELE service-panelet så bruker naturlig fortsetter tur-registrering.
+    // Lukk med en gang – sendingen går i bakgrunnen
     document.getElementById('feil-modal').classList.remove('open');
     lukkAllePaneler();
-    await hentFeilData();
+    toast('Feil registrert ✓', 'ok');
+    feilKoSend();
   } catch(e) { toast('Feil: ' + e.message, 'err'); }
   finally {
     clearTimeout(_ventTimer);
@@ -4111,6 +4292,7 @@ async function initAlt() {
 initAlt();
 startDypLenke();   // ?tur=<id> fra e-post
 setTimeout(() => { try { _varselKoSend(); } catch(e) {} }, 6000);   // mail som ikke rakk å bli sendt sist
+setTimeout(() => { try { feilKoSend(); } catch(e) {} }, 7000);   // feilmeldinger som ikke rakk å bli sendt sist
 </script>
 
 <!-- Lightbox for forstørret bildevisning -->
