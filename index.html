@@ -48,7 +48,7 @@
 .photo-thumb-wrap .fjern-btn { position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.65); color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:11px; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; }
 .photo-badge { display:inline-flex; align-items:center; gap:3px; font-size:11px; color:var(--text2); background:var(--ice); border:1px solid var(--border); border-radius:12px; padding:2px 7px 2px 6px; cursor:pointer; margin-left:4px; }
 .photo-badge:hover { background:var(--snow); border-color:var(--mid); color:var(--mid); }
-.dash-thumbs { display:flex; gap:4px; flex-shrink:0; }
+.dash-thumbs { display:flex; gap:4px; flex-shrink:0; max-width:132px; overflow:hidden; }
 .dash-thumb { width:36px; height:36px; border-radius:5px; overflow:hidden; cursor:pointer; background:var(--ice); border:1px solid var(--border); }
 .dash-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 .lb-back { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:400; display:none; align-items:center; justify-content:center; padding:20px; }
@@ -150,6 +150,7 @@
 .bk-veil{position:absolute;inset:0;background:rgba(20,33,58,.42);display:flex;align-items:center;justify-content:center;pointer-events:none}
 .bk-veil .bk-spin{width:22px;height:22px;border-width:3px}
 .bk-warn{width:22px;height:22px;border-radius:50%;background:#E67E22;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.bk-mer{position:absolute;right:1px;bottom:1px;background:rgba(15,30,50,.85);color:#fff;font-size:10px;font-weight:700;line-height:1;padding:2px 4px;border-radius:5px;pointer-events:none}
 .bk-vent{position:relative;display:inline-block;overflow:hidden;vertical-align:middle}
 .bk-vent img{width:100%;height:100%;object-fit:cover;display:block}
 .bk-vent .bk-spin{width:16px;height:16px;border-width:2px}
@@ -240,6 +241,8 @@
 .kvitt-merke { font-size:10px; font-weight:600; padding:3px 8px; border-radius:20px; background:var(--snow); border:1px solid var(--border); color:var(--text2); }
 .kvitt-merke.nil { background:#FFF6E5; border-color:#F3D9A4; color:#9A6B12; }
 .kvitt-merke.sammen { background:#EEF5FC; border-color:#C8DDF0; color:#1A4B7A; }
+.kvitt-varsel { font-size:12px; line-height:1.5; color:#8A5300; background:#FFF6E5; border:1px solid #F3D9A4; border-radius:9px; padding:9px 11px; margin-top:10px; text-align:left; }
+.kvitt-varsel b { color:#7A4E00; }
 .kvitt-status { display:flex; align-items:center; justify-content:center; gap:6px; font-size:11.5px; color:var(--text2); padding:11px 0 9px; }
 .kvitt-status .prikk { width:7px; height:7px; border-radius:50%; background:#F39C12; animation:kvitt-puls 1s infinite; flex-shrink:0; }
 .kvitt-status.ok { color:var(--success); }
@@ -291,7 +294,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v21.09 15:20</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v21.09 16:20</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -1467,6 +1470,7 @@ function bkLeggTilFiler(filer) {
       status: 'venter', url: '', turId: null, iSkjema: true, forkastet: false, koblet: false, feil: '' });
   });
   bkRender();
+  bkStyrWakeLock();
   _bkForbered();
 }
 
@@ -1500,10 +1504,12 @@ async function _bkForbered() {
 async function _bkStart() {
   if (_bk.kjorer) return;
   _bk.kjorer = true;
+  bkStyrWakeLock();
   try {
     let item;
     while ((item = _bk.ko.find(i => !i.forkastet && i.status === 'venter' && i.preview))) {
       item.status = 'laster'; item.feil = '';
+      bkStyrWakeLock();
       bkRender(); if (item.turId) bkRerender();
       try {
         if (!item.url) {
@@ -1593,6 +1599,43 @@ function bkFjern(kid) {
   bkRender();
   _bkVurderFerdig();
 }
+// ── SKJERMEN SKAL IKKE SOVNE MENS BILDER LASTES OPP ──
+// Mobilnettlesere fryser siden når skjermen låses, og da stopper opplastingen.
+// Wake Lock holder skjermen våken så lenge det er bilder igjen (Chrome/Android og iOS 16.4+).
+let _wakeLock = null;
+async function _wakeLockPa() {
+  try {
+    if (_wakeLock || !('wakeLock' in navigator) || document.hidden) return;
+    _wakeLock = await navigator.wakeLock.request('screen');
+    _wakeLock.addEventListener('release', () => { _wakeLock = null; });
+  } catch(e) { _wakeLock = null; }   // ikke støttet eller avvist – da gjelder bare varselteksten
+}
+function _wakeLockAv() {
+  try { if (_wakeLock) { _wakeLock.release(); _wakeLock = null; } } catch(e) { _wakeLock = null; }
+}
+function bkStyrWakeLock() {
+  const aktive = (typeof _bkAktive === 'function') ? _bkAktive().length : 0;
+  if (aktive > 0) _wakeLockPa(); else _wakeLockAv();
+}
+
+// Kom appen fram igjen etter at skjermen var låst, fortsetter vi der vi slapp:
+// bilder som stoppet midt i lastes opp på nytt automatisk.
+function bkFortsettEtterPause() {
+  try {
+    const feilede = _bkFeilede();
+    if (feilede.length) {
+      console.log('Fortsetter opplasting av ' + feilede.length + ' bilde(r) etter pause');
+      feilede.forEach(i => { i.status = 'venter'; i.feil = ''; });
+      bkRender();
+    }
+    _bkForbered();
+    _bkStart();
+    bkStyrWakeLock();
+  } catch(e) { console.log('Kunne ikke gjenoppta opplasting:', e); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) bkFortsettEtterPause(); });
+window.addEventListener('online', () => bkFortsettEtterPause());
+
 function bkProvIgjen() {
   _bkFeilede().forEach(i => { i.status = 'venter'; i.feil = ''; });
   bkRender();
@@ -1611,6 +1654,7 @@ function bkForkastFeilede() {
 }
 
 function _bkVurderFerdig() {
+  bkStyrWakeLock();
   if (_bkAktive().length || _bkFeilede().length) { bkRender(); return; }
   const lagtTil = _bk.ko.filter(i => !i.forkastet && i.status === 'ferdig' && i.turId).length;
   // Behold bare bilder som fortsatt hører til skjemaet og ikke er ferdige (skal ikke finnes her)
@@ -1725,10 +1769,14 @@ function bkRenderSkjema() {
 }
 
 // Små miniatyrer for bilder som fortsatt lastes opp til en lagret tur (dashboard/logg)
-function bkVentendeHtml(turId, cls) {
-  return _bk.ko.filter(i => !i.forkastet && i.turId && String(i.turId) === String(turId) && i.status !== 'ferdig')
-    .map(i => `<span class="${cls} bk-vent" title="${i.status === 'feil' ? 'Opplasting feilet' : 'Lastes opp …'}">${i.preview ? `<img src="${i.preview}" alt="">` : ''}<span class="bk-veil">${i.status === 'feil' ? '<span class="bk-warn">!</span>' : '<span class="bk-spin"></span>'}</span></span>`)
-    .join('');
+function bkVentendeHtml(turId, cls, maks) {
+  const liste = _bk.ko.filter(i => !i.forkastet && i.turId && String(i.turId) === String(turId) && i.status !== 'ferdig');
+  if (!liste.length) return '';
+  // Vis bare ett par miniatyrer – ellers presser de datoen ut av kortet på mobil
+  const grense = maks || 1;
+  const vis = liste.slice(0, grense);
+  const rest = liste.length - vis.length;
+  return vis.map((i, n) => `<span class="${cls} bk-vent" title="${i.status === 'feil' ? 'Opplasting feilet' : 'Lastes opp …'}">${i.preview ? `<img src="${i.preview}" alt="">` : ''}<span class="bk-veil">${i.status === 'feil' ? '<span class="bk-warn">!</span>' : '<span class="bk-spin"></span>'}</span>${n === vis.length - 1 && rest > 0 ? `<span class="bk-mer">+${rest}</span>` : ''}</span>`).join('');
 }
 
 function bkToast(msg, type) {
@@ -1829,7 +1877,8 @@ function _bildeThumbs(tur, maks) {
   const vent = bkVentendeHtml(tur.id, 'dash-thumb');
   if (!urls.length) return vent ? `<div class="dash-thumbs">${vent}</div>` : '';
   const urlsAttr = JSON.stringify(urls).replace(/"/g,'&quot;');
-  const vis = urls.slice(0, maks || 3);
+  // Lastes det opp bilder, gir vi plass til den ruta og viser færre ferdige
+  const vis = urls.slice(0, vent ? 2 : (maks || 3));
   const rest = urls.length - vis.length;
   return `<div class="dash-thumbs">${vis.map((u, i) => `<div class="dash-thumb" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${i})"><img src="${_thumb(u, 160)}" loading="lazy" decoding="async" alt="Bilde"></div>`).join('')}${rest > 0 ? `<div class="dash-thumb" style="display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text2);cursor:pointer" onclick="event.stopPropagation();apneLightbox(${urlsAttr}, ${vis.length})">+${rest}</div>` : ''}${vent}</div>`;
 }
@@ -1936,6 +1985,14 @@ function lagHilsen(navn) {
 function _kvittLogo() {
   const img = document.querySelector('#center-loader img');
   return img && img.src ? img.src : '';
+}
+function _bkAntallVentende(turId) {
+  try { return _bk.ko.filter(i => !i.forkastet && String(i.turId) === String(turId) && i.status !== 'ferdig').length; } catch(e) { return 0; }
+}
+function _kvittBildeVarsel(turId) {
+  const n = _bkAntallVentende(turId);
+  if (!n) return '';
+  return '<b>' + n + (n === 1 ? ' bilde lastes opp' : ' bilder lastes opp') + '</b><br>Hold appen åpen til det er ferdig – skjermen holdes våken så lenge det pågår.';
 }
 function _kvittVarighet() {
   // Sekunder kvitteringen står – settes i maskin-appen under Admin → Innstillinger
@@ -2147,7 +2204,8 @@ function visKvittering(d) {
       '<div class="kvitt-hilsen">' + (d.hilsen || '') + '</div>' +
       '<div class="kvitt-under">' + (d.under || '') + '</div>' +
       (tall ? '<div class="kvitt-tall">' + tall + '</div>' : '') +
-      '<div class="kvitt-meta">' + (d.meta || '') + (merker ? '<div class="kvitt-merker">' + merker + '</div>' : '') + '</div>' +
+      '<div class="kvitt-meta">' + (d.meta || '') + (merker ? '<div class="kvitt-merker">' + merker + '</div>' : '') +
+        (d.varsel ? '<div class="kvitt-varsel">' + d.varsel + '</div>' : '') + '</div>' +
       '<div class="kvitt-status" id="kvitt-status"><span class="prikk"></span>' + (d.status || 'Lagret på telefonen') + '</div>' +
       '<div class="kvitt-hint">Lukkes av seg selv – trykk for å lukke nå</div>' +
       '<div class="kvitt-progress"><i style="animation-duration:' + _ms + 'ms"></i></div>' +
@@ -2337,6 +2395,7 @@ try {
     tall: _tall,
     meta: '<b>' + loype + '</b>' + (tur.maskin ? '<br>' + tur.maskin : '') + ' · ferdig ' + tur.slutt,
     merker: _merker,
+    varsel: _kvittBildeVarsel(tur.id),
     status: 'Sender til regnearket …'
   });
 } catch(e) { console.log('Kvittering feilet:', e); }
