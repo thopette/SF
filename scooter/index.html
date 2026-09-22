@@ -336,8 +336,10 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .opp-igjen { text-align:center; font-size:12px; color:var(--text2); }
 .opp-ruter { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin:16px 0 10px; }
 .opp-rute { width:46px; height:46px; border-radius:8px; background:var(--ice); border:1px solid var(--border); position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.opp-rute img { width:100%; height:100%; object-fit:cover; display:block; }
+.opp-rute.venter img { opacity:.45; filter:grayscale(.4); }
 .opp-rute .ikon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; }
-.opp-rute.ferdig .ikon { background:rgba(39,174,96,.82); color:#fff; }
+.opp-rute.ferdig .ikon { background:rgba(39,174,96,.72); color:#fff; }
 .opp-rute.laster .ikon { background:rgba(20,33,58,.45); color:#fff; }
 .opp-rute.feil .ikon { background:rgba(231,76,60,.85); color:#fff; }
 .opp-rute .sn { width:18px; height:18px; border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; animation:opp-sn .8s linear infinite; }
@@ -409,7 +411,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="21.09" data-tid="18:15">18:15</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="22.09" data-tid="09:30">09:30</span>
 </div>
 
 <div class="nav">
@@ -730,6 +732,7 @@ function _genUploadId() {
 // GET brukes for lese-operasjoner (unngår Apps Script sin POST→302→404-redirect-bug)
 // POST brukes for skrive-operasjoner og store payloads (bilder)
 // Tidsgrenser per type kall: vanlige kall feiler raskt, bildekall får tiden de trenger.
+let _sisteOpplastingForsok = null;   // vises i opplastingsskjermen ved nettverkshikk
 const _TREGE_ACTIONS = ['lastOppBilde','hentAlleBilder','listAlleBilder','hentDiskStatus','sjekkDiskOgSendVarsel',
   'nullstillHeleBildearkivet','ryddOppSlettedeBildeReferanser','slettFlereBilder','slettFlereItems','slettAltData',
   'hentRyddedata','regnUtDiffPaNytt'];
@@ -801,6 +804,7 @@ async function _apiKallRa(body, forsokNr, opts) {
   const brukGet = bodyStr.length < 1500 && !body.tur && !body.base64 && !body.forere && !body.loyper && !body.maskiner && !body.innstillinger && !body.feil && !body.service && !body.kontakt && !body.scootere && !body.items && !body.bildeIds;
   const kanPrøveIgjen = brukGet || _IDEMPOTENTE_SKRIV.indexOf(body.action) > -1;
   const nyttForsøk = async (grunn) => {
+    if (body.action === 'lastOppBilde') { try { _sisteOpplastingForsok = { nr: forsokNr + 1, tid: Date.now() }; oppTegn(); } catch(_) {} }
     console.warn(`${grunn} – prøver igjen (forsøk ${forsokNr + 1}/${_maksForsok})…`);
     try { toast(`Nettverkshikk – prøver igjen (${forsokNr + 1}/${_maksForsok})…`, ''); } catch(_) {}
     await new Promise(r => setTimeout(r, _RETRY_PAUSE_MS[forsokNr - 1] || 4000));
@@ -1471,7 +1475,7 @@ function fjernScooterBilde() {
 async function lastOppScooterBilde(fil) {
   const jobb = (async () => {
     const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = e => res(e.target.result); r.onerror = () => rej(new Error('Kunne ikke lese bildet')); r.readAsDataURL(fil); });
-    const komprimert = await komprimerBilde(dataUrl, 1000, 0.72);
+    const komprimert = await komprimerBilde(dataUrl, _bildeMaal(), _bildeKvalitet());
     document.getElementById('scooter-bilde-img').src = komprimert;
     document.getElementById('scooter-bilde-preview').style.display = 'block';
     _sbStatus('laster', 'Laster opp bildet … Du kan trykke Lagre – det lagres når opplastingen er ferdig.');
@@ -1532,6 +1536,13 @@ function bkLeggTilFiler(filer) {
   _bkForbered();
 }
 
+// Bildestørrelse ved opplasting – settes i maskin-appen under Admin → Innstillinger.
+// Mindre bilder = raskere opplasting på dårlig dekning.
+function _bildeMaal() {
+  const v = parseInt((typeof innstillinger === 'object' && innstillinger) ? innstillinger.bildeStorrelse : 0);
+  return [1280, 1000, 800].indexOf(v) > -1 ? v : 1000;
+}
+function _bildeKvalitet() { const m = _bildeMaal(); return m >= 1280 ? 0.75 : m >= 1000 ? 0.72 : 0.68; }
 async function _bkLesOgKomprimer(item) {
   const dataUrl = await new Promise((res, rej) => {
     const r = new FileReader();
@@ -1539,7 +1550,7 @@ async function _bkLesOgKomprimer(item) {
     r.onerror = () => rej(new Error('Kunne ikke lese bildet'));
     r.readAsDataURL(item.fil);
   });
-  item.preview = await komprimerBilde(dataUrl, 1000, 0.72);
+  item.preview = await komprimerBilde(dataUrl, _bildeMaal(), _bildeKvalitet());
   item.fil = null;
 }
 
@@ -1947,6 +1958,14 @@ const _HILSEN_STD = ['Bra jobba', 'Takk for turen', 'Godt spora', 'Stå på'];
 // Vises etter kvitteringen når det fortsatt er bilder igjen, slik at sjåføren ser nøyaktig
 // når telefonen kan legges bort. Turen er alltid lagret før denne kommer.
 let _oppTurId = null, _oppTotalt = 0, _oppStart = 0, _oppFerdigVedStart = 0, _oppLukkTimer = null;
+let _oppTider = [];          // hvor lang tid hvert ferdig bilde tok i denne runden
+let _oppSistFerdig = 0;      // antall ferdige forrige gang vi tegnet
+function _oppVarighet(ms) {
+  const s = Math.max(1, Math.round(ms / 1000));
+  if (s < 60) return s + ' sek';
+  const m = Math.floor(s / 60), r = s % 60;
+  return m + ' min' + (r ? ' ' + r + ' sek' : '');
+}
 function _oppTall(turId) {
   const mine = _bk.ko.filter(i => !i.forkastet && String(i.turId) === String(turId));
   return {
@@ -1959,9 +1978,11 @@ function visOpplastingsskjerm(turId) {
   const t = _oppTall(turId);
   if (!t.aktive && !t.feil) return false;
   _oppTurId = String(turId);
-  _oppTotalt = t.liste.length + _bkFerdigeFor(turId);
+  // NB: t.liste inneholder allerede de ferdige – de skal ikke telles en gang til
+  _oppTotalt = t.liste.length;
   _oppFerdigVedStart = _oppTotalt - t.aktive - t.feil;
   _oppStart = Date.now();
+  _oppTider = [];
   let bg = document.getElementById('opp-bg');
   if (!bg) {
     bg = document.createElement('div');
@@ -1979,6 +2000,8 @@ function _bkFerdigeFor(turId) {
 function oppSynlig() { const b = document.getElementById('opp-bg'); return !!(b && b.classList.contains('vis')); }
 function lukkOpplasting() {
   clearTimeout(_oppLukkTimer);
+  _oppLukkTimer = null;
+  _oppTider = []; _oppSistFerdig = 0;
   const bg = document.getElementById('opp-bg');
   if (bg) bg.classList.remove('vis');
   _oppTurId = null;
@@ -1993,19 +2016,27 @@ function oppTegn() {
   const bg = document.getElementById('opp-bg');
   if (!bg || !oppSynlig() || !_oppTurId) return;
   const t = _oppTall(_oppTurId);
+  if (t.liste.length > _oppTotalt) _oppTotalt = t.liste.length;
   const ferdig = Math.max(0, _oppTotalt - t.aktive - t.feil);
   const alleFerdige = t.aktive === 0 && t.feil === 0;
   const stoppet = t.aktive === 0 && t.feil > 0;
-  // Anslag: mål hvor lang tid bildene i denne runden faktisk har tatt
-  const gjort = ferdig - _oppFerdigVedStart;
-  const snittMs = gjort > 0 ? (Date.now() - _oppStart) / gjort : 4000;
-  const igjenSek = Math.round(t.aktive * snittMs / 1000);
-  const ruter = Array.from({ length: _oppTotalt }, (_, i) => {
-    if (i < ferdig) return '<div class="opp-rute ferdig"><span class="ikon">✓</span></div>';
-    if (i < ferdig + t.feil && stoppet) return '<div class="opp-rute feil"><span class="ikon">!</span></div>';
-    if (i === ferdig && t.aktive) return '<div class="opp-rute laster"><span class="ikon"><span class="sn"></span></span></div>';
-    if (t.feil && i >= _oppTotalt - t.feil) return '<div class="opp-rute feil"><span class="ikon">!</span></div>';
-    return '<div class="opp-rute"></div>';
+  // Mål faktisk tid per bilde i denne runden – det gir et estimat som treffer
+  if (ferdig > _oppSistFerdig) {
+    const naa = Date.now();
+    const forrige = _oppTider.length ? _oppTider[_oppTider.length - 1].tid : _oppStart;
+    for (let i = _oppSistFerdig; i < ferdig; i++) _oppTider.push({ tid: naa, brukt: (naa - forrige) / Math.max(1, ferdig - _oppSistFerdig) });
+    _oppSistFerdig = ferdig;
+  }
+  const medgatt = Date.now() - _oppStart;
+  const snittMs = _oppTider.length ? _oppTider.reduce((sum, x) => sum + x.brukt, 0) / _oppTider.length : 0;
+  const igjenSek = snittMs ? Math.round(t.aktive * snittMs / 1000) : 0;
+  // Miniatyrer: viser hvilket bilde som er hvor i løypa
+  const ruter = t.liste.map(i => {
+    const bilde = i.preview ? '<img src="' + i.preview + '" alt="">' : '';
+    if (i.status === 'ferdig') return '<div class="opp-rute ferdig">' + bilde + '<span class="ikon">✓</span></div>';
+    if (i.status === 'feil') return '<div class="opp-rute feil">' + bilde + '<span class="ikon">!</span></div>';
+    if (i.status === 'laster') return '<div class="opp-rute laster">' + bilde + '<span class="ikon"><span class="sn"></span></span></div>';
+    return '<div class="opp-rute venter">' + bilde + '</div>';
   }).join('');
   const logo = (typeof _kvittLogo === 'function') ? _kvittLogo() : '';
   const tittel = alleFerdige ? 'Alle bilder er lagt til'
@@ -2014,6 +2045,16 @@ function oppTegn() {
   const under = alleFerdige ? 'Du kan legge bort telefonen'
     : stoppet ? ferdig + ' av ' + _oppTotalt + ' bilder er lagt til turen'
     : 'Turen er lagret – bildene kobles til når de er ferdige';
+  // Linje under søyla: medgått tid, og estimat så snart vi har målt ett bilde
+  let linje;
+  if (alleFerdige) linje = 'Ferdig på ' + _oppVarighet(medgatt);
+  else if (stoppet) linje = 'Stoppet etter ' + _oppVarighet(medgatt) + ' – appen prøver igjen automatisk';
+  else {
+    const forsok = (_sisteOpplastingForsok && Date.now() - _sisteOpplastingForsok.tid < 20000)
+      ? ' · nytt forsøk ' + _sisteOpplastingForsok.nr + '/4' : '';
+    linje = 'Medgått ' + _oppVarighet(medgatt)
+      + (igjenSek ? ' · ' + _oppTid(igjenSek) : ' · beregner tid …') + forsok;
+  }
   const melding = alleFerdige
     ? '<div class="opp-melding ok">Skjermen kan sovne igjen – ingenting mer skjer i bakgrunnen.</div>'
     : stoppet
@@ -2030,16 +2071,15 @@ function oppTegn() {
     '<div class="opp-und">' + under + '</div>' +
     '<div class="opp-stor">' + ferdig + ' <small>av ' + _oppTotalt + (_oppTotalt === 1 ? ' bilde' : ' bilder') + '</small></div>' +
     '<div class="opp-bar' + (alleFerdige ? ' ok' : stoppet ? ' feil' : '') + '"><i style="width:' + Math.round(ferdig / Math.max(1, _oppTotalt) * 100) + '%"></i></div>' +
-    '<div class="opp-igjen">' + (alleFerdige ? 'Ferdig på ' + Math.max(1, Math.round((Date.now() - _oppStart) / 1000)) + ' sekunder'
-        : stoppet ? 'Stoppet – appen prøver igjen automatisk' : _oppTid(igjenSek)) + '</div>' +
+    '<div class="opp-igjen">' + linje + '</div>' +
     '<div class="opp-ruter">' + ruter + '</div>' +
     melding +
     '<div class="opp-knapper">' + knapper + '</div>';
-  if (alleFerdige) {
-    clearTimeout(_oppLukkTimer);
-    _oppLukkTimer = setTimeout(lukkOpplasting, 2500);
-  }
+  // Skjermen tegnes hvert sekund – nedtellingen må bare settes én gang, ellers fornyes den i det uendelige
+  if (alleFerdige && !_oppLukkTimer) _oppLukkTimer = setTimeout(lukkOpplasting, 2500);
 }
+// Medgått tid skal telle selv når ingenting annet skjer
+setInterval(() => { if (oppSynlig()) oppTegn(); }, 1000);
 
 // ── KVITTERING ETTER LAGRET ØKT ──
 // Vises lokalt med en gang, lukker seg selv etter 2 sekunder. Ingen nettkall.
