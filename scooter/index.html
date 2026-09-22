@@ -411,7 +411,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="22.09" data-tid="09:30">09:30</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="22.09" data-tid="10:15">10:15</span>
 </div>
 
 <div class="nav">
@@ -739,6 +739,8 @@ const _TREGE_ACTIONS = ['lastOppBilde','hentAlleBilder','listAlleBilder','hentDi
 // Skrive-kall som trygt kan sendes på nytt (backend gjenkjenner duplikater)
 const _IDEMPOTENTE_SKRIV = ['lastOppBilde','leggTil','leggTilScooter','oppdaterVaer','oppdaterVaerScooter','oppdaterScooterTur'];
 function _timeoutFor(body) {
+  // Et bilde som henger skal ikke låse køen i halvannet minutt – 45 sek holder selv på tregt nett
+  if (body.action === 'lastOppBilde') return 45000;
   if (_TREGE_ACTIONS.indexOf(body.action) > -1) return 90000;
   if ((body.action === 'hentAlle' || body.action === 'hentAlleScooter') && !body.fraDato) return 25000;
   return 15000;
@@ -771,8 +773,8 @@ const _PRI = {
   lagreForere: 7, lagreLoyper: 7, lagreMaskiner: 7, lagreScootere: 7, lagreInnstillinger: 7,
   hentStartdata: 5, hentStartdataScooter: 5, hentConfig: 4, hentConfigScooter: 4,
   leggTilBilder: 3, lastOppBilde: 2,
-  sendVarselFeil: 6,   // feilvarsel skal ut raskt, ikke bak bildeopplasting
-  sendVarselTur: -1, hentServiceData: -2,
+  sendVarselFeil: 6, sendVarselTur: 6,   // varsler skal ut raskt, ikke bak bildeopplasting
+  hentServiceData: -2,
   listAlleBilder: -3, hentAlleBilder: -3, hentDiskStatus: -3
 };
 const _nettKo = [];
@@ -1540,9 +1542,10 @@ function bkLeggTilFiler(filer) {
 // Mindre bilder = raskere opplasting på dårlig dekning.
 function _bildeMaal() {
   const v = parseInt((typeof innstillinger === 'object' && innstillinger) ? innstillinger.bildeStorrelse : 0);
-  return [1280, 1000, 800].indexOf(v) > -1 ? v : 1000;
+  // Standard er satt lavt mens vi tester opplastingstid – endres under Admin → Innstillinger → Bilder
+  return [1280, 1000, 800, 640].indexOf(v) > -1 ? v : 640;
 }
-function _bildeKvalitet() { const m = _bildeMaal(); return m >= 1280 ? 0.75 : m >= 1000 ? 0.72 : 0.68; }
+function _bildeKvalitet() { const m = _bildeMaal(); return m >= 1280 ? 0.75 : m >= 1000 ? 0.72 : m >= 800 ? 0.68 : 0.62; }
 async function _bkLesOgKomprimer(item) {
   const dataUrl = await new Promise((res, rej) => {
     const r = new FileReader();
@@ -1577,17 +1580,22 @@ async function _bkStart() {
   try {
     let item;
     while ((item = _bk.ko.find(i => !i.forkastet && i.status === 'venter' && i.preview))) {
+      // En tur som venter på å bli lagret skal alltid foran bildene i køen
+      let vent = 0;
+      while (_turKo && _turKo.length && vent < 30) { await new Promise(r => setTimeout(r, 1000)); vent++; }
       item.status = 'laster'; item.feil = '';
       bkStyrWakeLock();
       bkRender(); if (item.turId) bkRerender();
       try {
         if (!item.url) {
+          // Maks to forsøk her: et bilde som feiler skal slippe køen fri, ikke holde den i minutter.
+          // Bildekøa prøver selv igjen litt senere, og ved «Prøv igjen».
           const res = await apiKall({
             action: 'lastOppBilde',
             filnavn: item.navn.replace(/\.(png|heic|heif|webp|jpeg)$/i, '.jpg'),
             base64: item.preview, mimeType: 'image/jpeg',
             uploadId: item.kid   // samme ID ved «Prøv igjen» → ingen duplikater på Drive
-          });
+          }, 1, { maksForsok: 2 });
           if (res.feil) throw new Error(res.feil);
           item.url = res.url; item.filId = res.filId || '';
           _bk.lokal[res.url] = item.preview;
@@ -1705,8 +1713,16 @@ function bkFortsettEtterPause() {
 document.addEventListener('visibilitychange', () => { if (!document.hidden) bkFortsettEtterPause(); });
 window.addEventListener('online', () => bkFortsettEtterPause());
 
+// Prøver selv igjen på feilede bilder mens appen står åpen – men ikke i det uendelige
+setInterval(() => {
+  if (document.hidden || navigator.onLine === false) return;
+  const kandidater = _bkFeilede().filter(i => (i.forsok || 0) < 5);
+  if (!kandidater.length) return;
+  kandidater.forEach(i => { i.forsok = (i.forsok || 0) + 1; i.status = 'venter'; i.feil = ''; });
+  bkRender(); _bkStart();
+}, 25000);
 function bkProvIgjen() {
-  _bkFeilede().forEach(i => { i.status = 'venter'; i.feil = ''; });
+  _bkFeilede().forEach(i => { i.status = 'venter'; i.feil = ''; i.forsok = 0; });
   bkRender();
   _bkForbered();
   _bkStart();
@@ -2224,7 +2240,18 @@ setInterval(() => { if (!document.hidden) oppdaterData({ maksAlder: 9 * 60 * 100
 const _VARSEL_KO_KEY = 'sf_varsel_ko_scooter_v1';
 function _lesVarselKo() { try { const r = localStorage.getItem(_VARSEL_KO_KEY); return r ? JSON.parse(r) : []; } catch(e) { return []; } }
 function _skrivVarselKo(liste) { try { localStorage.setItem(_VARSEL_KO_KEY, JSON.stringify(liste)); } catch(e) {} }
+// Turer som alt har fått mail – da slipper vi å be om den en gang til
+const _VARSEL_SENDT_KEY = 'sf_varsel_sendt_scooter_v1';
+function _lesVarselSendt() { try { const r = localStorage.getItem(_VARSEL_SENDT_KEY); return r ? JSON.parse(r) : []; } catch(e) { return []; } }
+function _merkVarselSendt(id) {
+  if (!id) return;
+  const liste = _lesVarselSendt().filter(x => String(x) !== String(id));
+  liste.push(String(id));
+  try { localStorage.setItem(_VARSEL_SENDT_KEY, JSON.stringify(liste.slice(-50))); } catch(e) {}
+}
+function _varselErSendt(id) { return _lesVarselSendt().indexOf(String(id)) > -1; }
 function _varselKoLeggTil(tur, appType) {
+  if (_varselErSendt(tur.id)) return;
   const liste = _lesVarselKo().filter(p => String(p.tur && p.tur.id) !== String(tur.id));
   liste.push({ tur: tur, appType: appType, lagt: Date.now() });
   _skrivVarselKo(liste);
@@ -2232,23 +2259,60 @@ function _varselKoLeggTil(tur, appType) {
 function _varselKoFjern(id) {
   _skrivVarselKo(_lesVarselKo().filter(p => String(p.tur && p.tur.id) !== String(id)));
 }
-async function _varselKoSend() {
+// Låses telefonen, fryser nettleseren alt som er i gang. sendBeacon overlever det:
+// forespørselen legges i operativsystemets kø og går ut selv om siden sovner.
+function _sendBeacon(body) {
+  try {
+    if (!navigator.sendBeacon || !scriptUrl) return false;
+    const blob = new Blob([JSON.stringify(body)], { type: 'text/plain;charset=utf-8' });
+    return navigator.sendBeacon(scriptUrl, blob);
+  } catch(e) { return false; }
+}
+// Alt som ikke har rukket å bli sendt, dyttes ut når appen legges bort.
+// Backend tåler duplikater: samme tur-ID gir én rad og én e-post uansett.
+function _skyvUtVedLukking() {
+  try {
+    (_lesVarselKo() || []).forEach(p => _sendBeacon({ action: 'sendVarselTur', tur: p.tur, appType: p.appType }));
+  } catch(e) {}
+  try {
+    (_turKo || []).forEach(p => _sendBeacon({ action: 'leggTilScooter', tur: p.tur }));
+  } catch(e) {}
+  try {
+    (typeof _lesFeilKo === 'function' ? _lesFeilKo() : []).forEach(p => _sendBeacon({ action: 'lagreFeil', feil: p.feil }));
+  } catch(e) {}
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) _skyvUtVedLukking(); });
+window.addEventListener('pagehide', _skyvUtVedLukking);
+
+let _varselSenderNa = false;
+async function _varselKoSend(opts) {
+  opts = opts || {};
+  if (_varselSenderNa) return;      // to samtidige runder skal ikke sende samme mail to ganger
   const liste = _lesVarselKo();
   if (!liste.length) return;
+  _varselSenderNa = true;
+  try {
   for (const post of liste) {
+    // Helt ferske poster får et øyeblikk på seg til å få med bildene først
+    if (opts.baGamle && post.lagt && (Date.now() - post.lagt) < 10000) continue;
     // Eldre enn et døgn: turen er uansett gammelt nytt – ikke send mail om den nå
     if (post.lagt && (Date.now() - post.lagt) > 24 * 60 * 60 * 1000) { _varselKoFjern(post.tur && post.tur.id); continue; }
     try {
       const res = await apiKall({ action: 'sendVarselTur', tur: post.tur, appType: post.appType });
-      if (res && (res.ok || res.alleredeSendt)) _varselKoFjern(post.tur && post.tur.id);
+      if (res && (res.ok || res.alleredeSendt)) {
+        _varselKoFjern(post.tur && post.tur.id);
+        _merkVarselSendt(post.tur && post.tur.id);
+      }
     } catch(e) { console.log('Varsel-sending feilet – prøver senere:', e); }
   }
+  } finally { _varselSenderNa = false; }
 }
-// E-postvarsel: vent på bilder som fortsatt lastes opp, slik at de blir med i mailen.
-// Maks 90 sekunder, og vi sender straks appen legges bort. Står det igjen bilder, sier mailen fra om det.
+// E-postvarsel: vent noen få sekunder på bilder som fortsatt lastes opp, slik at de blir med i mailen.
+// Maks 8 sekunder – rekker de det ikke, går mailen ut med beskjed om hvor mange som er på vei.
 async function _sendVarselNarBildeneErKlare(tur, appType) {
-  // Legg turen i varselkøen med én gang – da blir mailen sendt ved neste oppstart
-  // selv om appen lukkes mens vi venter på bildene
+  if (_varselErSendt(tur.id)) return;   // mailen gikk alt ut (for eksempel da telefonen ble låst)
+  // Turen ligger allerede i varselkøen fra lagringen – her oppdaterer vi den med
+  // serverens tall og bildene, og sender.
   _varselKoLeggTil(tur, appType);
   const start = Date.now();
   let avbryt = false;
@@ -2256,9 +2320,11 @@ async function _sendVarselNarBildeneErKlare(tur, appType) {
   const borte = () => { avbryt = true; };
   document.addEventListener('visibilitychange', skjult);
   window.addEventListener('pagehide', borte);
+  // Vi venter bare et lite øyeblikk på bildene. Rekker de det ikke, går mailen ut med beskjed om
+  // hvor mange som er på vei – da mister vi aldri varselet fordi telefonen ble låst.
   try {
-    while (!avbryt && (Date.now() - start) < 90000 && bkHarVentende(tur.id)) {
-      await new Promise(r => setTimeout(r, 1500));
+    while (!avbryt && (Date.now() - start) < 8000 && bkHarVentende(tur.id)) {
+      await new Promise(r => setTimeout(r, 800));
     }
   } catch(e) {}
   document.removeEventListener('visibilitychange', skjult);
@@ -2440,6 +2506,9 @@ async function lagreTur() {
     } else {
       // Ny tur: legges i utkøen og er trygt lagret på telefonen med en gang
       koLeggTil(tur);
+  // Varselet legges i køen med det samme. Låses telefonen før regnearket har kvittert,
+  // dyttes både turen og mailen ut med sendBeacon – da mister vi aldri varselet.
+  try { _varselKoLeggTil(Object.assign({}, tur), 'scooter'); } catch(e) { console.log('Kunne ikke kø-legge varsel:', e); }
     }
     // Oppdater lokalt med en gang – ingen ventetid på full ny henting
     try {
@@ -4332,6 +4401,9 @@ async function initAlt() {
 initAlt();
 startDypLenke();   // ?tur=<id> fra e-post
 setTimeout(() => { try { _varselKoSend(); } catch(e) {} }, 6000);   // mail som ikke rakk å bli sendt sist
+// Sikkerhetsnett: en mail som blir liggende – for eksempel fordi turen står bak en treg
+// bildeopplasting – sendes uansett etter et halvt minutt.
+setInterval(() => { if (!document.hidden && navigator.onLine !== false) _varselKoSend({ baGamle: true }); }, 30000);
 setTimeout(() => { try { feilKoSend(); } catch(e) {} }, 7000);   // feilmeldinger som ikke rakk å bli sendt sist
 </script>
 
