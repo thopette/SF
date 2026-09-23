@@ -293,6 +293,8 @@
 .opp-knapper button { flex:1; padding:12px; border-radius:9px; font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer; border:1.5px solid var(--mid); background:var(--white); color:var(--mid); }
 .opp-knapper button.pri { background:var(--mid); color:#fff; }
 .opp-knapper button.fare { border-color:#E74C3C; color:#E74C3C; }
+.dato-varsel { display:block; font-size:12px; line-height:1.4; font-weight:600; color:#B91C1C; background:#FEF2F2; border:1px solid #FECACA; border-radius:7px; padding:7px 9px; margin-top:6px; }
+.dato-varsel[hidden] { display:none; }
 </style></head><body>
 <div id="loading-overlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(255,255,255,0.85);align-items:center;justify-content:center;flex-direction:column;gap:12px">
 <div class="spinner"></div>
@@ -324,7 +326,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v22.09 10:15</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v23.09 08:40</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -342,7 +344,7 @@ Løypestatus – denne uken
 <div id="edit-advarsel" style="display:none;background:#FFFBF0;border:1px solid #F5CBA7;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#7D6608;line-height:1.5">
 ⚠️ <strong>Merk:</strong> Km-stand og timerteller er kumulative. Endrer du disse, blir <em>ikke</em> de avledede tallene (km kjørt, maskintimer) på etterfølgende økter oppdatert automatisk. Bruk <em>«Regn ut på nytt»</em> i Admin-fanen etter redigering hvis dette er nødvendig.
 </div>
-<div class="form-grid two dato-tid"><div class="field"><label>Dato</label><div class="felt-na"><input type="date" id="f-dato"><button type="button" class="na-btn" onclick="settIDag()">I dag</button></div></div><div class="field"><label>Slutt (kl.)</label><div class="felt-na"><input type="time" id="f-slutt"><button type="button" class="na-btn" onclick="settNa()">Nå</button></div></div></div><div class="field" style="margin-top:12px"><label>Fører</label><input type="hidden" id="f-forer"><div class="forer-chips" id="forer-chips" role="radiogroup" aria-label="Fører"></div></div><div style="margin-top:12px">
+<div class="form-grid two dato-tid"><div class="field"><label>Dato</label><div class="felt-na"><input type="date" id="f-dato" onchange="sjekkDato()" oninput="sjekkDato()"><button type="button" class="na-btn" onclick="settIDag(); sjekkDato();">I dag</button></div><div id="dato-varsel" class="dato-varsel" hidden></div></div><div class="field"><label>Slutt (kl.)</label><div class="felt-na"><input type="time" id="f-slutt"><button type="button" class="na-btn" onclick="settNa()">Nå</button></div></div></div><div class="field" style="margin-top:12px"><label>Fører</label><input type="hidden" id="f-forer"><div class="forer-chips" id="forer-chips" role="radiogroup" aria-label="Fører"></div></div><div style="margin-top:12px">
 <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px">Runder kjørt denne økten <span id="runder-valgt-count" style="color:var(--mid);font-weight:700"></span></label>
 <div id="runder-grid" style="display:flex;flex-direction:column;gap:8px"></div>
 </div><hr class="divider" data-label="Km og timer" style="margin-top:16px"><div style="display:grid;grid-template-columns:1fr;gap:10px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="field"><label>Km-stand ved slutt</label><input type="text" inputmode="decimal" data-desimal autocomplete="off" id="f-km" placeholder="0.0"><div id="hint-km" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div><div class="field"><label>Timerteller ved slutt</label><input type="text" inputmode="decimal" data-desimal autocomplete="off" id="f-timer-slutt" placeholder="0.0"><div id="hint-timer" style="font-size:11px;color:var(--text2);margin-top:4px"></div></div></div></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-diesel" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte diesel</span></label><label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 16px;border:1.5px solid var(--border);border-radius:8px;background:var(--snow);flex:1;min-width:130px"><input type="checkbox" id="f-adblue" style="width:20px;height:20px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:14px;font-weight:500;color:var(--text)">Fylte AdBlue</span></label></div><hr class="divider" data-label="Føreforhold" style="margin-top:16px"><div class="field" style="margin-bottom:12px"><label>Føreforhold</label><div class="cond-bar" id="cond-bar"><button type="button" class="cond-btn" data-val="1" onclick="setCond(1)"><div class="cond-dots"><div class="dot"></div></div>
@@ -1069,10 +1071,31 @@ function visFerskhet(status) {
   });
 }
 // Hurtigknapper i Ny økt: dagens dato og klokkeslettet nå
+// Advarsel når datoen ikke er i dag – lett å komme borti datofeltet uten å merke det
+function sjekkDato() {
+  const el = document.getElementById('f-dato');
+  const varsel = document.getElementById('dato-varsel');
+  if (!el || !varsel) return;
+  const v = el.value;
+  // Ved redigering av en gammel tur er fortiden helt i orden
+  if (!v || (typeof editModus !== "undefined" && editModus)) { varsel.hidden = true; return; }
+  const idag = new Date(); idag.setHours(0,0,0,0);
+  const d = new Date(v + 'T00:00:00');
+  if (isNaN(d)) { varsel.hidden = true; return; }
+  const dager = Math.round((d - idag) / 86400000);
+  if (dager === 0) { varsel.hidden = true; return; }
+  const antall = Math.abs(dager);
+  const tekst = antall === 1 ? (dager < 0 ? 'i går' : 'i morgen') : (antall + (dager < 0 ? ' dager tilbake i tid' : ' dager fram i tid'));
+  varsel.innerHTML = '⚠ Datoen er satt til <b>' + tekst + '</b> ('
+    + d.getDate() + '. ' + ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][d.getMonth()]
+    + '). Turen havner på den datoen i loggen – trykk «I dag» hvis det er feil.';
+  varsel.hidden = false;
+}
 function settIDag() {
   const n = new Date();
   const el = document.getElementById('f-dato');
   if (el) el.value = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
+  sjekkDato();
 }
 function settNa() {
   const n = new Date();
@@ -2713,6 +2736,7 @@ const _localDato = _now.getFullYear() + '-' +
 String(_now.getMonth()+1).padStart(2,'0') + '-' +
 String(_now.getDate()).padStart(2,'0');
 document.getElementById('f-dato').value = _localDato;
+try { sjekkDato(); } catch(e) {}
 showTab('logg');
 }
 
@@ -2725,6 +2749,7 @@ showTab('ny');
 nullstillRunder();  // start med blanke runder – rutenettet beholder ellers valg fra før
 // Fyll inn felt
 document.getElementById('f-dato').value = t.dato||'';
+try { sjekkDato(); } catch(e) {}
 // Gammel tur kan være lagret med bare fornavn – slå det opp i førerlista
 document.getElementById('f-forer').value = _kanoniskForer(t.forer || '');
 renderForerChips();
@@ -6716,6 +6741,7 @@ const _localDato = _now.getFullYear() + '-' +
 String(_now.getMonth()+1).padStart(2,'0') + '-' +
 String(_now.getDate()).padStart(2,'0');
 document.getElementById('f-dato').value = _localDato;
+try { sjekkDato(); } catch(e) {}
 document.getElementById('f-slutt').value = _now.getHours().toString().padStart(2,'0') + ':' + _now.getMinutes().toString().padStart(2,'0');
 oppdaterForerSelect();
 oppdaterLoypeSelect();

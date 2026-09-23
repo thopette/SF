@@ -351,6 +351,8 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .opp-knapper button { flex:1; padding:12px; border-radius:9px; font-family:var(--sans); font-size:14px; font-weight:600; cursor:pointer; border:1.5px solid var(--mid); background:var(--white); color:var(--mid); }
 .opp-knapper button.pri { background:var(--mid); color:#fff; }
 .opp-knapper button.fare { border-color:#E74C3C; color:#E74C3C; }
+.dato-varsel { display:block; font-size:12px; line-height:1.4; font-weight:600; color:#B91C1C; background:#FEF2F2; border:1px solid #FECACA; border-radius:7px; padding:7px 9px; margin-top:6px; }
+.dato-varsel[hidden] { display:none; }
 </style></head><body>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
@@ -411,7 +413,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="22.09" data-tid="10:15">10:15</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="23.09" data-tid="08:40">08:40</span>
 </div>
 
 <div class="nav">
@@ -474,7 +476,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
       </div>
       <div class="form-grid dato-tid">
         <div class="field"><label>Sluttidspunkt</label><div class="time-with-now"><input type="time" id="f-slutt" style="padding-right:56px"><button class="now-btn" onclick="event.preventDefault(); document.getElementById('f-slutt').value = new Date().toTimeString().slice(0,5)">Nå</button></div></div>
-        <div class="field"><label>Dato</label><div class="time-with-now"><input type="date" id="f-dato" style="padding-right:64px"><button class="now-btn" onclick="event.preventDefault(); settIDag()">I dag</button></div></div>
+        <div class="field"><label>Dato</label><div class="time-with-now"><input type="date" id="f-dato" style="padding-right:64px" onchange="sjekkDato()" oninput="sjekkDato()"><button class="now-btn" onclick="event.preventDefault(); settIDag(); sjekkDato();">I dag</button></div><div id="dato-varsel" class="dato-varsel" hidden></div></div>
       </div>
       <div class="field"><label>Kjøring</label><div class="nk-grid">
         <label class="nk" for="f-nil"><input type="checkbox" id="f-nil" onchange="this.closest('.nk').classList.toggle('on', this.checked)"><div><b>Kjørte (også) i nærområdet / for NIL</b><small>Kryss av selv om turen også gikk i marka – labbeløype, lysløypa o.l.</small></div></label>
@@ -882,6 +884,7 @@ function visTab(id) {
     if (!document.getElementById('f-dato').value) {
       document.getElementById('f-dato').value = _lokalDato(n);
     }
+    sjekkDato();
     oppdaterKmHint();
   }
   if (id === 'logg') renderLogg();
@@ -1272,10 +1275,31 @@ function _visNavn(n) {
   const kart = _navnKart(sjaforer);
   return kart[full] || full.split(' ')[0] || full;
 }
+// Advarsel når datoen ikke er i dag – lett å komme borti datofeltet uten å merke det
+function sjekkDato() {
+  const el = document.getElementById('f-dato');
+  const varsel = document.getElementById('dato-varsel');
+  if (!el || !varsel) return;
+  const v = el.value;
+  // Ved redigering av en gammel tur er fortiden helt i orden
+  if (!v || (typeof redigererTurId !== "undefined" && redigererTurId)) { varsel.hidden = true; return; }
+  const idag = new Date(); idag.setHours(0,0,0,0);
+  const d = new Date(v + 'T00:00:00');
+  if (isNaN(d)) { varsel.hidden = true; return; }
+  const dager = Math.round((d - idag) / 86400000);
+  if (dager === 0) { varsel.hidden = true; return; }
+  const antall = Math.abs(dager);
+  const tekst = antall === 1 ? (dager < 0 ? 'i går' : 'i morgen') : (antall + (dager < 0 ? ' dager tilbake i tid' : ' dager fram i tid'));
+  varsel.innerHTML = '⚠ Datoen er satt til <b>' + tekst + '</b> ('
+    + d.getDate() + '. ' + ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'][d.getMonth()]
+    + '). Turen havner på den datoen i loggen – trykk «I dag» hvis det er feil.';
+  varsel.hidden = false;
+}
 function settIDag() {
   const n = new Date();
   const el = document.getElementById('f-dato');
   if (el) el.value = n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
+  sjekkDato();
 }
 function renderSjaforChips() {
   const el = document.getElementById('sjafor-chips');
@@ -2602,6 +2626,7 @@ function startRedigerTur(id) {
   renderScooterCards();
   // Fyll form-feltene
   document.getElementById('f-dato').value = t.dato || '';
+  sjekkDato();
   document.getElementById('f-slutt').value = _normTid(t.slutt);
   document.getElementById('f-km').value = t.km || '';
   document.getElementById('f-tid').value = t.tidBrukt || '';
@@ -2985,7 +3010,7 @@ function renderTurItem(t) {
   const feilBadge = t.harFeil
     ? `<span title="Feil rapportert under denne turen" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:#FEF2F2;color:#B91C1C;font-size:11px;font-weight:600;border-radius:10px;border:1px solid #FECACA">⚙ Feil</span>`
     : '';
-  return `<div class="log-item${bilderHtml ? ' har-bilder' : ''}" data-turid="${t.id}">${bilderHtml ? '<div>' : ''}<div class="log-header"><span class="log-date">${datoKort} – ${t.sjafor||''}${t.venter ? ' <span title="Lagret på telefonen – sendes til regnearket" style="display:inline-flex;align-items:center;padding:1px 6px;background:#EEF5FC;color:#1A4B7A;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #C8DDF0">↑ sendes</span>' : ''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div>${bilderHtml ? '</div>' + bilderHtml : ''}</div>`;
+  return `<div class="log-item${bilderHtml ? ' har-bilder' : ''}" data-turid="${t.id}">${bilderHtml ? '<div>' : ''}<div class="log-header"><span class="log-date">${datoKort}${_normTid(t.slutt) ? ' · ' + _normTid(t.slutt) : ''} – ${t.sjafor||''}${t.venter ? ' <span title="Lagret på telefonen – sendes til regnearket" style="display:inline-flex;align-items:center;padding:1px 6px;background:#EEF5FC;color:#1A4B7A;font-size:10px;font-weight:600;border-radius:8px;border:1px solid #C8DDF0">↑ sendes</span>' : ''}</span><span class="log-driver">${t.scooter||''}</span></div>${t.beskrivelse?`<div class="log-body">${t.beskrivelse.replace(/</g,'&lt;')}</div>`:''}<div class="log-stats">${(t.nil ? '<span class="b-nil" title="Kjørt i nærområdet / for NIL">NIL</span>' : '') + (t.bensin ? '<span class="b-fuel" title="Fylte bensin ved parkering">⛽ Bensin</span>' : '')}${feilBadge}${stats.join('')}</div>${bilderHtml ? '</div>' + bilderHtml : ''}</div>`;
 }
 
 // ── SCOOTERPARK-WIDGET (Alt A: kortrekke med mini-sparklines) ──
