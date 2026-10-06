@@ -215,6 +215,9 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .okt-body{font-size:12px;color:var(--text2);line-height:1.4;margin-top:2px;overflow-wrap:anywhere}
 .okt-body b{color:var(--text)}
 .okt-til{font-weight:600;color:#8A5300}
+/* Ikon tegnet med CSS-maske: null ekstra elementer i lister med mange rader. */
+.sf-ikon{display:inline-block;background-color:currentColor;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.1%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M1.5%2020h7.5l2-2.5%22%2F%3E%3Cpath%20d%3D%22M1.5%2020c-1.2%200-1.1-1.9.6-1.9%22%2F%3E%3Crect%20x%3D%2212.5%22%20y%3D%2214.5%22%20width%3D%229.5%22%20height%3D%225%22%20rx%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M8.5%2016l2-4.2c.45-1%201.05-1.4%202.05-1.4h2.95l2.5%203.9%22%2F%3E%3Cpath%20d%3D%22M12.2%2010.2l1.6-3.2%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222.1%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M1.5%2020h7.5l2-2.5%22%2F%3E%3Cpath%20d%3D%22M1.5%2020c-1.2%200-1.1-1.9.6-1.9%22%2F%3E%3Crect%20x%3D%2212.5%22%20y%3D%2214.5%22%20width%3D%229.5%22%20height%3D%225%22%20rx%3D%222.5%22%2F%3E%3Cpath%20d%3D%22M8.5%2016l2-4.2c.45-1%201.05-1.4%202.05-1.4h2.95l2.5%203.9%22%2F%3E%3Cpath%20d%3D%22M12.2%2010.2l1.6-3.2%22%2F%3E%3C%2Fsvg%3E")}
+.okt-rad .ik{width:14px;height:14px}
 .okt-rader{margin-top:6px;display:flex;flex-direction:column;gap:3px}
 .okt-rad{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px;color:var(--text)}
 .okt-rad .nv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -354,7 +357,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .opp-knapper button.fare { border-color:#E74C3C; color:#E74C3C; }
 .dato-varsel { display:block; font-size:12px; line-height:1.4; font-weight:600; color:#B91C1C; background:#FEF2F2; border:1px solid #FECACA; border-radius:7px; padding:7px 9px; margin-top:6px; }
 .dato-varsel[hidden] { display:none; }
-</style></head><body>
+</style></head><body><svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false"><symbol id="ik-maskin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="14" width="17" height="6" rx="3"/><path d="M9 14V8h5l2.5 4V14"/><path d="M3 9v6"/></symbol><symbol id="ik-scooter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 20h7.5l2-2.5"/><path d="M1.5 20c-1.2 0-1.1-1.9.6-1.9"/><rect x="12.5" y="14.5" width="9.5" height="5" rx="2.5"/><path d="M8.5 16l2-4.2c.45-1 1.05-1.4 2.05-1.4h2.95l2.5 3.9"/><path d="M12.2 10.2l1.6-3.2"/></symbol></svg>
 
 <!-- Fullskjerm-loader: vises ved oppstart og førstegangs lasting -->
 <div class="center-loader visible" id="center-loader">
@@ -414,7 +417,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="15:38">15:38</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="15:49">15:49</span>
 </div>
 
 <div class="nav">
@@ -993,13 +996,11 @@ function _skrivTurerCache() {
 // ── IKONER FOR MASKIN OG SCOOTER ──
 // SVG i stedet for emoji: emoji tegnes av operativsystemet og ser forskjellig ut på iPhone,
 // Android og Windows. Disse ser like ut overalt og holder seg lesbare helt ned i 11 px.
-const _IKON_MASKIN = '<rect x="4" y="14" width="17" height="6" rx="3"/><path d="M9 14V8h5l2.5 4V14"/><path d="M3 9v6"/>';
-const _IKON_SCOOTER = '<path d="M1.5 20h7.5l2-2.5"/><path d="M1.5 20c-1.2 0-1.1-1.9.6-1.9"/><rect x="12.5" y="14.5" width="9.5" height="5" rx="2.5"/><path d="M8.5 16l2-4.2c.45-1 1.05-1.4 2.05-1.4h2.95l2.5 3.9"/><path d="M12.2 10.2l1.6-3.2"/>';
 function ikonSvg(type, px) {
   px = px || 13;
-  return `<svg viewBox="0 0 24 24" width="${px}" height="${px}" fill="none" stroke="currentColor" stroke-width="2.1" `
-    + `stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0" aria-hidden="true">`
-    + (type === 'scooter' ? _IKON_SCOOTER : _IKON_MASKIN) + '</svg>';
+  // <use> mot en felles <symbol>: ett element per ikon i stedet for seks. Med nær tusen turer i
+  // loggen utgjorde den forskjellen tusenvis av DOM-noder, og det merkes på mobil.
+  return `<svg width="${px}" height="${px}" style="vertical-align:-2px;flex-shrink:0" aria-hidden="true" focusable="false"><use href="#ik-${type === 'scooter' ? 'scooter' : 'maskin'}"/></svg>`;
 }
 function _klokke(ts) {
   const d = new Date(ts), n = new Date();
@@ -2964,7 +2965,7 @@ function renderOktKort(o) {
     const rest = urls.length - vis.length;
     bilder = `<div class="log-bilder">${vis.map((u, i) => `<span class="log-thumb" style="cursor:pointer" onclick="apneLightbox(${uj}, ${i})"><img src="${_thumb(u, 120)}" loading="lazy" decoding="async" alt="">${i === vis.length - 1 && rest > 0 ? `<span class="mer">+${rest}</span>` : ''}</span>`).join('')}${vent}</div>`;
   }
-  const rader = turerSortert.map(t => `<div class="okt-rad" data-turid="${t.id}"><span class="ik">${ikonSvg('scooter', 14)}</span><span class="nv"><b>${esc(t.sjafor)}</b> <span class="sc">· ${esc(t.scooter)}</span></span><span class="t">${t.bensin ? '<span title="Fylte bensin">⛽</span> ' : ''}${t.tidBrukt ? _minTilTekst(t.tidBrukt) : '–'}</span></div>`).join('');
+  const rader = turerSortert.map(t => `<div class="okt-rad" data-turid="${t.id}"><span class="ik sf-ikon"></span><span class="nv"><b>${esc(t.sjafor)}</b> <span class="sc">· ${esc(t.scooter)}</span></span><span class="t">${t.bensin ? '<span title="Fylte bensin">⛽</span> ' : ''}${t.tidBrukt ? _minTilTekst(t.tidBrukt) : '–'}</span></div>`).join('');
   const fore = turerSortert.map(t => t.foreforhold).filter(Boolean);
   const snoT = turerSortert.find(t => t.snoLav || t.snoHoy);
   const info = [];
@@ -3236,7 +3237,7 @@ function renderScooterpark() {
       ? '<span style="font-style:italic">Ikke kjørt siste 7d</span>'
       : `${r.antTurerSiste7} tur${r.antTurerSiste7 === 1 ? '' : 'er'} siste uke${r.kmSiste7 > 0 ? ` · km-teller +${r.kmSiste7.toFixed(0)}` : ''}`;
     return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;${borderStyle};${dempet}">
-      <div style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;${ikonBg}">${ikonSvg('scooter', 17)}</div>
+      <div style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;${ikonBg}"><span class="sf-ikon" style="width:18px;height:18px"></span></div>
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:600;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.navn}</div>
         <div style="font-size:11px;color:var(--text2);margin-top:1px">${undertekst}</div>
