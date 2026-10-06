@@ -346,7 +346,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v06.10 13:10</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v06.10 13:51</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -1067,12 +1067,16 @@ document.addEventListener('input', (e) => {
 // Vis forrige henting med én gang, hent ferske data i bakgrunnen hver gang.
 // Brukes bare til visning – validering av km/timer venter alltid på ferske tall.
 const _TURER_CACHE_KEY = 'sf_turer_v1';
+const _SYNK_VERSJON = 1;              // endres hvis lagret format ikke lenger kan brukes → full henting
+const _SYNK_FULL_INTERVALL = 24 * 60 * 60 * 1000;   // full henting minst én gang i døgnet
+let _synkTil = null;                  // serverens tidsstempel fra forrige vellykkede synk
+let _synkFullTs = 0;                  // da vi sist hentet alt
 let _visteDataTs = 0;        // når dataene på skjermen ble hentet
 function _lesTurerCache() {
   try { const r = localStorage.getItem(_TURER_CACHE_KEY); const o = r ? JSON.parse(r) : null; return (o && Array.isArray(o.turer) && o.turer.length) ? o : null; } catch(e) { return null; }
 }
 function _skrivTurerCache() {
-  try { localStorage.setItem(_TURER_CACHE_KEY, JSON.stringify({ ts: Date.now(), alle: _alleDataLastet, turer })); } catch(e) {}
+  try { localStorage.setItem(_TURER_CACHE_KEY, JSON.stringify({ ts: Date.now(), v: _SYNK_VERSJON, alle: _alleDataLastet, synkTil: _synkTil, fullTs: _synkFullTs, turer })); } catch(e) {}
 }
 function _klokke(ts) {
   const d = new Date(ts), n = new Date();
@@ -1368,6 +1372,17 @@ String(fraDato.getDate()).padStart(2,'0');
 try {
 // Ved oppdatering senere i økta: hent også fersk startdata (oppsett + stand) i samme runde
 if (opts.medStart !== false) hentStartdata().catch(e => console.log('Startdata-feil:', e));
+// Har vi hele historikken lokalt, holder det med delta-synken – da slipper vi 14-dagers-kallet,
+// og vi kaster ikke historikken på gulvet for så å hente den inn igjen.
+if (_alleDataLastet && _synkTil) {
+  await hentAlleDataBakgrunn();
+  document.querySelectorAll('.tab-laster').forEach(x => x.remove());
+  oppdaterDataLists();
+  const fane = document.querySelector('.section.active')?.id?.replace('tab-','');
+  if (fane) renderAktivFane(fane);
+  if (fane === 'ny') oppdaterStandHint();
+  return;
+}
 const data = await apiKall({ action: 'hentAlle', fraDato: fraDatoStr, kompakt: 1 });
 if (data.feil) throw new Error(data.feil);
 turer = _turListe(data).map(mapTurFraSheet);
@@ -1417,8 +1432,39 @@ let _alleHenter = null;
 // kjører Apps Script likevel ferdig – og tar bare ett kall om gangen per bruker. Et nytt forsøk
 // stiller seg altså bak det som allerede jobber, og køen vokser. Derfor: god tid (60 sek),
 // ingen kjappe nye forsøk, og heller ett rolig nytt forsøk et minutt senere.
-const _HISTORIKK_KALL = { action: 'hentAlle', kompakt: 1 };
+//
+// ── DELTA-SYNK ──
+// Appen har hele historikken liggende lokalt, og spør bare om det som har skjedd siden sist.
+// Serveren svarer med to ting: endrede turer, og ALLE tur-ID-er («fasiten»). Fasiten er det som
+// gjør synken til å stole på: turer som ikke står der er slettet, og ID-er vi ikke har, henter vi.
+// Turer som ennå ligger i lokalkøen (ikke lagret på serveren) røres aldri av fasiten.
 const _HISTORIKK_OPTS = { frist: 60000, maksForsok: 1 };
+const _SYNK_MAKS_ETTERSLEP = 400;   // mangler vi flere turer enn dette, er full henting raskere
+let _gammelBackend = false;   // backend uten hentSynk (ikke deployet ennå) – da henter vi alt som før
+function _synkKall() {
+  if (_gammelBackend) return { action: 'hentAlle', kompakt: 1 };
+  // Full henting ved første gangs bruk, nytt lagringsformat, eller én gang i døgnet
+  const kanDelta = _synkTil && _alleDataLastet && (Date.now() - _synkFullTs) < _SYNK_FULL_INTERVALL;
+  return { action: 'hentSynk', app: 'maskin', siden: kanDelta ? _synkTil : null, dager: 14 };
+}
+function _erUkjentHandling(data) {
+  return !!(data && data.feil && String(data.feil).indexOf('Ukjent handling') > -1);
+}
+// Fletter svaret fra hentSynk inn i turlista. Returnerer ID-er vi mangler.
+function _synkFlett(data, nyeTurer) {
+  const kart = new Map();
+  turer.forEach(t => { if (!t.venter) kart.set(String(t.id), t); });   // kølagrede turer holdes utenfor
+  nyeTurer.forEach(t => {
+    const eks = kart.get(String(t.id));
+    kart.set(String(t.id), eks ? { ...t, valgtRunder: eks.valgtRunder || t.valgtRunder, rundeDetaljer: eks.rundeDetaljer || t.rundeDetaljer } : t);
+  });
+  const fasit = new Set((data.ider || []).map(String));
+  if (fasit.size) Array.from(kart.keys()).forEach(id => { if (!fasit.has(id)) kart.delete(id); });   // slettet på server
+  const liste = Array.from(kart.values());
+  liste.sort((a, b) => (String(b.dato) + ' ' + String(b.slutt || '00:00')).localeCompare(String(a.dato) + ' ' + String(a.slutt || '00:00')));
+  turer = liste;
+  return (data.ider || []).filter(id => !kart.has(String(id)));
+}
 let _historikkForsok = 0;
 function _historikkProvSenere() {
   if (_historikkForsok >= 2) return false;   // maks to rolige nye forsøk
@@ -1432,24 +1478,38 @@ if (!scriptUrl) return;
 if (_alleHenter) return _alleHenter;
 _alleHenter = (async () => {
 try {
-const data = await apiKall(_HISTORIKK_KALL, 1, _HISTORIKK_OPTS); // ingen fraDato = alle
-if (data.feil) { setSyncStatus('error', 'Feil'); return; }
-// Merge: behold nye turer fra siste 14 dager, legg til eldre
-const nyeIds = new Set(turer.map(t => String(t.id)));
-const alleTurer = _turListe(data).map(mapTurFraSheet);
-// Merge: behold runde-data fra eksisterende turer, oppdater med Sheets-data
-const eksisterendeIds = new Map(turer.map(t => [String(t.id), t]));
-turer = alleTurer.map(t => {
-const eks = eksisterendeIds.get(String(t.id));
-if (eks) {
-// Behold runde-spesifikke felt fra eksisterende
-return { ...t, 
-  valgtRunder: eks.valgtRunder || t.valgtRunder,
-  rundeDetaljer: eks.rundeDetaljer || t.rundeDetaljer
-};
+let data = null;
+for (let runde = 0; runde < 3; runde++) {
+  const kall = _synkKall();
+  data = await apiKall(kall, 1, _HISTORIKK_OPTS);
+  // Backend ikke oppdatert ennå: fall tilbake til full henting som før
+  if (_erUkjentHandling(data) && !_gammelBackend) { _gammelBackend = true; _synkTil = null; continue; }
+  if (data.feil) { setSyncStatus('error', 'Feil'); return; }
+  const nyeTurer = _turListe(data).map(mapTurFraSheet);
+  if (data.full || !kall.siden) {
+    // Full henting: serverens liste er hele sannheten
+    const eksisterende = new Map(turer.map(t => [String(t.id), t]));
+    turer = nyeTurer.map(t => {
+      const eks = eksisterende.get(String(t.id));
+      return eks ? { ...t, valgtRunder: eks.valgtRunder || t.valgtRunder, rundeDetaljer: eks.rundeDetaljer || t.rundeDetaljer } : t;
+    });
+    _synkFullTs = Date.now();
+    break;
+  }
+  // Delta: flett inn endringene, fjern slettede, hent turene vi mangler
+  let mangler = _synkFlett(data, nyeTurer);
+  if (mangler.length > _SYNK_MAKS_ETTERSLEP) { _synkTil = null; continue; }   // for stort etterslep → ta alt
+  while (mangler.length) {
+    const bolk = mangler.slice(0, 300);
+    const svar = await apiKall({ action: 'hentTurerIder', app: 'maskin', ider: bolk }, 1, _HISTORIKK_OPTS);
+    const hentede = _turListe(svar).map(mapTurFraSheet);
+    if (!hentede.length) break;   // finnes ikke likevel – ikke gå i evig løkke
+    _synkFlett({ ider: [] }, hentede);
+    mangler = mangler.slice(bolk.length);
+  }
+  break;
 }
-return t;
-});
+if (data && data.naa) _synkTil = data.naa;   // serverens klokke, aldri telefonens
 _flettKo();
 _alleDataLastet = true;
 _sisteHenting = Date.now();
@@ -1477,10 +1537,7 @@ async function hentDataBakgrunn() {
 // Hent stille i bakgrunnen uten å vise loader
 if (!scriptUrl) return;
 try {
-const data = await apiKall(_HISTORIKK_KALL, 1, _HISTORIKK_OPTS);
-if (data.feil) return;
-turer = _turListe(data).map(mapTurFraSheet);
-_flettKo();
+await hentAlleDataBakgrunn();   // samme synk-logikk som ellers (delta når vi kan)
 const cfg = await apiKall({ action: 'hentConfig' });
 if (cfg.forere && cfg.forere.length) forere = cfg.forere;
 if (cfg.loyper) loyper = cfg.loyper;
@@ -6835,6 +6892,12 @@ async function startApp() {
     _dataLastet = true;
     _visteDataTs = tc.ts;
     _sisteHenting = 0;      // tvinger frisk henting
+    // Delta-synk krever at forrige økt hadde hele historikken, i et format vi fortsatt forstår
+    if (tc.v === _SYNK_VERSJON && tc.alle && tc.synkTil) {
+      _alleDataLastet = true;
+      _synkTil = tc.synkTil;
+      _synkFullTs = tc.fullTs || tc.ts || 0;
+    }
   }
   // Start oppsett-kallet FØR fanen tegnes, så det havner først i køen
   const pStart = scriptUrl ? hentStartdata().catch(e => { console.log('Startdata feilet – bruker lagret oppsett:', e); _skjemaLaster(false); }) : Promise.resolve();

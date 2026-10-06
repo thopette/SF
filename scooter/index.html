@@ -413,7 +413,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="13:10">13:10</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="13:51">13:51</span>
 </div>
 
 <div class="nav">
@@ -963,12 +963,16 @@ function sesongPeriodeTekst(sesong) {
 // ── MELLOMLAGRING AV TURER ──
 // Forrige henting vises med én gang; ferske data hentes i bakgrunnen hver gang.
 const _TURER_CACHE_KEY = 'sf_turer_scooter_v1';
+const _SYNK_VERSJON = 1;              // endres hvis lagret format ikke lenger kan brukes → full henting
+const _SYNK_FULL_INTERVALL = 24 * 60 * 60 * 1000;   // full henting minst én gang i døgnet
+let _synkTil = null;                  // serverens tidsstempel fra forrige vellykkede synk
+let _synkFullTs = 0;                  // da vi sist hentet alt
 let _visteDataTs = 0;
 function _lesTurerCache() {
   try { const r = localStorage.getItem(_TURER_CACHE_KEY); const o = r ? JSON.parse(r) : null; return (o && Array.isArray(o.turer) && o.turer.length) ? o : null; } catch(e) { return null; }
 }
 function _skrivTurerCache() {
-  try { localStorage.setItem(_TURER_CACHE_KEY, JSON.stringify({ ts: Date.now(), turer })); } catch(e) {}
+  try { localStorage.setItem(_TURER_CACHE_KEY, JSON.stringify({ ts: Date.now(), v: _SYNK_VERSJON, synkTil: _synkTil, fullTs: _synkFullTs, turer })); } catch(e) {}
 }
 function _klokke(ts) {
   const d = new Date(ts), n = new Date();
@@ -1193,8 +1197,29 @@ async function _ventPaStartdata() {
 // Når nettleseren avbryter et tregt kall, kjører Apps Script likevel ferdig – og tar bare ett kall
 // om gangen per bruker. Et kjapt nytt forsøk stiller seg bak det som allerede jobber og gjør køen
 // lengre. Derfor: god tid (60 sek), ingen kjappe nye forsøk, og ett rolig nytt forsøk et minutt etter.
-const _HISTORIKK_KALL = { action: 'hentAlleScooter', kompakt: 1 };
+// Delta-synk: appen har historikken lokalt og spør bare om det som har skjedd siden sist.
+// Serveren svarer med endrede turer + ALLE tur-ID-er («fasiten»). Fasiten styrer hva som slettes
+// og hva vi mangler – men bare for turer som ligger på serveren. Turer i lokalkøen røres aldri.
 const _HISTORIKK_OPTS = { frist: 60000, maksForsok: 1 };
+const _SYNK_MAKS_ETTERSLEP = 400;
+let _gammelBackend = false;   // backend uten hentSynk (ikke deployet ennå) – da henter vi alt som før
+function _synkKall() {
+  if (_gammelBackend) return { action: 'hentAlleScooter', kompakt: 1 };
+  const kanDelta = _synkTil && _turerLastet && (Date.now() - _synkFullTs) < _SYNK_FULL_INTERVALL;
+  return { action: 'hentSynk', app: 'scooter', siden: kanDelta ? _synkTil : null, dager: 14 };
+}
+function _erUkjentHandling(d) { return !!(d && d.feil && String(d.feil).indexOf('Ukjent handling') > -1); }
+function _synkFlett(data, nyeTurer) {
+  const kart = new Map();
+  turer.forEach(t => { if (!t.venter) kart.set(String(t.id), t); });
+  nyeTurer.forEach(t => kart.set(String(t.id), t));
+  const fasit = new Set((data.ider || []).map(String));
+  if (fasit.size) Array.from(kart.keys()).forEach(id => { if (!fasit.has(id)) kart.delete(id); });
+  const liste = Array.from(kart.values());
+  liste.sort((a, b) => (String(b.dato) + ' ' + String(b.slutt || '00:00')).localeCompare(String(a.dato) + ' ' + String(a.slutt || '00:00')));
+  turer = liste;
+  return (data.ider || []).filter(id => !kart.has(String(id)));
+}
 let _historikkForsok = 0;
 function _historikkProvSenere(opts) {
   if (_historikkForsok >= 2) return false;
@@ -1207,13 +1232,45 @@ function _historikkProvSenere(opts) {
 async function lastData(opts) {
   opts = opts || {};
   try {
+    let kall = _synkKall();
     const [turData, cfg] = await Promise.all([
-      apiKall(_HISTORIKK_KALL, 1, _HISTORIKK_OPTS),
+      apiKall(kall, 1, _HISTORIKK_OPTS),
       opts.utenConfig ? Promise.resolve(null) : apiKall({ action: 'hentConfigScooter' })
     ]);
-    if (turData.feil) throw new Error(turData.feil);
     if (cfg && cfg.feil) throw new Error(cfg.feil);
-    turer = _turListe(turData).map(mapTur);
+    let data = turData;
+    // Backend ikke oppdatert ennå: hent alt med gammel handling i stedet
+    if (_erUkjentHandling(data) && !_gammelBackend) {
+      _gammelBackend = true; _synkTil = null;
+      kall = _synkKall();
+      data = await apiKall(kall, 1, _HISTORIKK_OPTS);
+    }
+    if (data.feil) throw new Error(data.feil);
+    const nyeTurer = _turListe(data).map(mapTur);
+    if (data.full || !kall.siden) {
+      turer = nyeTurer;
+      _synkFullTs = Date.now();
+    } else {
+      let mangler = _synkFlett(data, nyeTurer);
+      if (mangler.length > _SYNK_MAKS_ETTERSLEP) {
+        // For stort etterslep – hent alt på én gang i stedet
+        _synkTil = null;
+        data = await apiKall(_synkKall(), 1, _HISTORIKK_OPTS);
+        if (data.feil) throw new Error(data.feil);
+        turer = _turListe(data).map(mapTur);
+        _synkFullTs = Date.now();
+      } else {
+        while (mangler.length) {
+          const bolk = mangler.slice(0, 300);
+          const svar = await apiKall({ action: 'hentTurerIder', app: 'scooter', ider: bolk }, 1, _HISTORIKK_OPTS);
+          const hentede = _turListe(svar).map(mapTur);
+          if (!hentede.length) break;
+          _synkFlett({ ider: [] }, hentede);
+          mangler = mangler.slice(bolk.length);
+        }
+      }
+    }
+    if (data.naa) _synkTil = data.naa;   // serverens klokke, aldri telefonens
     _flettKo();
     _turerLastet = true;
     _visteDataTs = Date.now();
@@ -4428,7 +4485,11 @@ async function initAlt() {
   const cache = _lesStartCache();
   // Turer fra forrige økt vises med én gang – ferske hentes uansett rett etter
   const tc = _lesTurerCache();
-  if (tc) { turer = tc.turer; _turerLastet = true; _visteDataTs = tc.ts; }
+  if (tc) {
+    turer = tc.turer; _turerLastet = true; _visteDataTs = tc.ts;
+    // Delta-synk bare hvis forrige økt lagret i et format vi fortsatt forstår
+    if (tc.v === _SYNK_VERSJON && tc.synkTil) { _synkTil = tc.synkTil; _synkFullTs = tc.fullTs || tc.ts || 0; }
+  }
   if (cache && cache.config) {
     _brukConfigScooter(cache.config);
     _startStand = cache.stand || {};
