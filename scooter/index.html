@@ -413,7 +413,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="23.09" data-tid="08:40">08:40</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="13:10">13:10</span>
 </div>
 
 <div class="nav">
@@ -986,6 +986,7 @@ function visFerskhet(status) {
   const nar = _visteDataTs ? _klokke(_visteDataTs) : '';
   let tekst, kl = '';
   if (status === 'henter') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – oppdaterer …` : 'Henter data …'; kl = 'henter'; }
+  else if (status === 'historikk') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – henter historikk …` : 'Henter historikk …'; kl = 'henter'; }
   else if (status === 'feil') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – kunne ikke oppdatere` : 'Kunne ikke hente data'; kl = 'gammel'; }
   else { tekst = `Sist oppdatert <b>${nar}</b>`; }
   if (dager >= 1 && status !== 'henter') { tekst += ` · mer enn ${dager === 1 ? 'ett døgn' : dager + ' døgn'} gammelt`; kl = 'gammel'; }
@@ -1188,20 +1189,35 @@ async function _ventPaStartdata() {
   try { await Promise.race([_startPromise, new Promise(r => setTimeout(r, 8000))]); } catch(e) {}
 }
 
+// ── HELE HISTORIKKEN ──
+// Når nettleseren avbryter et tregt kall, kjører Apps Script likevel ferdig – og tar bare ett kall
+// om gangen per bruker. Et kjapt nytt forsøk stiller seg bak det som allerede jobber og gjør køen
+// lengre. Derfor: god tid (60 sek), ingen kjappe nye forsøk, og ett rolig nytt forsøk et minutt etter.
+const _HISTORIKK_KALL = { action: 'hentAlleScooter', kompakt: 1 };
+const _HISTORIKK_OPTS = { frist: 60000, maksForsok: 1 };
+let _historikkForsok = 0;
+function _historikkProvSenere(opts) {
+  if (_historikkForsok >= 2) return false;
+  _historikkForsok++;
+  setTimeout(() => { if (!document.hidden && navigator.onLine !== false) lastData(opts); }, 60000);
+  return true;
+}
+
 // Henter alle turer (og som standard oppsettet på nytt). opts.utenConfig: bare turer.
 async function lastData(opts) {
   opts = opts || {};
   try {
     const [turData, cfg] = await Promise.all([
-      apiKall({ action: 'hentAlleScooter' }),
+      apiKall(_HISTORIKK_KALL, 1, _HISTORIKK_OPTS),
       opts.utenConfig ? Promise.resolve(null) : apiKall({ action: 'hentConfigScooter' })
     ]);
     if (turData.feil) throw new Error(turData.feil);
     if (cfg && cfg.feil) throw new Error(cfg.feil);
-    turer = (turData.turer || []).map(mapTur);
+    turer = _turListe(turData).map(mapTur);
     _flettKo();
     _turerLastet = true;
     _visteDataTs = Date.now();
+    _historikkForsok = 0;
     _skrivTurerCache();
     visFerskhet('ok');
     if (cfg) _brukConfigScooter(cfg);
@@ -1211,10 +1227,24 @@ async function lastData(opts) {
     if (document.getElementById('tab-logg')?.classList.contains('active')) renderLogg();
     oppdaterKmHint();
   } catch(e) {
-    visFerskhet('feil');
-    toast('Kunne ikke laste data: ' + e.message, 'err');
-    console.error(e);
+    // Har vi tall på skjermen fra før, holder det å prøve igjen stille – ingen rød feilmelding
+    const prover = _historikkProvSenere(opts);
+    visFerskhet(prover ? 'historikk' : 'feil');
+    if (!prover || !_visteDataTs) toast('Kunne ikke laste data: ' + e.message, 'err');
+    console.warn('Turlista kom ikke denne gangen:', e && e.message ? e.message : e);
   }
+}
+
+// Backend svarer enten gammelt ({ turer: [{kolonne: verdi}] }) eller kompakt
+// ({ kompakt:1, kolonner:[…], rader:[[…]] }) – kompakt er under halvparten så mange byte.
+// Begge pakkes ut her, så resten av appen ser det samme.
+function _turListe(data) {
+  if (!data) return [];
+  if (data.kompakt && Array.isArray(data.rader)) {
+    const k = data.kolonner || [];
+    return data.rader.map(rad => { const o = {}; for (let i = 0; i < k.length; i++) o[k[i]] = rad[i]; return o; });
+  }
+  return data.turer || [];
 }
 
 function mapTur(t) {

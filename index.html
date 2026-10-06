@@ -346,7 +346,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v23.09 14:34</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v06.10 13:10</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -964,6 +964,18 @@ function _tomConfigCache() {
 try { localStorage.removeItem(_CONFIG_CACHE_KEY); } catch(e) {}
 }
 
+// Backend kan svare på to måter: gammelt format { turer: [{kolonne: verdi}] } eller kompakt
+// { kompakt:1, kolonner:[…], rader:[[…]] }. Kompakt er under halvparten så mange byte på ~1000 turer.
+// Her pakkes begge ut til samme liste, slik at resten av appen ikke merker forskjell.
+function _turListe(data) {
+  if (!data) return [];
+  if (data.kompakt && Array.isArray(data.rader)) {
+    const k = data.kolonner || [];
+    return data.rader.map(rad => { const o = {}; for (let i = 0; i < k.length; i++) o[k[i]] = rad[i]; return o; });
+  }
+  return data.turer || [];
+}
+
 // Felles mapping fra Sheets-rad til klient-objekt.
 // VIKTIG: All mapping av tur-data SKAL gå gjennom denne funksjonen.
 // Hvis du legger til et nytt felt, gjør det her – ikke spredd rundt i koden.
@@ -1080,6 +1092,7 @@ function visFerskhet(status) {
   const dager = _visteDataTs ? Math.floor((Date.now() - _visteDataTs) / 86400000) : 0;
   let tekst, kl = '';
   if (status === 'henter') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – oppdaterer …` : 'Henter data …'; kl = 'henter'; }
+  else if (status === 'historikk') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – henter historikk …` : 'Henter historikk …'; kl = 'henter'; }
   else if (status === 'feil') { tekst = _visteDataTs ? `Viser tall fra <b>${nar}</b> – kunne ikke oppdatere` : 'Kunne ikke hente data'; kl = 'gammel'; }
   else { tekst = `Sist oppdatert <b>${nar}</b>`; }
   if (gammelt && status !== 'henter') { tekst += ` · mer enn ${dager === 1 ? 'ett døgn' : dager + ' døgn'} gammelt`; kl = 'gammel'; }
@@ -1355,9 +1368,9 @@ String(fraDato.getDate()).padStart(2,'0');
 try {
 // Ved oppdatering senere i økta: hent også fersk startdata (oppsett + stand) i samme runde
 if (opts.medStart !== false) hentStartdata().catch(e => console.log('Startdata-feil:', e));
-const data = await apiKall({ action: 'hentAlle', fraDato: fraDatoStr });
+const data = await apiKall({ action: 'hentAlle', fraDato: fraDatoStr, kompakt: 1 });
 if (data.feil) throw new Error(data.feil);
-turer = (data.turer || []).map(mapTurFraSheet);
+turer = _turListe(data).map(mapTurFraSheet);
 _flettKo();
 _alleDataLastet = false;  // turer er nå bare siste 14 dager til full historikk er hentet
 _dataLastet = true;
@@ -1399,17 +1412,31 @@ if (id==='admin') renderAdmin();
 }
 
 let _alleHenter = null;
+// ── HELE HISTORIKKEN ──
+// ~1000 turer er en tung jobb for Apps Script. Viktig: når nettleseren avbryter kallet,
+// kjører Apps Script likevel ferdig – og tar bare ett kall om gangen per bruker. Et nytt forsøk
+// stiller seg altså bak det som allerede jobber, og køen vokser. Derfor: god tid (60 sek),
+// ingen kjappe nye forsøk, og heller ett rolig nytt forsøk et minutt senere.
+const _HISTORIKK_KALL = { action: 'hentAlle', kompakt: 1 };
+const _HISTORIKK_OPTS = { frist: 60000, maksForsok: 1 };
+let _historikkForsok = 0;
+function _historikkProvSenere() {
+  if (_historikkForsok >= 2) return false;   // maks to rolige nye forsøk
+  _historikkForsok++;
+  setTimeout(() => { if (!document.hidden && navigator.onLine !== false) hentAlleDataBakgrunn(); }, 60000);
+  return true;
+}
 async function hentAlleDataBakgrunn() {
 // Hent ALLE historiske data stille i bakgrunnen – aldri to ganger samtidig
 if (!scriptUrl) return;
 if (_alleHenter) return _alleHenter;
 _alleHenter = (async () => {
 try {
-const data = await apiKall({ action: 'hentAlle' }); // ingen fraDato = alle
+const data = await apiKall(_HISTORIKK_KALL, 1, _HISTORIKK_OPTS); // ingen fraDato = alle
 if (data.feil) { setSyncStatus('error', 'Feil'); return; }
 // Merge: behold nye turer fra siste 14 dager, legg til eldre
 const nyeIds = new Set(turer.map(t => String(t.id)));
-const alleTurer = (data.turer || []).map(mapTurFraSheet);
+const alleTurer = _turListe(data).map(mapTurFraSheet);
 // Merge: behold runde-data fra eksisterende turer, oppdater med Sheets-data
 const eksisterendeIds = new Map(turer.map(t => [String(t.id), t]));
 turer = alleTurer.map(t => {
@@ -1428,6 +1455,7 @@ _alleDataLastet = true;
 _sisteHenting = Date.now();
 _visteDataTs = _sisteHenting;
 _skrivTurerCache();
+_historikkForsok = 0;
 visFerskhet('ok');
 setSyncStatus('ok', 'Sync');
 // Oppdater aktiv fane med komplett data
@@ -1437,8 +1465,9 @@ if (aktivFane) renderAktivFane(aktivFane);
 // Ikke vis rød ring hvis grunndata allerede er lastet
 if (!_dataLastet) setSyncStatus('error', 'Feil');
 else setSyncStatus('ok', 'Sync'); // skjul spinner
-visFerskhet('feil');
-console.error('Bakgrunnslasting feil:', e);
+// Historikken kommer gjerne på neste forsøk – ikke skrik «feil» mens vi venter
+visFerskhet(_historikkProvSenere() ? 'historikk' : 'feil');
+console.warn('Historikken kom ikke denne gangen:', e && e.message ? e.message : e);
 }
 })();
 try { await _alleHenter; } finally { _alleHenter = null; }
@@ -1448,9 +1477,9 @@ async function hentDataBakgrunn() {
 // Hent stille i bakgrunnen uten å vise loader
 if (!scriptUrl) return;
 try {
-const data = await apiKall({ action: 'hentAlle' });
+const data = await apiKall(_HISTORIKK_KALL, 1, _HISTORIKK_OPTS);
 if (data.feil) return;
-turer = (data.turer || []).map(mapTurFraSheet);
+turer = _turListe(data).map(mapTurFraSheet);
 _flettKo();
 const cfg = await apiKall({ action: 'hentConfig' });
 if (cfg.forere && cfg.forere.length) forere = cfg.forere;
