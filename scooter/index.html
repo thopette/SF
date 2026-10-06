@@ -414,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="15:12">15:12</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="15:38">15:38</span>
 </div>
 
 <div class="nav">
@@ -802,11 +802,16 @@ async function _apiKallRa(body, forsokNr, opts) {
   forsokNr = forsokNr || 1;
   opts = opts || {};
   const _maksForsok = opts.maksForsok || 4;
+  // Et tidsavbrudd og et 404 fra Google er to vidt forskjellige ting. Ved tidsavbrudd kjører
+  // Apps Script fortsatt – da gjør et nytt forsøk bare køen lengre. Men når Google svarer med
+  // en feilside med én gang (den kjente 404-en fra script.googleusercontent.com), er ingenting
+  // i gang, og et nytt forsøk går som regel rett igjennom. Derfor eget tak for de tilfellene.
+  const _maksForsokSvar = Math.max(opts.maksForsokSvar || 0, _maksForsok);
   startSpinner();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), opts.frist || _timeoutFor(body));
   const bodyStr = JSON.stringify(body);
-  const brukGet = bodyStr.length < 1500 && !body.tur && !body.base64 && !body.forere && !body.loyper && !body.maskiner && !body.innstillinger && !body.feil && !body.service && !body.kontakt && !body.scootere && !body.items && !body.bildeIds;
+  const brukGet = !opts.tvingPost && bodyStr.length < 1500 && !body.tur && !body.base64 && !body.forere && !body.loyper && !body.maskiner && !body.innstillinger && !body.feil && !body.service && !body.kontakt && !body.scootere && !body.items && !body.bildeIds;
   const kanPrøveIgjen = brukGet || _IDEMPOTENTE_SKRIV.indexOf(body.action) > -1;
   const nyttForsøk = async (grunn) => {
     if (body.action === 'lastOppBilde') { try { _sisteOpplastingForsok = { nr: forsokNr + 1, tid: Date.now() }; oppTegn(); } catch(_) {} }
@@ -816,6 +821,11 @@ async function _apiKallRa(body, forsokNr, opts) {
     // NB: kall _apiKallRa direkte – apiKall ville lagt forsøket bakerst i køen, men plassen i køen
     // er opptatt av dette kallet. Da ville nytt forsøk aldri startet (vranglås).
     return _apiKallRa(body, forsokNr + 1, opts);
+  };
+  const _nyttSvarForsok = async (nyeOpts) => {
+    console.warn(`Ugyldig svar – prøver igjen (forsøk ${forsokNr + 1}/${_maksForsokSvar})…`);
+    await new Promise(r => setTimeout(r, _RETRY_PAUSE_MS[forsokNr - 1] || 4000));
+    return _apiKallRa(body, forsokNr + 1, nyeOpts);
   };
   try {
     let res;
@@ -848,11 +858,15 @@ async function _apiKallRa(body, forsokNr, opts) {
     catch(e) {
       console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}, ${brukGet ? 'GET' : 'POST'}). Første 500 tegn:`, txt.substring(0, 500));
       console.error('HTTP status:', res.status, 'Response length:', txt.length);
-      if (forsokNr < _maksForsok) return nyttForsøk('Ugyldig svar');
+      if (forsokNr < _maksForsokSvar) {
+        // Siste forsøk tas som POST – det er GET-ens omdirigering til googleusercontent.com som svikter
+        const nyeOpts = (brukGet && forsokNr + 1 >= _maksForsokSvar) ? Object.assign({}, opts, { tvingPost: true }) : opts;
+        return _nyttSvarForsok(nyeOpts);
+      }
       const erLoginSide = txt.includes('accounts.google.com');
       throw new Error(erLoginSide
         ? 'Apps Script krever re-autorisering. Åpne script-editoren og godkjenn tilgang.'
-        : `Server svarte ikke etter ${_maksForsok} forsøk (HTTP ${res.status}). Prøv igjen om et øyeblikk.`);
+        : `Server svarte ikke etter ${_maksForsokSvar} forsøk (HTTP ${res.status}). Prøv igjen om et øyeblikk.`);
     }
   } catch(e) {
     clearTimeout(timeout);
@@ -1214,7 +1228,7 @@ async function _ventPaStartdata() {
 // Delta-synk: appen har historikken lokalt og spør bare om det som har skjedd siden sist.
 // Serveren svarer med endrede turer + ALLE tur-ID-er («fasiten»). Fasiten styrer hva som slettes
 // og hva vi mangler – men bare for turer som ligger på serveren. Turer i lokalkøen røres aldri.
-const _HISTORIKK_OPTS = { frist: 60000, maksForsok: 1 };
+const _HISTORIKK_OPTS = { frist: 60000, maksForsok: 1, maksForsokSvar: 3 };
 const _SYNK_MAKS_ETTERSLEP = 400;
 let _gammelBackend = false;   // backend uten hentSynk (ikke deployet ennå) – da henter vi alt som før
 function _synkKall() {
