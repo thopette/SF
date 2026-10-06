@@ -417,7 +417,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="15:49">15:49</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="15:58">15:58</span>
 </div>
 
 <div class="nav">
@@ -2328,8 +2328,18 @@ function _dypFerdig() {
 function startDypLenke() {
   try {
     let id = new URLSearchParams(location.search).get('tur');
-    if (id) { try { sessionStorage.setItem(_DYP_NOKKEL, String(id)); } catch(e) {} }
-    else { try { id = sessionStorage.getItem(_DYP_NOKKEL); } catch(e) {} }
+    if (id) { try { sessionStorage.setItem(_DYP_NOKKEL, Date.now() + '|' + id); } catch(e) {} }
+    else {
+      // Lagret ID gjelder bare en umiddelbar oppfriskning av siden. Uten tidsgrensen ville hver
+      // eneste oppstart i samme fane hoppe til loggen og tegne den på nytt, lenge etter at
+      // e-postlenken var glemt.
+      try {
+        const lagret = sessionStorage.getItem(_DYP_NOKKEL);
+        const delt = lagret ? String(lagret).split('|') : null;
+        if (delt && delt.length === 2 && (Date.now() - Number(delt[0])) < 120000) id = delt[1];
+        else if (lagret) sessionStorage.removeItem(_DYP_NOKKEL);
+      } catch(e) {}
+    }
     if (!id) return;
     _dypTurId = String(id);
     try { history.replaceState({}, '', location.pathname); } catch(e) {}
