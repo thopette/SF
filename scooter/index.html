@@ -248,6 +248,9 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 .rlbar button{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:16px;border:1.5px solid #E0B057;background:#fff;color:#8A5300;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .rlbar span{font-size:11px;color:#8A5300;flex:1;min-width:0}
 .ferskhet[hidden]{display:none !important}
+.maalbar { display:flex; align-items:center; gap:10px; padding:8px 14px; font-size:12.5px; background:#0F3A5F; color:#fff; } .maalbar b { font-weight:600; } .maalbar button { margin-left:auto; background:rgba(255,255,255,0.18); color:#fff; border:0; border-radius:6px; padding:4px 10px; font-size:12px; cursor:pointer; }
+.dyp-status { margin:10px 14px 0; padding:9px 12px; border-radius:8px; background:#EAF3FA; border:1px solid #C8DDF0; color:#0F3A5F; font-size:13px; }
+.dyp-status.feil { background:#FDF0E6; border-color:#F0C9A8; color:#8A4B10; }
 .ferskhet{display:flex;align-items:center;gap:7px;padding:6px 12px;margin:0 0 10px;font-size:11.5px;color:var(--text2);background:var(--snow);border:1px solid var(--border);border-radius:8px}
 .ferskhet b{color:var(--text);font-weight:600}
 .ferskhet.gammel{background:#FFF8E7;border-color:#F5D5A0;color:#8A5300}
@@ -413,7 +416,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="13:51">13:51</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="14:41">14:41</span>
 </div>
 
 <div class="nav">
@@ -842,6 +845,7 @@ async function _apiKallRa(body, forsokNr, opts) {
     }
     const txt = await res.text();
     clearTimeout(timeout);
+    try { _maalRegistrer(txt); } catch(_) {}
     try { return JSON.parse(txt); }
     catch(e) {
       console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}, ${brukGet ? 'GET' : 'POST'}). Første 500 tegn:`, txt.substring(0, 500));
@@ -1137,6 +1141,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden && _t
 
 function hentAltPaNytt() {
   // NB: utkøen for turer røres ikke – usendte turer skal aldri kastes
+  try { sessionStorage.setItem('sf_maal_start_scooter', '1'); } catch(e) {}   // måler kaldstarten
   ['sf_turer_scooter_v1', 'sf_startdata_scooter_v1', 'sf_config_cache', 'sf_galleri_v1', 'sf_admin_bilder_v1'].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
   location.reload();
 }
@@ -1272,6 +1277,7 @@ async function lastData(opts) {
     }
     if (data.naa) _synkTil = data.naa;   // serverens klokke, aldri telefonens
     _flettKo();
+    _maalFerdig(turer.length);
     _turerLastet = true;
     _visteDataTs = Date.now();
     _historikkForsok = 0;
@@ -2249,27 +2255,103 @@ function _kvittVarighet() {
   return Math.min(15, Math.max(1, n)) * 1000;
 }
 // Etter lagring: rull ned til «Siste økter» slik at man ser at turen faktisk ble ført opp
+// ── TIDTAKING AV FULL HENTING ──
+// «Hent alt på nytt» måler hvor lang tid og hvor mange byte en kaldstart koster. Måler bare da.
+const _MAAL_NOKKEL = 'sf_maal_start_scooter';
+let _maaling = null;
+function _maalBytes(tekst) {
+  try { return new TextEncoder().encode(tekst).length; } catch(e) { return (tekst || '').length; }
+}
+function _maalRegistrer(tekst) {
+  if (!_maaling) return;
+  _maaling.bytes += _maalBytes(tekst);
+  _maaling.kall++;
+}
+function _maalStartHvisBedt() {
+  try {
+    if (sessionStorage.getItem(_MAAL_NOKKEL)) { sessionStorage.removeItem(_MAAL_NOKKEL); _maaling = { start: Date.now(), bytes: 0, kall: 0 }; }
+  } catch(e) {}
+}
+function _maalFerdig(antallTurer) {
+  if (!_maaling) return;
+  const m = _maaling; _maaling = null;
+  const sek = ((Date.now() - m.start) / 1000).toFixed(1).replace('.', ',');
+  const tekst = 'Full henting: ' + sek + ' s \u00b7 ' + Math.round(m.bytes / 1024) + ' kB \u00b7 ' + m.kall + ' kall \u00b7 ' + antallTurer + ' turer';
+  console.log('[tidtaking] ' + tekst);
+  try {
+    const etter = document.getElementById('reload-bar');
+    if (!etter || !etter.parentNode) return;
+    let bar = document.getElementById('maalbar');
+    if (!bar) { bar = document.createElement('div'); bar.id = 'maalbar'; bar.className = 'maalbar'; etter.parentNode.insertBefore(bar, etter.nextSibling); }
+    bar.innerHTML = '';
+    const t = document.createElement('span'); t.innerHTML = '\u23f1 <b>' + tekst + '</b>';
+    const x = document.createElement('button'); x.type = 'button'; x.textContent = 'Lukk'; x.onclick = () => bar.remove();
+    bar.appendChild(t); bar.appendChild(x);
+  } catch(e) {}
+}
 // ── DYPLENKE FRA E-POST (?tur=<id>) ──
 // E-posten lenker rett til turen. Vi venter til turen finnes i lista, åpner loggen og blinker den.
 let _dypTurId = null;
+// ── DYPLENKE FRA E-POST (?tur=<id>) ──
+// Vi går til loggen med en gang, spør backend direkte etter turen hvis den ikke finnes lokalt,
+// og sier fra hvis vi ikke finner den – i stedet for å la folk stå på «Ny økt» uten beskjed.
+const _DYP_NOKKEL = 'sf_dyp_tur_scooter';
+let _dypHentet = false, _dypFinnesIkke = false;
+function _dypBanner(tekst, type) {
+  const sek = document.getElementById('tab-logg');
+  if (!sek) return;
+  let el = document.getElementById('dyp-status');
+  if (!tekst) { if (el) el.remove(); return; }
+  if (!el) { el = document.createElement('div'); el.id = 'dyp-status'; sek.insertBefore(el, sek.firstChild); }
+  el.className = 'dyp-status' + (type ? ' ' + type : '');
+  el.textContent = tekst;
+}
+function _dypFerdig() {
+  _dypTurId = null;
+  try { sessionStorage.removeItem(_DYP_NOKKEL); } catch(e) {}
+}
 function startDypLenke() {
   try {
-    const id = new URLSearchParams(location.search).get('tur');
+    let id = new URLSearchParams(location.search).get('tur');
+    if (id) { try { sessionStorage.setItem(_DYP_NOKKEL, String(id)); } catch(e) {} }
+    else { try { id = sessionStorage.getItem(_DYP_NOKKEL); } catch(e) {} }
     if (!id) return;
     _dypTurId = String(id);
+    _dypHentet = false; _dypFinnesIkke = false;
     try { history.replaceState({}, '', location.pathname); } catch(e) {}
+    try { visTab('logg'); if (typeof renderLogg === 'function') renderLogg(); } catch(e) {}
+    _dypBanner('Henter turen fra e-posten \u2026');
     _forsokDypLenke(0);
   } catch(e) { console.log('Dyplenke feilet:', e); }
 }
-function _forsokDypLenke(n) {
+async function _forsokDypLenke(n) {
   if (!_dypTurId) return;
   const finnes = (turer || []).some(t => String(t.id) === _dypTurId);
-  if (!finnes) { if (n < 25) setTimeout(() => _forsokDypLenke(n + 1), 1500); else _dypTurId = null; return; }
+  if (!finnes) {
+    // Ikke i våre data: hent nøyaktig denne turen fra backend
+    if (n >= 2 && !_dypHentet && scriptUrl) {
+      _dypHentet = true;
+      try {
+        const svar = await apiKall({ action: 'hentTurerIder', app: 'scooter', ider: [_dypTurId] }, 1, { frist: 20000, maksForsok: 1 });
+        const funnet = _turListe(svar);
+        // Svarte serveren uten å finne turen, finnes den ikke – da nytter det ikke å vente videre
+        if (svar && !svar.feil && !funnet.length) _dypFinnesIkke = true;
+        const hentede = funnet.map(mapTur).filter(t => !turer.some(x => String(x.id) === String(t.id)));
+        if (hentede.length) { turer = turer.concat(hentede); renderLogg(); }
+      } catch(e) { console.log('Dyplenke-oppslag feilet:', e); }
+    }
+    if (n < 20 && !_dypFinnesIkke) { setTimeout(() => _forsokDypLenke(n + 1), 1000); return; }
+    _dypFerdig();
+    _dypBanner('Fant ikke turen fra e-posten \u2013 viser hele loggen.', 'feil');
+    setTimeout(() => _dypBanner(''), 8000);
+    return;
+  }
   // Turkortet har data-turid i begge visningene (økt og enkelttur), så vi lar brukeren beholde sin visning
   try { visTab('logg'); if (typeof renderLogg === 'function') renderLogg(); } catch(e) {}
   setTimeout(() => {
     const id = _dypTurId;
-    _dypTurId = null;
+    _dypFerdig();
+    _dypBanner('');
     if (!id) return;
     let el = null;
     try { el = document.querySelector('[data-turid="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]'); } catch(e) {}
@@ -4474,6 +4556,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 async function initAlt() {
+  _maalStartHvisBedt();
   const loader = document.getElementById('center-loader');
   // Ny tur er default-fane: sett dato + klokkeslett så bruker ikke må gjøre det manuelt
   const n = new Date();
