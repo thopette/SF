@@ -414,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:42">08:42</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:50">08:50</span>
 </div>
 
 <div class="nav">
@@ -845,6 +845,7 @@ async function _apiKallRa(body, forsokNr, opts) {
     } catch(nettFeil) {
       clearTimeout(timeout);
       const erTimeout = nettFeil.name === 'AbortError';
+      try { _maalMislykket(erTimeout ? 'tidsavbrudd' : 'nettfeil'); } catch(_) {}
       // Nettverksfeil: prøv igjen for lese-kall og trygge skrive-kall. Tidsavbrudd på trege kall prøves ikke igjen.
       if (kanPrøveIgjen && forsokNr < _maksForsok && !(erTimeout && _TREGE_ACTIONS.indexOf(body.action) > -1)) {
         return nyttForsøk(erTimeout ? 'Tidsavbrudd' : 'Nettverksfeil');
@@ -1198,11 +1199,14 @@ let _startForsok = 0;
 function _startProvSenere() {
   if (_startForsok >= 2) return;
   _startForsok++;
+  // Har vi ikke oppsett i det hele tatt, står sjåføren med et tomt skjema – da haster det mer
+  const harOppsett = typeof loyper !== 'undefined' ? (loyper && loyper.length)
+                   : (typeof scootere !== 'undefined' && scootere && scootere.length);
   setTimeout(() => {
     if (document.hidden || navigator.onLine === false) return;
     _startPromise = null;
     try { hentStartdata(); } catch(e) {}
-  }, 30000);
+  }, harOppsett ? 30000 : 8000);
 }
 function hentStartdata() {
   _startPromise = (async () => {
@@ -2314,6 +2318,12 @@ function _maalRegistrer(tekst) {
   _maaling.bytes += _maalBytes(tekst);
   _maaling.kall++;
 }
+// Et kall som aldri kom fram teller ikke som svar, men koster like fullt tid – vis det
+function _maalMislykket(grunn) {
+  if (!_maaling) return;
+  if (grunn === 'tidsavbrudd') _maaling.tidsavbrudd = (_maaling.tidsavbrudd || 0) + 1;
+  else _maaling.mislykket = (_maaling.mislykket || 0) + 1;
+}
 function _maalStartHvisBedt() {
   try {
     if (sessionStorage.getItem(_MAAL_NOKKEL)) { sessionStorage.removeItem(_MAAL_NOKKEL); _maaling = { start: Date.now(), bytes: 0, kall: 0 }; }
@@ -2323,7 +2333,9 @@ function _maalFerdig(antallTurer) {
   if (!_maaling) return;
   const m = _maaling; _maaling = null;
   const sek = ((Date.now() - m.start) / 1000).toFixed(1).replace('.', ',');
-  const tekst = 'Full henting: ' + sek + ' s \u00b7 ' + Math.round(m.bytes / 1024) + ' kB \u00b7 ' + m.kall + ' kall \u00b7 ' + antallTurer + ' turer';
+  const tekst = 'Full henting: ' + sek + ' s \u00b7 ' + Math.round(m.bytes / 1024) + ' kB \u00b7 ' + m.kall + ' kall \u00b7 ' + antallTurer + ' turer'
+    + (m.tidsavbrudd ? ' \u00b7 ' + m.tidsavbrudd + ' tidsavbrudd' : '')
+    + (m.mislykket ? ' \u00b7 ' + m.mislykket + ' mislykket' : '');
   console.log('[tidtaking] ' + tekst);
   try {
     const etter = document.getElementById('reload-bar');
@@ -4632,7 +4644,8 @@ async function initAlt() {
   const pStart = hentStartdata().catch(e => console.error('Startdata feilet:', e)).finally(() => { if (loader) loader.classList.remove('visible'); });
   // Fulgte turene med oppstartskallet, er de allerede på vei inn – ellers hentes de nå
   const pData = pStart.then(() => window._scooterDataPromise || lastData({ utenConfig: true }));
-  pStart.then(() => { if (!window._serviceFraStart) hentFeilData(); });
+  // Bare hvis oppstartskallet faktisk gikk igjennom – ellers er nettet tungt fra før
+  pStart.then(sd => { if (sd && !window._serviceFraStart) hentFeilData(); });
   await Promise.allSettled([pStart, pData]);
 }
 initAlt();
