@@ -27,6 +27,38 @@
 .rlbar button{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:16px;border:1.5px solid #E0B057;background:#fff;color:#8A5300;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .rlbar span{font-size:11px;color:#8A5300;flex:1;min-width:0}
 .ferskhet[hidden] { display:none !important; }
+/* Admin: grupper */
+.adm-gruppe{margin-bottom:18px}
+.adm-gruppe-hode{display:flex;align-items:baseline;gap:8px;font-size:13px;font-weight:600;color:var(--navy);padding:0 2px 7px;border-bottom:2px solid var(--border);margin-bottom:10px}
+.adm-gruppe-hode small{font-weight:400;font-size:12px;color:var(--text2)}
+.adm-nr{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+/* E-post-varsler: matrise */
+.vm-hjelp{font-size:12.5px;color:var(--text2);line-height:1.5;margin:2px 0 12px}
+.vm-hjelp b{color:var(--navy)}
+.vm-rull{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:8px}
+.vm-tab{border-collapse:collapse;width:100%;font-size:13px;min-width:430px}
+.vm-tab th{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--text2);font-weight:600;background:var(--snow);padding:7px 8px;text-align:left;border-bottom:1px solid var(--border);line-height:1.3}
+.vm-tab td{padding:7px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+.vm-tab tr:last-child td{border-bottom:0}
+.vm-c{text-align:center}
+.vm-navn{font-weight:600;color:var(--navy);min-width:132px}
+.vm-epost{font-weight:400;font-size:11.5px;color:var(--text2)}
+.vm-mangler{font-weight:600;font-size:11.5px;color:#B45309}
+.vm-kjorer{white-space:nowrap;color:var(--text2)}
+.vm-kjorer svg{margin-right:2px}
+.vm-stille{color:#C3CFDB}
+.vm-br{width:38px;height:21px;border-radius:11px;background:#CBD5E1;position:relative;border:0;padding:0;cursor:pointer;display:inline-block;transition:background .15s}
+.vm-br::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:#fff;transition:left .15s}
+.vm-br.pa{background:var(--mid)} .vm-br.pa::after{left:19px}
+.vm-las{background:none;border:0;font-size:14px;padding:2px 6px;opacity:.45;cursor:default;line-height:1}
+.vm-las.kan{cursor:pointer;opacity:.7}
+.vm-las.kan:hover{opacity:1}
+.vm-unntak{display:block;margin:3px auto 0;background:#F2EEF8;color:#5B4B8A;border:0;border-radius:8px;font-size:9.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:2px 6px;cursor:pointer;font-family:var(--sans)}
+.vm-fasit{margin-top:12px;background:var(--snow);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.vm-gaar{font-size:12px;color:var(--text2);padding:2px 0;line-height:1.45}
+.vm-gaar b{color:var(--navy)}
+.vm-gaar.av{color:#B45309}
+.vm-tom{font-size:13px;color:var(--text2);padding:10px 0}
 .maalbar { display:flex; align-items:center; gap:10px; padding:8px 14px; font-size:12.5px; background:#0F3A5F; color:#fff; } .maalbar b { font-weight:600; } .maalbar button { margin-left:auto; background:rgba(255,255,255,0.18); color:#fff; border:0; border-radius:6px; padding:4px 10px; font-size:12px; cursor:pointer; }
 .ferskhet { display:flex; align-items:center; gap:7px; padding:6px 14px; font-size:11.5px; color:var(--text2); background:var(--snow); border-bottom:1px solid var(--border); } .ferskhet b { color:var(--text); font-weight:600; } .ferskhet.gammel { background:#FFF8E7; color:#8A5300; } .ferskhet.gammel b { color:#8A5300; } .ferskhet .prikk { width:7px; height:7px; border-radius:50%; background:var(--accent); flex-shrink:0; } .ferskhet.henter .prikk { animation:pulse 1.2s ease-in-out infinite; } .ferskhet.gammel .prikk { background:#E67E22; } .forer-chips { display:flex; flex-wrap:wrap; gap:8px; } .forer-chip { padding:10px 16px; border-radius:22px; border:2px solid var(--border); background:var(--white); font-family:var(--sans); font-size:15px; font-weight:500; color:var(--text); cursor:pointer; user-select:none; -webkit-user-select:none; min-height:44px; } .forer-chip.valgt { background:var(--mid); color:#fff; border-color:var(--mid); } .forer-chip:focus-visible { outline:2px solid var(--accent); outline-offset:2px; } .metric-value.tekst { font-size:17px; font-family:var(--sans); line-height:1.25; } .rek-liste { display:flex; flex-direction:column; } .rek-rad { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 10px; padding:10px 0; border-bottom:1px solid var(--border); } .rek-rad:last-child { border-bottom:0; } .rek-lbl { font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; } .rek-verdi { grid-row:span 2; align-self:center; font-family:var(--mono); font-size:20px; font-weight:600; color:var(--navy); white-space:nowrap; } .rek-verdi small { font-size:12px; color:var(--text2); font-weight:500; } .rek-hvem { font-size:13px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .rek-hvem span { color:var(--text2); }
 .fs-kort { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; background:var(--white); } .fs-hode { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--snow); border-bottom:1px solid var(--border); } .fs-ini { width:30px; height:30px; border-radius:50%; background:var(--mid); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; flex-shrink:0; } .fs-navn { font-weight:600; font-size:14px; color:var(--navy); flex:1; min-width:0; } .fs-ant { font-family:var(--mono); font-size:12px; color:var(--text2); white-space:nowrap; } .fs-grid { display:grid; grid-template-columns:repeat(3,1fr); } .fs-celle { padding:10px 12px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); min-width:0; } .fs-celle:nth-child(3n) { border-right:0; } .fs-v { font-family:var(--mono); font-size:17px; font-weight:600; color:var(--navy); white-space:nowrap; } .fs-v.fart { color:var(--mid); } .fs-l { font-size:10px; color:var(--text2); text-transform:uppercase; letter-spacing:0.4px; margin-top:2px; } .fs-s { font-size:11px; color:var(--text2); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .fs-fot { padding:8px 14px; font-size:12px; color:var(--text2); display:flex; gap:14px; flex-wrap:wrap; } .fs-krone { color:#B7770D; font-weight:600; }
@@ -344,7 +376,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v07.10 09:10</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v07.10 10:37</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -417,7 +449,7 @@ Sesonginnstillinger
 </div>
 <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Valideringsgrenser</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Maks km per tur</label><input type="number" id="admin-max-km" placeholder="150" min="1" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div><div class="field"><label>Maks timer per tur</label><input type="number" id="admin-max-timer" placeholder="10" min="1" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Scooterøkter</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Samme økt innen (minutter)</label><input type="number" inputmode="numeric" id="admin-okt-min" placeholder="30" min="5" max="180" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Scooterturer samme dag med sluttid innenfor denne grensen regnes som én økt.</div></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Læring</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Læring starter fra</label><input type="date" id="admin-laering-fra" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Turer før denne datoen telles ikke i læringen for kombinerte runder. La stå tom for å bruke alle data.</div></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Bilder</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Størrelse ved opplasting</label><select id="admin-bildestorrelse" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><option value="1280">Høy – 1280 px (tregest)</option><option value="1000">Middels – 1000 px</option><option value="800">Rask – 800 px</option><option value="640">Raskest – 640 px (standard nå)</option></select><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Gjelder begge appene og nye bilder. Et vanlig mobilbilde sendes som ca. 445 kB på 1280 px, 250 kB på 1000 px, 155 kB på 800 px og 89 kB på 640 px. 640 px er skarpt nok på mobilskjerm og i e-post, men blir synlig mykt hvis du zoomer inn.</div></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Kvittering etter lagret økt</div><div class="form-grid two" style="margin-bottom:10px"><div class="field"><label>Vises i (sekunder)</label><input type="number" inputmode="decimal" id="admin-kvitt-sek" placeholder="5" min="1" max="15" step="0.5" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow)"><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Gjelder begge appene. Kvitteringen kan alltid lukkes med ett trykk. Tomt felt = 5 sekunder.</div></div></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin:12px 0 8px">Hilsener i kvitteringen – maskin og scooter</div><div class="form-grid full" style="margin-bottom:10px"><div class="field"><textarea id="admin-hilsener" rows="5" placeholder="Bra jobba" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow);min-height:96px"></textarea><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Maskinloggen. Én hilsen per linje, <b>uten navn</b> – appen legger til fornavnet selv: «Bra jobba» blir «Bra jobba, Thomas!». Kvitteringen trekker tilfeldig og bruker aldri samme to ganger på rad. Vil du styre plasseringen selv, skriv {navn} i linja. Tomt felt gir standardlista.</div></div><div class="field" style="margin-top:10px"><textarea id="admin-hilsener-scooter" rows="5" placeholder="Bra jobba" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:var(--sans);font-size:14px;color:var(--text);background:var(--snow);min-height:96px"></textarea><div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.4">Scooterloggen. Samme regler – hilsenene vises i kvitteringen i scooter-appen.</div></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="sesong-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreSesong()">Lagre innstillinger</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
 Google Sheets tilkobling
-</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Vedlikehold</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Regn ut <strong>Maskintimer</strong>, <strong>Km kjørt</strong> og <strong>Km/t</strong> på nytt for alle turer i loggen. Brukes etter at en gammel registrering er rettet i sheetet, slik at avledede tall blir riktige.</div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-wrap:wrap"><span id="diff-status" style="font-size:12px;color:var(--text2);display:none"></span><button class="btn btn-primary btn-sm" id="diff-knapp" onclick="regnUtDiffPaNytt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Regn ut på nytt</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-post-varsler</div><div class="card-body"><div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">Master-brytere for varsler. Skru av kategorier her for å stoppe alle e-poster i den kategorien, uansett hva enkeltkontakter har krysset av for.</div><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-tur-maskin" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>maskin-turer</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-tur-scooter" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>scooter-turer</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-feil-maskin" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>maskin-feil</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-feil-scooter" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>scooter-feil</strong></span></label></div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Krysstilgang</div><label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:10px;background:var(--ice);border-radius:6px;margin-bottom:16px"><input type="checkbox" id="admin-tillat-cross" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer;margin-top:1px"><div><div>Tillat <strong>scooter-sjåfører</strong> å abonnere på <strong>maskin-turer</strong></div><div style="font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4">Om av: alle scooter-only kontakter mister sitt VarslerTurMaskin-abonnement. Maskin-sjåfører beholder alt uansett.</div></div></label><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px">Statistikk</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"><div style="background:var(--snow);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="admin-varsler-stats-mottakere">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Aktive mottakere</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="admin-varsler-stats-epost">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Med e-post</div></div><div style="background:var(--snow);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:600;color:var(--navy);font-family:var(--mono)" id="admin-varsler-stats-uke">–</div><div style="font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:0.3px">Sendt siste 7d</div></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="admin-varsler-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreVarslerAdmin()">Lagre varsler-innstillinger</button></div></div></div><div class="card"><div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Bilder på Drive</span><span id="admin-bilder-status" style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:400;margin-left:auto"></span></div><div class="card-body" id="admin-bilder"><p style="font-size:13px;color:var(--text2)">Klikk «Last inn» for å se bilder og diskstatus</p><button onclick="lastAdminBilder()" class="btn btn-outline" style="margin-top:8px">Last inn bilder</button></div></div>
+</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:8px">URL er hardkodet i appen. For å bytte, oppdater HTML-filen med ny URL.</div><div style="font-family:var(--mono);font-size:11px;background:var(--snow);border:1px solid var(--border);border-radius:7px;padding:10px 12px;word-break:break-all;color:var(--text2)">https://script.google.com/macros/s/AKfycbxzFc0f_-zb3VHWSn424MS3MTjgDO0eU-YyV89lC79ZkdIDQnkxrEQD5bZAy9rZV2EV7A/exec</div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Vedlikehold</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Regn ut <strong>Maskintimer</strong>, <strong>Km kjørt</strong> og <strong>Km/t</strong> på nytt for alle turer i loggen. Brukes etter at en gammel registrering er rettet i sheetet, slik at avledede tall blir riktige.</div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center;flex-wrap:wrap"><span id="diff-status" style="font-size:12px;color:var(--text2);display:none"></span><button class="btn btn-primary btn-sm" id="diff-knapp" onclick="regnUtDiffPaNytt()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Regn ut på nytt</button></div></div></div><div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-post-varsler</div><div class="card-body"><div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">Master-brytere for varsler. Skru av kategorier her for å stoppe alle e-poster i den kategorien, uansett hva enkeltkontakter har krysset av for.</div><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px"><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-tur-maskin" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>maskin-turer</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-tur-scooter" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>scooter-turer</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-feil-maskin" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>maskin-feil</strong></span></label><label style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 10px;background:var(--snow);border-radius:6px"><input type="checkbox" id="admin-master-feil-scooter" style="width:18px;height:18px;accent-color:var(--mid);cursor:pointer"><span>Aktivér varsler for <strong>scooter-feil</strong></span></label></div><div id="admin-varsler-matrise" style="margin-top:4px"><div style="font-size:12.5px;color:var(--text2);padding:10px 0">Henter sjåfører …</div></div></div></div><div style="display:flex;justify-content:flex-end;gap:8px;align-items:center"><span id="admin-varsler-lagret" style="font-size:12px;color:var(--success);display:none">✓ Lagret</span><button class="btn btn-primary btn-sm" onclick="lagreVarslerAdmin()">Lagre varsler-innstillinger</button></div></div></div><div class="card"><div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:10px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Bilder på Drive</span><span id="admin-bilder-status" style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:400;margin-left:auto"></span></div><div class="card-body" id="admin-bilder"><p style="font-size:13px;color:var(--text2)">Klikk «Last inn» for å se bilder og diskstatus</p><button onclick="lastAdminBilder()" class="btn btn-outline" style="margin-top:8px">Last inn bilder</button></div></div>
 
 <div class="card"><div class="card-header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>Ryddesenter</div><div class="card-body"><div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5">Samlet oversikt over turer og feil fra begge apper. Marker flere og slett i bulk – bilder på Drive slettes automatisk hvis ingen andre turer refererer til dem.</div>
 <div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button class="btn btn-primary btn-sm" onclick="lastRyddedata()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:4px;vertical-align:middle"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15A9 9 0 1 1 5.64 5.64L1 10"/></svg>Last inn</button></div>
@@ -5332,6 +5364,7 @@ function renderAdminBilder() {
     <button onclick="ryddOppReferanser()" class="btn btn-sm btn-outline" style="padding:4px 10px;font-size:11px" title="Fjern bilde-URL-er i loggen som peker til slettede filer">🧹 Rydd opp gamle referanser</button>
     <button onclick="nullstillBildearkivet()" style="padding:4px 10px;font-size:11px;background:white;color:var(--danger);border:1.5px solid #FECACA;border-radius:6px;cursor:pointer;font-weight:600" title="Slett ALLE bilder og tøm alle URL-referanser">🗑️ Nullstill hele bildearkivet</button>
   </div>`;
+try { strukturerAdmin(); } catch(e) {}
 }
 async function nullstillBildearkivet() {
   if (!confirm(`⚠️ ADVARSEL – Dette sletter ALLE ${adminBilderCache.length} bildene og tømmer alle bilde-referanser fra hele loggen (maskin + scooter).\n\nBrukes typisk kun ved oppstart/test-oppsett.\n\nFortsett?`)) return;
@@ -5543,6 +5576,7 @@ function renderRyddesenter() {
   }
 
   el.innerHTML = html;
+try { strukturerAdmin(); } catch(e) {}
 }
 
 function _ryddNokkel(it) { return it.type + ':' + it.enhet + ':' + it.id; }
@@ -5703,6 +5737,7 @@ setTimeout(() => { status.style.display = 'none'; }, 12000);
 }
 function renderAdmin() {
 if (!adminLoggetInn) return;
+strukturerAdmin();
 oppdaterForerSelect();
 renderAdminLoyper();
 renderAdmin_sesong();
@@ -5715,6 +5750,7 @@ el.innerHTML = sjaforKontakter.map(k => {
 const tlfHtml = k.telefon ? `<a href="tel:${k.telefon}" style="color:var(--mid);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.69 3.38 2 2 0 0 1 3.66 1.21h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.16 6.16l1.15-1.15a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${k.telefon}</a>` : '';
 const epostHtml = k.epost ? `<a href="mailto:${k.epost}" style="color:var(--mid);text-decoration:none;font-size:12px;display:inline-flex;align-items:center;gap:4px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>${k.epost}</a>` : '';
 return `<div class="forer-list-item"><div style="flex:1"><div class="forer-name">${k.navn}</div>${(tlfHtml||epostHtml)?`<div style="display:flex;gap:12px;margin-top:3px">${tlfHtml}${epostHtml}</div>`:''}</div><button class="btn btn-sm btn-outline" onclick="toggleKontaktPanel(); setTimeout(()=>redigerKontakt('${k.id}'),300)" style="padding:5px 10px;font-size:12px">Endre</button></div>`;
+strukturerAdmin();   // kort som tegnes underveis plasseres i gruppa si
 }).join('');
 } else {
 el.innerHTML = '<p style="color:var(--text2);font-size:13px">Ingen sjåfører registrert.<br><span style="font-size:12px">Legg til under Kontakter og hak av «Sjåfør».</span></p>';
@@ -5724,6 +5760,49 @@ lastVarslerAdmin();
 }
 
 // Last inn varsler-admin-innstillinger fra backend og fyll ut UI
+// ── ADMIN: GRUPPERING ────────────────────────────────
+// Kortene ligger i HTML-en i den rekkefølgen de ble bygget. I stedet for å flytte dem i fila
+// (og risikere å rote til strukturen) stokker vi dem i DOM-en når adminpanelet åpnes første
+// gang. Finnes ikke et kort, hoppes det bare over.
+const _ADMIN_GRUPPER = [
+  { nr: '1', tittel: 'Folk', under: 'hvem finnes, og hvem får beskjed', kort: ['Førere', 'E-post-varsler'] },
+  { nr: '2', tittel: 'Utstyr', under: 'det som kjører', kort: ['Maskiner', 'Scootere', 'Vedlikehold'] },
+  { nr: '3', tittel: 'Løyper', under: 'hva som kjøres', kort: ['Løyper'] },
+  { nr: '4', tittel: 'Appen', under: 'hvordan den oppfører seg', kort: ['Sesonginnstillinger', 'Google Sheets'] },
+  { nr: '5', tittel: 'Data og opprydding', under: 'det man sjelden rører', kort: ['Bildearkiv', 'Ryddesenter', 'Data', 'Farlige handlinger'] }
+];
+function strukturerAdmin() {
+  const panel = document.getElementById('admin-panel');
+  if (!panel) return;
+  // Kan kjøres flere ganger: noen kort tegnes først når adminpanelet åpnes, og de plasseres
+  // da i gruppa si ved neste gjennomkjøring. Kort vi ikke kjenner igjen blir stående i fred.
+  _ADMIN_GRUPPER.forEach(g => {
+    const ledige = Array.prototype.slice.call(panel.querySelectorAll('.card'))
+      .filter(k => !k.closest('.adm-gruppe'));
+    const treff = [];
+    g.kort.forEach(navn => {
+      const k = ledige.find(el => {
+        if (treff.indexOf(el) > -1) return false;
+        const h = el.querySelector('.card-header');
+        return h && h.textContent.trim().toLowerCase().indexOf(navn.toLowerCase()) === 0;
+      });
+      if (k) treff.push(k);
+    });
+    let bolk = panel.querySelector('[data-adm-gruppe="' + g.nr + '"]');
+    if (!treff.length && !bolk) return;
+    if (!bolk) {
+      bolk = document.createElement('div');
+      bolk.className = 'adm-gruppe';
+      bolk.setAttribute('data-adm-gruppe', g.nr);
+      bolk.innerHTML = '<div class="adm-gruppe-hode"><span class="adm-nr">' + g.nr + '</span>' + g.tittel +
+        '<small>' + g.under + '</small></div>';
+      panel.appendChild(bolk);
+    }
+    treff.forEach(k => bolk.appendChild(k));
+  });
+}
+
+
 async function lastVarslerAdmin() {
 try {
 const res = await apiKall({ action: 'hentVarslerAdmin' });
@@ -5738,12 +5817,112 @@ setChk('admin-master-tur-maskin', innst.masterTurMaskin);
 setChk('admin-master-tur-scooter', innst.masterTurScooter);
 setChk('admin-master-feil-maskin', innst.masterFeilMaskin);
 setChk('admin-master-feil-scooter', innst.masterFeilScooter);
-setChk('admin-tillat-cross', innst.tillatScooterFolgeMaskinTur);
 // Stats
-document.getElementById('admin-varsler-stats-mottakere').textContent = stats.abonnenter ?? '–';
-document.getElementById('admin-varsler-stats-epost').textContent = stats.medEpost ?? '–';
-document.getElementById('admin-varsler-stats-uke').textContent = stats.sendtSisteUke ?? '–';
+renderVarslerMatrise();
 } catch(e) { console.warn('Kunne ikke laste varsler-admin:', e); }
+}
+
+// ── E-POST-VARSLER: MATRISE ──────────────────────────
+// Én rad per person, én kolonne per varseltype. To lag styrer hva som sendes:
+//   LOV  – maskinfører, eller unntak gitt her av admin (ligger i Kontakter-arket)
+//   VIL  – personens eget valg, som han også kan endre selv i scooter-appen
+// Mail går først når begge er ja. Låsen i tabellen er «mangler lov».
+const _VARSEL_KOL = [
+  { f: 'varslerTurMaskin',   l: 'Tur maskin',   enhet: 'maskin',  unntak: 'turMaskin',  master: 'masterTurMaskin' },
+  { f: 'varslerFeilMaskin',  l: 'Feil maskin',  enhet: 'maskin',  unntak: 'feilMaskin', master: 'masterFeilMaskin' },
+  { f: 'varslerTurScooter',  l: 'Tur scooter',  enhet: 'scooter', unntak: null,         master: 'masterTurScooter' },
+  { f: 'varslerFeilScooter', l: 'Feil scooter', enhet: 'scooter', unntak: null,         master: 'masterFeilScooter' }
+];
+function _harLov(k, kol) {
+  if (kol.enhet === 'scooter') return k.sjaforScooter || k.sjaforMaskin;
+  if (kol.f === 'varslerTurMaskin') return k.sjaforMaskin || k.unntakTurMaskin;
+  return k.sjaforMaskin || k.unntakFeilMaskin;
+}
+function _faarMail(k, kol) { return !!(k.epost && k[kol.f] && _harLov(k, kol)); }
+function _vEsc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c])); }
+
+function renderVarslerMatrise() {
+  const el = document.getElementById('admin-varsler-matrise');
+  if (!el) return;
+  const folk = (kontakter || []).filter(k => k.aktiv !== false && (k.sjaforMaskin || k.sjaforScooter))
+    .sort((a, b) => String(a.navn).localeCompare(String(b.navn), 'no'));
+  if (!folk.length) { el.innerHTML = '<div class="vm-tom">Ingen sjåfører registrert ennå. Legg dem inn under Førere og kontakter.</div>'; return; }
+
+  const celle = (k, kol) => {
+    if (!k.epost) return '<td class="vm-c"><span class="vm-stille">–</span></td>';
+    if (!_harLov(k, kol)) {
+      const kanAapnes = !!kol.unntak;
+      const tittel = kanAapnes
+        ? _vEsc(k.navn) + ' er ikke maskinfører. Trykk for å gi unntak.'
+        : _vEsc(k.navn) + ' er ikke registrert som sjåfør for dette.';
+      return `<td class="vm-c"><button class="vm-las${kanAapnes ? ' kan' : ''}" title="${tittel}" ${kanAapnes ? `onclick="varslerGiUnntak('${k.id}','${kol.unntak}',true)"` : 'disabled'}>🔒</button></td>`;
+    }
+    const unntak = kol.unntak && !k.sjaforMaskin;
+    return `<td class="vm-c">
+      <button class="vm-br${k[kol.f] ? ' pa' : ''}" role="switch" aria-checked="${!!k[kol.f]}" aria-label="${_vEsc(k.navn)} – ${kol.l}" onclick="varslerVeksle('${k.id}','${kol.f}')"></button>
+      ${unntak ? `<button class="vm-unntak" title="Unntak gitt av admin. Trykk for å ta det vekk." onclick="varslerGiUnntak('${k.id}','${kol.unntak}',false)">unntak</button>` : ''}
+    </td>`;
+  };
+
+  const rader = folk.map(k => `<tr>
+      <td class="vm-navn"><div>${_vEsc(k.navn)}</div>${k.epost ? `<div class="vm-epost">${_vEsc(k.epost)}</div>` : '<div class="vm-mangler">mangler e-post</div>'}</td>
+      <td class="vm-kjorer">${k.sjaforMaskin ? ikonSvg('maskin', 13) : ''}${k.sjaforScooter ? ikonSvg('scooter', 13) : ''}</td>
+      ${_VARSEL_KOL.map(kol => celle(k, kol)).join('')}
+    </tr>`).join('');
+
+  const gaarTil = _VARSEL_KOL.map(kol => {
+    const navn = folk.filter(k => _faarMail(k, kol)).map(k => _fornavn(k.navn));
+    const av = window.__varslerAdmin && window.__varslerAdmin[kol.master] === false;
+    return `<div class="vm-gaar${av ? ' av' : ''}"><b>${kol.l}:</b> ${av ? 'hovedbryteren er av – ingen får denne' : (navn.length ? navn.join(', ') : 'ingen')}</div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="vm-hjelp">Mail går ut når personen både <b>har lov</b> (er sjåfør, eller har fått unntak) og <b>har sagt ja</b>. Sjåførene kan endre sitt eget valg i scooter-appen – låsen kan bare du åpne.</div>
+    <div class="vm-rull"><table class="vm-tab">
+      <tr><th>Person</th><th>Kjører</th>${_VARSEL_KOL.map(k => `<th class="vm-c">${k.l.replace(' ', '<br>')}</th>`).join('')}</tr>
+      ${rader}
+    </table></div>
+    <div class="vm-fasit">${gaarTil}</div>`;
+}
+
+async function varslerVeksle(id, felt) {
+  const k = (kontakter || []).find(x => String(x.id) === String(id));
+  if (!k) return;
+  k[felt] = !k[felt];
+  renderVarslerMatrise();
+  try {
+    const res = await apiKall({ action: 'lagreKontakt', kontakt: k });
+    if (res.feil) throw new Error(res.feil);
+  } catch(e) {
+    k[felt] = !k[felt];
+    renderVarslerMatrise();
+    alert('Kunne ikke lagre: ' + e.message);
+  }
+}
+
+async function varslerGiUnntak(id, felt, verdi) {
+  const k = (kontakter || []).find(x => String(x.id) === String(id));
+  if (!k) return;
+  const hva = felt === 'turMaskin' ? 'maskin-turer' : 'maskin-feil';
+  if (verdi) {
+    if (!confirm(`Gi ${k.navn} varsler om ${hva}, selv om han ikke er maskinfører?\n\nHan kan da selv velge å melde seg av og på.`)) return;
+  } else {
+    if (!confirm(`Ta vekk unntaket for ${k.navn} på ${hva}?\n\nHan slutter å få disse mailene.`)) return;
+  }
+  const nokkel = felt === 'turMaskin' ? 'unntakTurMaskin' : 'unntakFeilMaskin';
+  const varselFelt = felt === 'turMaskin' ? 'varslerTurMaskin' : 'varslerFeilMaskin';
+  k[nokkel] = verdi;
+  if (verdi) k[varselFelt] = true; else if (!k.sjaforMaskin) k[varselFelt] = false;
+  renderVarslerMatrise();
+  try {
+    const res = await apiKall({ action: 'settVarselUnntak', id: k.id, felt, verdi });
+    if (res.feil) throw new Error(res.feil);
+    if (verdi) await apiKall({ action: 'lagreKontakt', kontakt: k });
+  } catch(e) {
+    k[nokkel] = !verdi;
+    renderVarslerMatrise();
+    alert('Kunne ikke lagre: ' + e.message);
+  }
 }
 
 async function lagreVarslerAdmin() {
@@ -5752,8 +5931,7 @@ const innst = {
 masterTurMaskin: chk('admin-master-tur-maskin'),
 masterTurScooter: chk('admin-master-tur-scooter'),
 masterFeilMaskin: chk('admin-master-feil-maskin'),
-masterFeilScooter: chk('admin-master-feil-scooter'),
-tillatScooterFolgeMaskinTur: chk('admin-tillat-cross')
+masterFeilScooter: chk('admin-master-feil-scooter')
 };
 try {
 const res = await apiKall({ action: 'lagreVarslerAdmin', innst });

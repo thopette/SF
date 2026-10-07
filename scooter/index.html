@@ -414,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="09:10">09:10</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="10:37">10:37</span>
 </div>
 
 <div class="nav">
@@ -4051,13 +4051,13 @@ function bygVarslerHtml(k, epostNaa, id) {
   if (!k.sjaforMaskin && !k.sjaforScooter) {
     return `<div style="margin-bottom:8px;padding:8px 10px;background:var(--snow);border-radius:6px;font-size:11px;color:var(--text2);font-style:italic">Kun sjåfører kan motta e-postvarsler</div>`;
   }
-  const scooterOnly = k.sjaforScooter && !k.sjaforMaskin;
-  const crossBlokkert = scooterOnly && !(window.__varslerAdmin?.tillatScooterFolgeMaskinTur);
+  // Maskin-varsler krever LOV: maskinfører, eller unntak gitt av admin for denne personen.
+  // Har man lov, får man selv velge – derfor vises haken da, og bare da.
   // Regel: scooter-only-kontakter med cross blokkert ser IKKE noen maskin-haker
   // Ellers: maskin-tur alltid vist for maskin-sjåfører og for scooter-only med cross-tilgang.
   // Maskin-feil krever fortsatt at kontakten er maskin-sjåfør.
-  const visMaskinTur = !crossBlokkert;
-  const visMaskinFeil = k.sjaforMaskin;  // Kun maskin-sjåfører kan velge dette
+  const visMaskinTur = k.sjaforMaskin || k.unntakTurMaskin;
+  const visMaskinFeil = k.sjaforMaskin || k.unntakFeilMaskin;
   const maskinTurHake = visMaskinTur ?
     `<label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0;color:var(--text)"><input type="checkbox" id="ek-vTM-${id}" ${k.varslerTurMaskin?'checked':''} style="width:auto;margin:0"> Nye maskin-turer</label>` : '';
   const maskinFeilHake = visMaskinFeil ?
