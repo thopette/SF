@@ -4,6 +4,8 @@
 body { font-family:var(--sans); background:var(--snow); color:var(--text); min-height:100vh; padding-bottom:40px; }
 .topbar { background:var(--navy); padding:10px 14px; display:flex; align-items:center; gap:8px; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.25); border-bottom:3px solid var(--scooter-accent); }
 .topbar h1 { color:var(--white); font-size:15px; font-weight:500; letter-spacing:0.3px; }
+.besok-pille{background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.8);border:0;border-radius:9px;font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;cursor:pointer;line-height:1.4;flex-shrink:0}
+.besok-pille:hover{background:rgba(255,255,255,0.22);color:#fff}
 .topbar-version { font-size:10px; color:rgba(255,255,255,0.45); font-family:var(--mono); white-space:nowrap; cursor:pointer; user-select:none; }
 .topbar-version:hover { color:rgba(255,255,255,0.7); }
 .nav { background:var(--white); border-bottom:1px solid var(--border); display:flex; padding:0 4px; position:sticky; top:48px; z-index:90; }
@@ -414,7 +416,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="12:36">12:36</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="15:17">15:17</span>
 </div>
 
 <div class="nav">
@@ -592,7 +594,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 <div id="tab-admin" class="tab-content">
   <div class="card">
     <div class="card-header">Data</div>
-    <div class="card-body"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">Tømmer mellomlagrede data på denne enheten og henter alt fra regnearket.</span></div><label style="display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);cursor:pointer"><input type="checkbox" id="admin-vis-reload" onchange="settVisReloadKnapp(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis knappen under menylinjen<br><span style="font-size:11px;color:var(--text2)">Nyttig ved testing. Gjelder bare denne enheten og nettleseren.</span></span></label><label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer"><input type="checkbox" id="admin-vis-ferskhet" onchange="settVisFerskhet(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis linjen «Sist oppdatert …»<br><span style="font-size:11px;color:var(--text2)">Står øverst på Dashboard og Logg. Gjelder bare denne enheten.</span></span></label></div>
+    <div class="card-body"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="hentAltPaNytt()">⟳ Hent alt på nytt</button><span style="font-size:12px;color:var(--text2);flex:1;min-width:200px">Tømmer mellomlagrede data på denne enheten og henter alt fra regnearket.</span></div><label style="display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);cursor:pointer"><input type="checkbox" id="admin-vis-reload" onchange="settVisReloadKnapp(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis knappen under menylinjen<br><span style="font-size:11px;color:var(--text2)">Nyttig ved testing. Gjelder bare denne enheten og nettleseren.</span></span></label><label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer"><input type="checkbox" id="admin-vis-ferskhet" onchange="settVisFerskhet(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis linjen «Sist oppdatert …»<br><span style="font-size:11px;color:var(--text2)">Står øverst på Dashboard og Logg. Gjelder bare denne enheten.</span></span></label><label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer"><input type="checkbox" id="admin-vis-besok" onchange="settVisBesok(this.checked)" style="width:17px;height:17px;accent-color:var(--mid);cursor:pointer;flex-shrink:0"><span style="font-size:13px;color:var(--text)">Vis besøksteller i topplinja<br><span style="font-size:11px;color:var(--text2)">Lite tall ved versjonsnummeret: enheter innom siste 24 t. Gjelder bare denne enheten.</span></span></label></div>
   </div>
   <div class="card">
     <div class="card-header">Scootere</div>
@@ -1030,6 +1032,60 @@ function visFerskhet(status) {
 }
 // Infolinja «Sist oppdatert …» – av/på per enhet
 const _VIS_FERSK_KEY = 'sf_vis_ferskhet';
+// ── BESØKSTELLER ─────────────────────────────────────
+// En tilfeldig ID per enhet, laget første gang appen åpnes. Den sier ingenting om hvem eller
+// hvilken telefon – den skiller bare den ene fra den andre. Følger med oppstartskallet, maks
+// én gang i timen, så den koster ingen egne kall.
+const _ENHET_NOKKEL = 'sf_enhet_id';
+const _BESOK_SENDT_NOKKEL = 'sf_besok_sendt';
+const _VIS_BESOK_NOKKEL = 'sf_vis_besok';
+function _enhetId() {
+  try {
+    let id = localStorage.getItem(_ENHET_NOKKEL);
+    if (!id) {
+      id = 'sf-' + Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 6);
+      localStorage.setItem(_ENHET_NOKKEL, id);
+    }
+    return id;
+  } catch(e) { return null; }
+}
+// Returnerer { id } når det er på tide å melde fra, ellers {} (da teller backend ingenting nytt)
+function _besokNyttelast() {
+  try {
+    const sist = parseInt(localStorage.getItem(_BESOK_SENDT_NOKKEL) || '0', 10);
+    if (Date.now() - sist < 60 * 60 * 1000) return { };   // meldt fra for under en time siden
+    const id = _enhetId();
+    if (!id) return {};
+    localStorage.setItem(_BESOK_SENDT_NOKKEL, String(Date.now()));
+    return { id: id };
+  } catch(e) { return {}; }
+}
+function _lesVisBesok() { try { return localStorage.getItem(_VIS_BESOK_NOKKEL) === 'ja'; } catch(e) { return false; } }
+function settVisBesok(pa) {
+  try { localStorage.setItem(_VIS_BESOK_NOKKEL, pa ? 'ja' : 'nei'); } catch(e) {}
+  visBesokPille();
+}
+function visBesokPille() {
+  const vert = document.getElementById('topbar-version');
+  if (!vert || !vert.parentNode) return;
+  let pille = document.getElementById('besok-pille');
+  const tall = window.__besok && typeof window.__besok.t24 === 'number' ? window.__besok.t24 : null;
+  if (!_lesVisBesok() || tall === null) { if (pille) pille.remove(); return; }
+  if (!pille) {
+    pille = document.createElement('button');
+    pille.id = 'besok-pille';
+    pille.type = 'button';
+    pille.className = 'besok-pille';
+    pille.onclick = () => {
+      const b = window.__besok || {};
+      const melding = `${b.t24 || 0} enheter innom siste 24 timer\n${b.t6 || 0} siste 6 timer · ${b.d7 || 0} siste 7 døgn`;
+      try { toast(`${b.t24 || 0} enheter innom siste 24 t`, ''); } catch(e) { alert(melding); }
+    };
+    vert.parentNode.insertBefore(pille, vert);
+  }
+  pille.textContent = tall;
+  pille.title = `${tall} enheter innom siste 24 timer`;
+}
 function _lesVisFerskhet() { try { return localStorage.getItem(_VIS_FERSK_KEY) !== 'nei'; } catch(e) { return true; } }
 function settVisFerskhet(pa) {
   try { localStorage.setItem(_VIS_FERSK_KEY, pa ? 'ja' : 'nei'); } catch(e) {}
@@ -1052,7 +1108,7 @@ function tegnReloadKnapp() {
   const cb = document.getElementById('admin-vis-reload');
   if (cb) cb.checked = pa;
   const cb2 = document.getElementById('admin-vis-ferskhet');
-  if (cb2) cb2.checked = _lesVisFerskhet();
+  if (cb2) cb2.checked = _lesVisFerskhet(); const cb3 = document.getElementById('admin-vis-besok'); if (cb3) cb3.checked = _lesVisBesok();
 }
 document.addEventListener('DOMContentLoaded', tegnReloadKnapp);
 tegnReloadKnapp();
@@ -1215,7 +1271,7 @@ function hentStartdata() {
     // vente på den. Ved kaldstart holder vi oppstartskallet lite og henter historikken etterpå.
     const synkKall = _synkKall();
     const taMedSynk = !!synkKall.siden;
-    const body = { action: 'hentStartdataScooter', medService: true };
+    const body = { action: 'hentStartdataScooter', medService: true, besok: _besokNyttelast() };
     if (taMedSynk) body.synk = { siden: synkKall.siden, dager: synkKall.dager || 14 };
     // Tidsavbrudd på dette kallet var det som spiste tid: standardfristen er 15 sek med inntil fire
     // forsøk, og hvert nytt forsøk stiller seg bak det forrige som Apps Script fortsatt kjører.
@@ -1228,6 +1284,7 @@ function hentStartdata() {
     _startStand = sd.stand || {};
     _startFersk = true;
     _startForsok = 0;
+    if (sd.besok) { window.__besok = sd.besok; try { visBesokPille(); } catch(e) {} }
     try { localStorage.setItem(_START_CACHE_KEY, JSON.stringify({ ts: Date.now(), config: sd.config, stand: _startStand })); } catch(e) {}
     renderSjaforChips();
     renderScooterCards();
