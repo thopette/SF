@@ -414,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:13">08:13</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:25">08:25</span>
 </div>
 
 <div class="nav">
@@ -1194,6 +1194,16 @@ let _startFersk = false;
 let _startPromise = null;
 let _turerLastet = false;  // true når alle turer er hentet (da er turer-lista fasiten)
 function _lesStartCache() { try { const r = localStorage.getItem(_START_CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+let _startForsok = 0;
+function _startProvSenere() {
+  if (_startForsok >= 2) return;
+  _startForsok++;
+  setTimeout(() => {
+    if (document.hidden || navigator.onLine === false) return;
+    _startPromise = null;
+    try { hentStartdata(); } catch(e) {}
+  }, 30000);
+}
 function hentStartdata() {
   _startPromise = (async () => {
     // Synken følger med i samme kall når backend er ny nok – ett rundturs-besøk spart.
@@ -1203,11 +1213,17 @@ function hentStartdata() {
     const taMedSynk = !!synkKall.siden;
     const body = { action: 'hentStartdataScooter', medService: true };
     if (taMedSynk) body.synk = { siden: synkKall.siden, dager: synkKall.dager || 14 };
-    const sd = await apiKall(body, 1, taMedSynk ? { frist: 30000, maksForsok: 1, maksForsokSvar: 3 } : undefined);
+    // Tidsavbrudd på dette kallet var det som spiste tid: standardfristen er 15 sek med inntil fire
+    // forsøk, og hvert nytt forsøk stiller seg bak det forrige som Apps Script fortsatt kjører.
+    // Derfor: god frist, ingen kjappe nye forsøk ved tidsavbrudd, og ett rolig forsøk et halvt
+    // minutt senere i stedet.
+    const sd = await apiKall(body, 1, { frist: 45000, maksForsok: 1, maksForsokSvar: 3 })
+      .catch(e => { _startProvSenere(); throw e; });
     if (!sd || sd.feil || !sd.ok) throw new Error((sd && sd.feil) || 'Ugyldig startdata');
     _brukConfigScooter(sd.config);
     _startStand = sd.stand || {};
     _startFersk = true;
+    _startForsok = 0;
     try { localStorage.setItem(_START_CACHE_KEY, JSON.stringify({ ts: Date.now(), config: sd.config, stand: _startStand })); } catch(e) {}
     renderSjaforChips();
     renderScooterCards();
