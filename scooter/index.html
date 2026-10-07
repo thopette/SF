@@ -322,9 +322,6 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 @media (prefers-reduced-motion: reduce) { .sf-nytt-blink { animation:none; } }
 /* Dra ned for å oppdatere (mobil) */
 .pull-indikator { position:fixed; top:0; left:0; right:0; z-index:150; display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--sans); font-size:12px; font-weight:600; color:var(--mid); background:var(--ice); border-bottom:1px solid #C8DDF0; height:0; overflow:hidden; transition:height .12s ease; }
-.pull-indikator .snurr { width:13px; height:13px; border:2px solid rgba(74,159,212,0.3); border-top-color:var(--mid); border-radius:50%; }
-.pull-indikator.spinner .snurr { animation:pull-spin .8s linear infinite; }
-@keyframes pull-spin { to { transform:rotate(360deg); } }
 /* ── OPPLASTINGSSKJERM ── */
 .opp-bg { position:fixed; inset:0; z-index:420; background:var(--snow); display:none; flex-direction:column; padding:22px 18px 18px; }
 .opp-bg.vis { display:flex; }
@@ -417,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="07:58">07:58</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:13">08:13</span>
 </div>
 
 <div class="nav">
@@ -2414,11 +2411,13 @@ setInterval(() => { if (!document.hidden) oppdaterData({ maksAlder: 9 * 60 * 100
     if (indikator) return indikator;
     indikator = document.createElement('div');
     indikator.className = 'pull-indikator';
-    indikator.innerHTML = '<span class="snurr"></span><span class="tekst">Dra ned for å hente nye turer</span>';
+    // Ingen egen snurrende ring her: SF-logoen i topbaren snurrer allerede mens kallet går,
+    // og to snurrende ting rett ved siden av hverandre ser ut som en feil.
+    indikator.innerHTML = '<span class="tekst">Dra ned for å hente nye turer</span>';
     document.body.appendChild(indikator);
     return indikator;
   };
-  const rydd = () => { if (indikator) { indikator.style.height = '0px'; indikator.classList.remove('spinner'); } dratt = 0; startY = null; };
+  const rydd = () => { if (indikator) { indikator.style.height = '0px'; indikator.classList.remove('henter'); } dratt = 0; startY = null; };
   document.addEventListener('touchstart', e => {
     if (_oppdatererNa) return;
     const y = window.pageYOffset || document.documentElement.scrollTop || 0;
@@ -2438,7 +2437,7 @@ setInterval(() => { if (!document.hidden) oppdaterData({ maksAlder: 9 * 60 * 100
     if (!skalOppdatere) { rydd(); return; }
     const el = lagIndikator();
     el.style.height = '30px';
-    el.classList.add('spinner');
+    el.classList.add('henter');
     el.querySelector('.tekst').textContent = 'Henter nye turer …';
     startY = null; dratt = 0;
     try { await oppdaterData({ tvunget: true }); } catch(e) {}
