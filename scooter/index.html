@@ -417,7 +417,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="16:16">16:16</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="07:58">07:58</span>
 </div>
 
 <div class="nav">
@@ -1199,10 +1199,14 @@ let _turerLastet = false;  // true når alle turer er hentet (da er turer-lista 
 function _lesStartCache() { try { const r = localStorage.getItem(_START_CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
 function hentStartdata() {
   _startPromise = (async () => {
-    // Synken følger med i samme kall når backend er ny nok – ett rundturs-besøk spart
+    // Synken følger med i samme kall når backend er ny nok – ett rundturs-besøk spart.
+    // MEN bare delta-synken: hele historikken er tung, og skjemaet for ny tur skal aldri stå og
+    // vente på den. Ved kaldstart holder vi oppstartskallet lite og henter historikken etterpå.
     const synkKall = _synkKall();
-    const sd = await apiKall({ action: 'hentStartdataScooter', medService: true,
-      synk: { siden: synkKall.siden || null, dager: synkKall.dager || 14 } });
+    const taMedSynk = !!synkKall.siden;
+    const body = { action: 'hentStartdataScooter', medService: true };
+    if (taMedSynk) body.synk = { siden: synkKall.siden, dager: synkKall.dager || 14 };
+    const sd = await apiKall(body, 1, taMedSynk ? { frist: 30000, maksForsok: 1, maksForsokSvar: 3 } : undefined);
     if (!sd || sd.feil || !sd.ok) throw new Error((sd && sd.feil) || 'Ugyldig startdata');
     _brukConfigScooter(sd.config);
     _startStand = sd.stand || {};
