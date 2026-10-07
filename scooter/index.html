@@ -414,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:50">08:50</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="09:10">09:10</span>
 </div>
 
 <div class="nav">
@@ -1285,8 +1285,13 @@ function _historikkProvSenere(opts) {
 }
 
 // Henter alle turer (og som standard oppsettet på nytt). opts.utenConfig: bare turer.
+let _lastDataNa = null;
 async function lastData(opts) {
   opts = opts || {};
+  // Kjører en henting allerede, venter vi på den i stedet for å sende et kall til. Uten dette kan
+  // et fanebytte midt i en kaldstart starte henting nummer to, som stiller seg bak den første.
+  if (_lastDataNa && !opts.forhand) { try { await _lastDataNa; } catch(e) {} return; }
+  _lastDataNa = (async () => {
   try {
     let kall = opts.forhand ? opts.forhand.kall : _synkKall();
     const [turData, cfg] = await Promise.all([
@@ -1347,6 +1352,8 @@ async function lastData(opts) {
     if (!prover || !_visteDataTs) toast('Kunne ikke laste data: ' + e.message, 'err');
     console.warn('Turlista kom ikke denne gangen:', e && e.message ? e.message : e);
   }
+  })();
+  try { await _lastDataNa; } finally { _lastDataNa = null; }
 }
 
 // Backend svarer enten gammelt ({ turer: [{kolonne: verdi}] }) eller kompakt
