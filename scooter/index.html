@@ -414,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:25">08:25</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="08:42">08:42</span>
 </div>
 
 <div class="nav">
@@ -2397,7 +2397,10 @@ function _forsokDypLenke(n) {
 // Appen viser mellomlagrede tall med én gang. Blir de gamle – for eksempel mens en annen sjåfør
 // registrerer en tur – henter vi ferske data når appen kommer fram igjen, ved fanebytte, eller
 // når man drar ned øverst på siden.
-const _FERSK_GRENSE_MS = 60000;
+// Kjøreloggen endrer seg noen få ganger om dagen, ikke hvert minutt. Et fanebytte skal derfor
+// ikke utløse et nytt kall med det samme – nedtrekk (mobil) og vanlig oppfriskning (PC)
+// henter alltid ferskt når man faktisk vil ha det.
+const _FERSK_GRENSE_MS = 5 * 60 * 1000;
 let _oppdatererNa = false;
 function dataAlder() { return _visteDataTs ? (Date.now() - _visteDataTs) : Infinity; }
 async function oppdaterData(opts) {
@@ -2413,8 +2416,8 @@ async function oppdaterData(opts) {
   return true;
 }
 // Kommer appen fram igjen, er det et tydelig signal om at noen vil se ferske tall
-document.addEventListener('visibilitychange', () => { if (!document.hidden) oppdaterData({ maksAlder: 20000 }); });
-window.addEventListener('focus', () => oppdaterData({ maksAlder: 20000 }));
+document.addEventListener('visibilitychange', () => { if (!document.hidden) oppdaterData({ maksAlder: 60000 }); });
+window.addEventListener('focus', () => oppdaterData({ maksAlder: 60000 }));
 window.addEventListener('online', () => oppdaterData());
 // Står appen åpen hele dagen, frisker vi opp hvert tiende minutt så tallene aldri blir gamle
 setInterval(() => { if (!document.hidden) oppdaterData({ maksAlder: 9 * 60 * 1000 }); }, 10 * 60 * 1000);
