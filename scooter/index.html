@@ -414,7 +414,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="10:37">10:37</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="12:36">12:36</span>
 </div>
 
 <div class="nav">
@@ -3885,11 +3885,11 @@ async function feilKoSend() {
         const res = await apiKall({ action: 'lagreFeil', feil: post.feil });
         if (res && res.feil) throw new Error(res.feil);
         _skrivFeilKo(_lesFeilKo().filter(p => String(p.feil.id) !== String(post.feil.id)));
-        // Varselet sendes først når meldingen faktisk ligger i regnearket
-        if (!res.duplikat) {
-          apiKall({ action: 'sendVarselFeil', feil: post.feil, appType: post.appType })
-            .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
-        }
+        // NB: res.duplikat betyr bare at raden alt lå der – som regel fordi kallet vårt gikk i
+        // tidsavbrudd og ble prøvd på nytt. Da skal mailen fortsatt sendes; backend sørger for
+        // at det blir maks én per feilmelding.
+        apiKall({ action: 'sendVarselFeil', feil: post.feil, appType: post.appType })
+          .catch(e => console.log('Varsel-sending (bakgrunn) feilet:', e));
         try { await hentFeilData(); } catch(e) {}
       } catch(e) {
         post.forsok = (post.forsok || 0) + 1;
