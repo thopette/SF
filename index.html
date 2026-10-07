@@ -347,7 +347,7 @@
 <line x1="8" y1="2" x2="8" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <line x1="16" y1="2" x2="16" y2="6" stroke="rgba(255,255,255,0.75)" stroke-width="2"/>
 <text x="12" y="20" text-anchor="middle" fill="rgba(255,255,255,0.75)" style="font-size:7px;font-weight:700;font-family:sans-serif">29</text>
-</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v06.10 15:58</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+</svg></button><a href="scooter/" title="Gå til scooter-loggen" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:6px;flex-shrink:0;text-decoration:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg></a><div style="flex:1"></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0"><span id="bk-pill" class="bk-pill" data-flyt="1" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}"></span><span id="topbar-version" style="font-size:10px;color:rgba(255,255,255,0.45);font-family:var(--mono);white-space:nowrap" class="topbar-version-desktop">v06.10 16:16</span></div></div><nav class="nav"><button class="nav-btn" onclick="showTab('dashboard')" id="btn-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
 Dashboard
 </button><button class="nav-btn active" onclick="showTab('ny')" id="btn-ny"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
 Ny økt
@@ -887,7 +887,8 @@ async function _apiKallRa(body, forsokNr, opts) {
   };
   const _nyttSvarForsok = async (nyeOpts) => {
     console.warn(`Ugyldig svar – prøver igjen (forsøk ${forsokNr + 1}/${_maksForsokSvar})…`);
-    await new Promise(r => setTimeout(r, _RETRY_PAUSE_MS[forsokNr - 1] || 4000));
+    // Serveren svarte allerede – ingen grunn til å vente lenge før nytt forsøk
+    await new Promise(r => setTimeout(r, 250));
     return _apiKallRa(body, forsokNr + 1, nyeOpts);
   };
   try {
@@ -922,9 +923,9 @@ async function _apiKallRa(body, forsokNr, opts) {
       console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}, ${brukGet ? 'GET' : 'POST'}). Første 500 tegn:`, txt.substring(0, 500));
       console.error('HTTP status:', res.status, 'Response length:', txt.length);
       if (forsokNr < _maksForsokSvar) {
-        // Siste forsøk tas som POST – det er GET-ens omdirigering til googleusercontent.com som svikter
-        const nyeOpts = (brukGet && forsokNr + 1 >= _maksForsokSvar) ? Object.assign({}, opts, { tvingPost: true }) : opts;
-        return _nyttSvarForsok(nyeOpts);
+        // Det er GET-ens omdirigering til googleusercontent.com som svikter – da nytter det ikke å
+        // gjenta samme GET. Første nye forsøk går derfor rett over til POST.
+        return _nyttSvarForsok(brukGet ? Object.assign({}, opts, { tvingPost: true }) : opts);
       }
       const erLoginSide = txt.includes('accounts.google.com');
       throw new Error(erLoginSide
@@ -1326,7 +1327,10 @@ let _startPromise = null;
 function _lesStartCache() { try { const r = localStorage.getItem(_START_CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
 function hentStartdata() {
   _startPromise = (async () => {
-    const sd = await apiKall({ action: 'hentStartdata', medService: true });
+    // Synken følger med i samme kall når backend er ny nok – ett rundturs-besøk spart
+    const synkKall = _synkKall();
+    const sd = await apiKall({ action: 'hentStartdata', medService: true,
+      synk: { siden: synkKall.siden || null, dager: synkKall.dager || 14 } });
     if (!sd || sd.feil || !sd.ok) throw new Error((sd && sd.feil) || 'Ugyldig startdata');
     _brukConfig(sd.config);
     _startStand = sd.stand || {};
@@ -1344,6 +1348,8 @@ function hentStartdata() {
       window._serviceFraStart = true;
       try { oppdaterServiceBadge(); } catch(e) {}
     }
+    // Turene fulgte med: behandle dem nå, så slipper vi å spørre om dem etterpå
+    if (sd.synk) window._alleDataPromise = hentAlleDataBakgrunn({ kall: synkKall, data: sd.synk });
     return sd;
   })();
   return _startPromise;
@@ -1489,7 +1495,8 @@ function _historikkProvSenere() {
   setTimeout(() => { if (!document.hidden && navigator.onLine !== false) hentAlleDataBakgrunn(); }, 60000);
   return true;
 }
-async function hentAlleDataBakgrunn() {
+// forhand: { kall, data } når synken allerede fulgte med oppstartskallet
+async function hentAlleDataBakgrunn(forhand) {
 // Hent ALLE historiske data stille i bakgrunnen – aldri to ganger samtidig
 if (!scriptUrl) return;
 if (_alleHenter) return _alleHenter;
@@ -1497,8 +1504,9 @@ _alleHenter = (async () => {
 try {
 let data = null;
 for (let runde = 0; runde < 3; runde++) {
-  const kall = _synkKall();
-  data = await apiKall(kall, 1, _HISTORIKK_OPTS);
+  const kall = forhand ? forhand.kall : _synkKall();
+  data = forhand ? forhand.data : await apiKall(kall, 1, _HISTORIKK_OPTS);
+  forhand = null;   // bare første runde kan være forhåndshentet
   // Backend ikke oppdatert ennå: fall tilbake til full henting som før
   if (_erUkjentHandling(data) && !_gammelBackend) { _gammelBackend = true; _synkTil = null; continue; }
   if (data.feil) { setSyncStatus('error', 'Feil'); return; }
@@ -1529,9 +1537,12 @@ for (let runde = 0; runde < 3; runde++) {
 if (data && data.naa) _synkTil = data.naa;   // serverens klokke, aldri telefonens
 _flettKo();
 _alleDataLastet = true;
+_dataLastet = true;                // kaldstart: synken er nå eneste datakilde
 _sisteHenting = Date.now();
 _visteDataTs = _sisteHenting;
 _skrivTurerCache();
+document.querySelectorAll('.tab-laster').forEach(x => x.remove());
+try { oppdaterDataLists(); } catch(e) {}
 _maalFerdig(turer.length);
 _historikkForsok = 0;
 visFerskhet('ok');
@@ -1545,6 +1556,11 @@ if (!_dataLastet) setSyncStatus('error', 'Feil');
 else setSyncStatus('ok', 'Sync'); // skjul spinner
 // Historikken kommer gjerne på neste forsøk – ikke skrik «feil» mens vi venter
 visFerskhet(_historikkProvSenere() ? 'historikk' : 'feil');
+if (!_dataLastet) {
+  document.querySelectorAll('.tab-laster').forEach(x => x.remove());
+  const dashEl = document.getElementById('dash-recent');
+  if (dashEl) dashEl.innerHTML = '<p style="color:var(--text2);text-align:center;padding:20px;font-size:13px">Henter data … prøver igjen om et øyeblikk.</p>';
+}
 console.warn('Historikken kom ikke denne gangen:', e && e.message ? e.message : e);
 }
 })();
@@ -7008,9 +7024,10 @@ async function startApp() {
   hentTopbarVaer();  // vær går ikke via Apps Script – kan starte med en gang
   setSyncStatus('loading-bg', 'Sync');
   // Ett kall om gangen (køen styrer rekkefølgen etter prioritet).
-  // Har vi mellomlagrede turer, hopper vi over 14-dagers-kallet og henter hele historikken direkte.
-  const pData = tc ? Promise.resolve() : hentData({ medStart: false });
-  if (tc) { window._alleDataPromise = hentAlleDataBakgrunn(); }
+  // 14-dagers-kallet er arv fra før synken fantes. Synken henter alt i samme slengen, så et eget
+  // kall først er et helt rundturs-besøk hos Apps Script (flere sekunder) for data vi får uansett.
+  const pData = pStart.then(() => window._alleDataPromise || (window._alleDataPromise = hentAlleDataBakgrunn()))
+                      .catch(() => window._alleDataPromise || (window._alleDataPromise = hentAlleDataBakgrunn()));
   // Feil og service sist i køen – og bare hvis de ikke fulgte med oppstartskallet
   pStart.then(() => window._serviceFraStart ? null : apiKall({ action: 'hentServiceData' })).then(data => {
     if (!data) return;

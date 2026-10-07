@@ -417,7 +417,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="15:58">15:58</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="06.10" data-tid="16:16">16:16</span>
 </div>
 
 <div class="nav">
@@ -827,7 +827,8 @@ async function _apiKallRa(body, forsokNr, opts) {
   };
   const _nyttSvarForsok = async (nyeOpts) => {
     console.warn(`Ugyldig svar – prøver igjen (forsøk ${forsokNr + 1}/${_maksForsokSvar})…`);
-    await new Promise(r => setTimeout(r, _RETRY_PAUSE_MS[forsokNr - 1] || 4000));
+    // Serveren svarte allerede – ingen grunn til å vente lenge før nytt forsøk
+    await new Promise(r => setTimeout(r, 250));
     return _apiKallRa(body, forsokNr + 1, nyeOpts);
   };
   try {
@@ -862,9 +863,9 @@ async function _apiKallRa(body, forsokNr, opts) {
       console.error(`Backend returnerte ikke JSON (forsøk ${forsokNr}, ${brukGet ? 'GET' : 'POST'}). Første 500 tegn:`, txt.substring(0, 500));
       console.error('HTTP status:', res.status, 'Response length:', txt.length);
       if (forsokNr < _maksForsokSvar) {
-        // Siste forsøk tas som POST – det er GET-ens omdirigering til googleusercontent.com som svikter
-        const nyeOpts = (brukGet && forsokNr + 1 >= _maksForsokSvar) ? Object.assign({}, opts, { tvingPost: true }) : opts;
-        return _nyttSvarForsok(nyeOpts);
+        // Det er GET-ens omdirigering til googleusercontent.com som svikter – da nytter det ikke å
+        // gjenta samme GET. Første nye forsøk går derfor rett over til POST.
+        return _nyttSvarForsok(brukGet ? Object.assign({}, opts, { tvingPost: true }) : opts);
       }
       const erLoginSide = txt.includes('accounts.google.com');
       throw new Error(erLoginSide
@@ -1198,7 +1199,10 @@ let _turerLastet = false;  // true når alle turer er hentet (da er turer-lista 
 function _lesStartCache() { try { const r = localStorage.getItem(_START_CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
 function hentStartdata() {
   _startPromise = (async () => {
-    const sd = await apiKall({ action: 'hentStartdataScooter', medService: true });
+    // Synken følger med i samme kall når backend er ny nok – ett rundturs-besøk spart
+    const synkKall = _synkKall();
+    const sd = await apiKall({ action: 'hentStartdataScooter', medService: true,
+      synk: { siden: synkKall.siden || null, dager: synkKall.dager || 14 } });
     if (!sd || sd.feil || !sd.ok) throw new Error((sd && sd.feil) || 'Ugyldig startdata');
     _brukConfigScooter(sd.config);
     _startStand = sd.stand || {};
@@ -1213,6 +1217,8 @@ function hentStartdata() {
       window._serviceFraStart = true;
       try { oppdaterServiceBadge(); } catch(e) {}
     }
+    // Turene fulgte med: behandle dem nå i stedet for å spørre om dem etterpå
+    if (sd.synk) window._scooterDataPromise = lastData({ utenConfig: true, forhand: { kall: synkKall, data: sd.synk } });
     return sd;
   })();
   return _startPromise;
@@ -1261,9 +1267,9 @@ function _historikkProvSenere(opts) {
 async function lastData(opts) {
   opts = opts || {};
   try {
-    let kall = _synkKall();
+    let kall = opts.forhand ? opts.forhand.kall : _synkKall();
     const [turData, cfg] = await Promise.all([
-      apiKall(kall, 1, _HISTORIKK_OPTS),
+      opts.forhand ? Promise.resolve(opts.forhand.data) : apiKall(kall, 1, _HISTORIKK_OPTS),
       opts.utenConfig ? Promise.resolve(null) : apiKall({ action: 'hentConfigScooter' })
     ]);
     if (cfg && cfg.feil) throw new Error(cfg.feil);
@@ -4602,7 +4608,8 @@ async function initAlt() {
   // så turhentingen trenger ikke config – da slipper vi et kall og venter ikke på tur.
   // Ett kall om gangen – køen sender oppsett først, så turer, og feildata sist
   const pStart = hentStartdata().catch(e => console.error('Startdata feilet:', e)).finally(() => { if (loader) loader.classList.remove('visible'); });
-  const pData = lastData({ utenConfig: true });
+  // Fulgte turene med oppstartskallet, er de allerede på vei inn – ellers hentes de nå
+  const pData = pStart.then(() => window._scooterDataPromise || lastData({ utenConfig: true }));
   pStart.then(() => { if (!window._serviceFraStart) hentFeilData(); });
   await Promise.allSettled([pStart, pData]);
 }
