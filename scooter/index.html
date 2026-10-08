@@ -416,7 +416,7 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 
   <div style="flex:1"></div>
   <span id="bk-pill" class="bk-pill" role="button" tabindex="0" hidden onclick="bkTogglePop(event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bkTogglePop(event)}" style="margin-right:6px"></span>
-  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="07.10" data-tid="17:45">17:45</span>
+  <span class="topbar-version" id="topbar-version" onclick="toggleVersjonVisning()" title="Klikk for å bytte format" data-dato="08.10" data-tid="08:34">08:34</span>
 </div>
 
 <div class="nav">
@@ -687,8 +687,8 @@ body { font-family:var(--sans); background:var(--snow); color:var(--text); min-h
 </div>
 
 <style>
-@keyframes puls { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.6} }
-@keyframes ikonfarge-rod { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.4)} }
+@keyframes puls { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes ikonfarge-rod { 0%,100%{stroke:#E74C3C;opacity:1} 50%{stroke:#ff9999;opacity:0.5} }
 </style>
 
 <script>
@@ -3805,20 +3805,24 @@ function oppdaterServiceBadge() {
   const nyeFeil = feilData.filter(f => f.status === 'Ny');
   const paabegynt = feilData.filter(f => f.status === 'Påbegynt');
   const setFarge = (farge) => ikon.setAttribute('stroke', farge);
+  // Samme statuskode og blink som i maskin-appen: rød og blinkende = Ny, oransje = Påbegynt
   if (nyeFeil.length > 0) {
     badge.style.display = 'block';
     badge.style.background = '#E74C3C';
     badge.style.animation = 'puls 1.2s infinite';
     setFarge('#E74C3C');
+    ikon.style.animation = 'ikonfarge-rod 1.2s infinite';
   } else if (paabegynt.length > 0) {
     badge.style.display = 'block';
     badge.style.background = '#F39C12';
     badge.style.animation = '';
     setFarge('#F39C12');
+    ikon.style.animation = '';
   } else {
     badge.style.display = 'none';
     badge.style.animation = '';
     setFarge('rgba(255,255,255,0.75)');
+    ikon.style.animation = '';
   }
 }
 function toggleServicePanel() {
